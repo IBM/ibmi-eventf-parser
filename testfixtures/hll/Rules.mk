@@ -1,0 +1,1 @@
+LITINERR.PGM: literalInMessage.rpgle
