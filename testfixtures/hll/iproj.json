@@ -1,3 +1,4 @@
 {
-    "tgtccsid": "37"
+    "curlib": "&CURLIB",
+    "includePath": ["includes"]
 }
