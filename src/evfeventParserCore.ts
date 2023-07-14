@@ -1,6 +1,6 @@
-import Source from "../views/projectExplorer/source";
 
-class EventsFileParserCore {
+
+export class EventsFileParserCore {
     static Copyright: string;
     static LOGGER: any;
 

@@ -47,10 +47,10 @@ class QSYSEventsFileMapTable
 		{
 			let parentFile =  this._files.peek();
 			
-			let parentRange = this._map.getLast();
+			let parentRange = this._map[-1];
 			if(parentRange.getOutputStartLine() === range.getOutputStartLine())
 			{
-				this._map.removeLast();
+				this._map.pop();
 			}
 			else
 			{
@@ -62,7 +62,7 @@ class QSYSEventsFileMapTable
 			}
 		}
 		
-		this._map.addLast(range);
+		this._map.push(range);
 		this._files.push(file);
 		this._fileTable.set(record.getSourceId(), record);
 	}
@@ -96,7 +96,7 @@ class QSYSEventsFileMapTable
 			{throw new Error("The ID field of the FILEEND event does not match the ID field of the last FILEID event." + '\n' +  
 							"Mismatched IDs: \t FILEID: " + file?.getID() + "\t FILEEND: " + record.toString());}
 		
-		let last = this._map.getLast();
+		let last = this._map[-1];
 		
 		// Make sure that last retrieved node matches the ID of the FILEEND
 		if(last.getInputFileID() !== (record.getFileId()))
@@ -133,7 +133,7 @@ class QSYSEventsFileMapTable
 			range.setInputStartLine(parent?.getLinesProcessed() + 1);
 			range.setOutputStartLine(last.getOutputEndLine() + 1);
 			
-			this._map.addLast(range);
+			this._map.push(range);
 		}
 		// If the expansion field is 0, assume that the bounds go to the end of the file
 		// defect 7526: according to Gina Whitney, the expansion field is only 0 if the copy file
@@ -156,7 +156,7 @@ class QSYSEventsFileMapTable
 			range.setInputFileID(parent.getID());
 			range.setInputStartLine(parent.getLinesProcessed() + 1);
 			range.setOutputStartLine(last.getOutputStartLine() + 1);
-			this._map.addLast(range);
+			this._map.push(range);
 		}
 	}
 	
@@ -186,7 +186,7 @@ class QSYSEventsFileMapTable
 		//We need to take into consideration lines that have already been mapped to the output file.
 		//line - parentFile.getLinesProcessed() === lines between the new /copy and the old /copy
 		if(!this._files.isEmpty()) {
-			let parentRange = this._map.getLast();
+			let parentRange = this._map[-1];
 			let parentFile = this._files.peek();	
 			range.setOutputStartLine(parentRange.getOutputStartLine() + line - parentFile.getLinesProcessed());
 		}
@@ -198,7 +198,7 @@ class QSYSEventsFileMapTable
 	
 	public addExpansionRecord(record: QSYSEventsFileExpansionRecord)
 	{
-		this._queueExpansion.addLast(record);
+		this._queueExpansion.push(record);
 	}
 	
 	private getSourceLineRangeForOutputLine(line: number): SourceLineRange | null
@@ -273,9 +273,9 @@ class QSYSEventsFileMapTable
 		let expansionRange = this.createSourceLineRange(record);
 		let expandedSource = null;
 		//Handle the case where the expansion comes at the end of file (right after the last range)
-		if(expansionRange.getOutputStartLine() - (this._map.getLast()).getOutputEndLine() === 1) {
+		if(expansionRange.getOutputStartLine() - (this._map[-1]).getOutputEndLine() === 1) {
 			if(expansionRange.getInputStartLine() === expansionRange.getInputEndLine()) { 
-				this._map.addLast(expansionRange);
+				this._map.push(expansionRange);
 				return;
 			}	
 		}
