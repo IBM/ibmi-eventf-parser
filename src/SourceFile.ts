@@ -1,4 +1,4 @@
-class SourceFile{
+export class SourceFile{
     private location: string;
     private browseMode: boolean;
 

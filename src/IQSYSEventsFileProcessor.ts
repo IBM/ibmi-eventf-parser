@@ -5,7 +5,15 @@
  * The source code for this program is not published or otherwise divested of its trade secrets,
  * irrespective of what has been deposited with the U.S. Copyright Office.
  *
- */ 
+ */
+import { QSYSEventsFileErrorInformationRecord } from "./QSYSEventsFileErrorInformationRecord";
+import { QSYSEventsFileExpansionRecord } from "./QSYSEventsFileExpansionRecord";
+import { QSYSEventsFileFileEndRecord } from "./QSYSEventsFileFileEndRecord";
+import { QSYSEventsFileFileIDRecord } from "./QSYSEventsFileFileIDRecord";
+import { QSYSEventsFileProcessorRecord } from "./QSYSEventsFileProcessorRecord";
+import { QSYSEventsFileTimestampRecord } from "./QSYSEventsFileTimestampRecord";
+
+ 
 
 /**
  * This interface defines a backbone for processing Events File Records.<br>
@@ -18,7 +26,7 @@
  * For instance, an SQL compile might need a different processor to make use of the
  * Expansion record.
  */
-interface IQSYSEventsFileProcessor
+export interface IQSYSEventsFileProcessor
 {
 	/**
 	 * Processes a File ID record object.
@@ -57,31 +65,31 @@ interface IQSYSEventsFileProcessor
 	 * Processes a Program record object.
 	 * @param record
 	 */
-	processProgramRecord(record: QSYSEventsFileProgramRecord): void;
+	processProgramRecord(record: QSYSEventsFileProcessorRecord): void;
 	
 	/**
 	 * Processes a Feedback Code record object.
 	 * @param record
 	 */
-	processFeedbackCodeRecord(record: QSYSEventsFileFeedbackCodeRecord): void;
+	processFeedbackCodeRecord(record: QSYSEventsFileFileEndRecord): void;
 	
 	/**
 	 * Processes a Map Define record object.
 	 * @param record
 	 */
-	processMapDefineRecord(record: QSYSEventsFileMapDefineRecord): void;
+	processMapDefineRecord(record: QSYSEventsFileFileIDRecord): void;
 	
 	/**
 	 * Processes a Map Start record object.
 	 * @param record
 	 */
-	processMapStartRecord(record: QSYSEventsFileMapStartRecord): void;
+	processMapStartRecord(record: QSYSEventsFileTimestampRecord): void;
 	
 	/**
 	 * Processes a Map End record object.
 	 * @param record
 	 */
-	processMapEndRecord(record: QSYSEventsFileMapEndRecord): void;
+	processMapEndRecord(record: QSYSEventsFileFileEndRecord): void;
 	
 	/**
 	 * Processes an Expansion record object.

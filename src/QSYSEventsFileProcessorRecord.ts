@@ -5,13 +5,16 @@
  * The source code for this program is not published or otherwise divested of its trade secrets,
  * irrespective of what has been deposited with the U.S. Copyright Office.
  *
- */ 
+ */
+import { IQSYSEventsFileRecordType } from "./IQSYSEventsFileRecordType";
+
+ 
 
 
 /**
  * This class represents a Processor record in an events file.
  */
-class QSYSEventsFileProcessorRecord implements EvfeventRecord {
+export class QSYSEventsFileProcessorRecord implements EvfeventRecord {
 
    public Copyright = "(C) Copyright IBM Corp. 2003  All Rights Reserved.";
 

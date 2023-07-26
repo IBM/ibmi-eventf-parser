@@ -11,7 +11,7 @@
 /**
  * This class represents a File End record in an events file.
  */
-class QSYSEventsFileFileEndRecord implements EvfeventRecord {
+export class QSYSEventsFileFileEndRecord implements EvfeventRecord {
 
    public static Copyright = "(C) Copyright IBM Corp. 2003  All Rights Reserved.";
 

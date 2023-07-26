@@ -10,7 +10,7 @@
 /**
  * This class represents a Error Information record in an events file.
  */
-class QSYSEventsFileErrorInformationRecord implements EvfeventRecord {
+export class QSYSEventsFileErrorInformationRecord implements EvfeventRecord {
 	
 	private version: string;
 	private fileId: string;

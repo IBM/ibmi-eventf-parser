@@ -5,13 +5,16 @@
  * The source code for this program is not published or otherwise divested of its trade secrets,
  * irrespective of what has been deposited with the U.S. Copyright Office.
  *
- */ 
+ */
+import { IQSYSEventsFileRecordType } from "./IQSYSEventsFileRecordType";
+
+ 
 
 
 /**
  * This class represents an Expansion record in an Events File.
  */
-class QSYSEventsFileExpansionRecord implements EvfeventRecord
+export class QSYSEventsFileExpansionRecord implements EvfeventRecord
 {
 	public static Copyright = "(C) Copyright IBM Corp. 2006  All Rights Reserved.";
 	

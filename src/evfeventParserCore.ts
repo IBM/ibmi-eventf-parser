@@ -1,11 +1,21 @@
-
+import {IQSYSEventsFileRecordType} from './IQSYSEventsFileRecordType';
+import {QSYSEventsFileTimestampRecord} from './QSYSEventsFileTimestampRecord';
+import {QSYSEventsFileProcessorRecord} from './QSYSEventsFileProcessorRecord';
+import {SourceFile} from './SourceFile';
+import {QSYSEventsFileFileIDRecord} from './QSYSEventsFileFileIDRecord';
+import {IQSYSEventsFileProcessor} from './IQSYSEventsFileProcessor';
+import {ISequentialFileReader} from './ISequentialFileReader';
+import {IMarkerCreator} from './IMarkerCreator';
+import {QSYSEventsFileErrorInformationRecord} from './QSYSEventsFileErrorInformationRecord';
+import {QSYSEventsFileFileEndRecord} from './QSYSEventsFileFileEndRecord';
+import {QSYSEventsFileExpansionRecord} from './QSYSEventsFileExpansionRecord';
 
 export class EventsFileParserCore {
     static Copyright: string;
     static LOGGER: any;
 
   private _exception: Error | null;
-  private _processor: IQSYSEventsFileProcessor | undefined;
+  private _processor: IQSYSEventsFileProcessor | null;
   private _lastOutputFile: SourceFile | null;
   private _currentOutputFile: SourceFile | null;
   private _sourceTable: Map<String, SourceFile>;
@@ -46,9 +56,9 @@ export class EventsFileParserCore {
   }
 
   parse(reader: ISequentialFileReader, ccsid: number, markerCreator: IMarkerCreator) {
-    let lineText = null;
+    let lineText: string;
     let st = null;
-    let word = null;
+    let word: string;
     let id = null;
     let message = null;
     let severity = null;
@@ -59,10 +69,10 @@ export class EventsFileParserCore {
     let charEnd = null;
     let lineEnd = null;
     let fileProcessed = null;
-    let fileId = null;
-    if (this._processor === null) {
-      this._processor = new IQSYSEventsFileProcessor(); // Why we need to initialize this?
-    }
+    let fileId: string;
+    // if (this._processor === null) {
+    //   this._processor: IQSYSEventsFileProcessor; // Why we need to initialize this?
+    // }
     this._processor?.doPreProcessing();
     lineText = reader.readNextLine();
     while (lineText !== null) {
@@ -219,7 +229,7 @@ export class EventsFileParserCore {
               let record = new QSYSEventsFileFileIDRecord(version, fileId, lineNumber, locationLength.toString(), location, timestamp.toString(), tempFlag);
               try {
                 this._processor?.processFileIDRecord(record);
-              } catch (e: Error) {
+              } catch (e) {
                 this.logError(e);
                 this._exception = e;
               }
@@ -233,7 +243,7 @@ export class EventsFileParserCore {
                 let record = new QSYSEventsFileFileEndRecord(version, fileId, expansion);
                 try {
                   this._processor?.processFileEndRecord(record);
-                } catch (e: Error) {
+                } catch (e) {
                   this.logError(e);
                   this._exception = e; 
                 }
@@ -271,14 +281,14 @@ export class EventsFileParserCore {
                       // record.setLineClass(st[i++]);
                       try {
                         this._processor?.processProcessorRecord(record);
-                      } catch (e: Error) {
+                      } catch (e) {
                         this.logError(e);
                         this._exception = e;
                       }
                     }
                     break;
                   } else {
-                    if (word === (IQSYSEventsFileRecordType.PROGRAM) || word === (IQSYSEventsFileRecordType.MAP_DEFINE) || word === (IQSYSEventsFileRecordType.MAP_END) || word === (IQSYSEventsFileRecordType.MAP_START) || word === (IQSYSEventsFileRecordType.FEEDBACK_CODE) || word.trim().length() === 0) {
+                    if (word === (IQSYSEventsFileRecordType.PROGRAM) || word === (IQSYSEventsFileRecordType.MAP_DEFINE) || word === (IQSYSEventsFileRecordType.MAP_END) || word === (IQSYSEventsFileRecordType.MAP_START) || word === (IQSYSEventsFileRecordType.FEEDBACK_CODE) || word.trim().length === 0) {
                       break;
                     } else {
                       throw new Error('Events file has incorrect format. Unexpected line type. LT=' + lineText);
@@ -297,14 +307,14 @@ export class EventsFileParserCore {
     if (this._processor !== null) {
       try {
         this._processor?.doPostProcessing();
-      } catch (ex: Error) {
+      } catch (ex) {
         this._exception = ex;
       }
     }
   }
   resolveRelativePath(location: string) {
-    location = Paths.get(location).normalize().toString();
-    location = location.replaceAll('\\\\', '/');
+    // location = Paths.get(location).normalize().toString();
+    location = location.replace('\\\\', '/');
     return location;
   }
   getException() {
@@ -319,21 +329,34 @@ export class EventsFileParserCore {
     }
     let nestedErrors = this._processor?.getAllErrors();
     let allErrors = new Array();
-    for (let iter1 = nestedErrors?.iterator(); iter1.hasNext();) {
-      let curErrorList = iter1.next();
-      for (let iter2 = curErrorList.iterator(); iter2.hasNext();) {
-        allErrors.add((iter2.next()));
+    let index = 0;
+    while (index + 1 < nestedErrors.length) {
+      // let iter1 = nestedErrors[index];
+      let curErrorList = nestedErrors[index + 1];
+      let index1 = 0;
+      while (index1 + 1 < curErrorList.length) {
+        // let iter2 = curErrorList[index1];
+        let next = curErrorList[index1 + 1];
+        allErrors.push(next);
+        index1++;
       }
+      index++;
     }
+    // for (let iter1 = nestedErrors?.iterator(); iter1.hasNext();) {
+    //   let curErrorList = iter1.next();
+    //   for (let iter2 = curErrorList.iterator(); iter2.hasNext();) {
+    //     allErrors.push((iter2.next()));
+    //   }
+    // }
     return allErrors;
   }
   getAllFileIDRecords() {
     if (this._processor === null) {
-      return Collections.emptySet();
+      return new Array();
     } else {
       return this._processor?.getAllFileIDRecords();
     }
   }
 }
 EventsFileParserCore.Copyright = '(C) Copyright IBM Corp. 2002, 2009.  All Rights Reserved.';
-EventsFileParserCore.LOGGER = LoggerFactory.getLogger(.getName());
+// EventsFileParserCore.LOGGER = LoggerFactory.getLogger(.getName());

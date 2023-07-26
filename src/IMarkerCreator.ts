@@ -1,4 +1,6 @@
-interface IMarkerCreator {
+import { QSYSEventsFileErrorInformationRecord } from "./QSYSEventsFileErrorInformationRecord";
+
+export interface IMarkerCreator {
 
 	createMarker(
 			 record: QSYSEventsFileErrorInformationRecord, fileLocation: string,

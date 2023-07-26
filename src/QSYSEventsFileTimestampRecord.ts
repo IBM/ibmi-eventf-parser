@@ -7,11 +7,12 @@
  *
  */ 
 
+import {IQSYSEventsFileRecordType} from './IQSYSEventsFileRecordType';
 
 /**
  * This class represents a Timestamp record in an events file.
  */
-class QSYSEventsFileTimestampRecord implements EvfeventRecord {
+export class QSYSEventsFileTimestampRecord implements EvfeventRecord {
 
    public Copyright = "(C) Copyright IBM Corp. 2003  All Rights Reserved.";
 
