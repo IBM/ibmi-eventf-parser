@@ -18,6 +18,7 @@ import { QSYSEventsFileProcessorBlockCore } from "./QSYSEventsFileProcessorBlock
 import { QSYSEventsFileProcessorRecord } from "./QSYSEventsFileProcessorRecord";
 import { QSYSEventsFileProgramRecord } from "./QSYSEventsFileProgramRecord";
 import { QSYSEventsFileTimestampRecord } from "./QSYSEventsFileTimestampRecord";
+import { EvfeventRecord } from "./evfeventRecord";
 
 class QSYSEventsFileExpansionProcessorCore implements EvfeventRecord {
 
@@ -252,22 +253,22 @@ class QSYSEventsFileExpansionProcessorCore implements EvfeventRecord {
 	 * @return a list of lists of all parsed errors from all processor blocks of the Events File
 	 * (one list for each processor block).
 	 */
-	public getAllErrors(): Array<QSYSEventsFileErrorInformationRecord> {
-		if (this._currentProcessor !== null) {
+	public getAllErrors(): QSYSEventsFileErrorInformationRecord[] {
+		if (this._currentProcessor) {
 			return this._currentProcessor.getAllProcessorErrors();
 		}
 
-		return new Array<QSYSEventsFileErrorInformationRecord>();
+		return [];
 	}
 
 	/**
 	 * Return all file ID records.
 	 */
-	public getAllFileIDRecords(): Array<QSYSEventsFileFileIDRecord> {
-		if (this._currentProcessor !== null) { return this._currentProcessor.getMappingTable().getAllFileIDRecords(); }
-		else {
-			let emptyArray = new Array<QSYSEventsFileFileIDRecord>();
-			return emptyArray;
+	public getAllFileIDRecords(): QSYSEventsFileFileIDRecord[] {
+		if (this._currentProcessor) {
+			return this._currentProcessor.getMappingTable().getAllFileIDRecords();
+		} else {
+			return [];
 		}
 	}
 }

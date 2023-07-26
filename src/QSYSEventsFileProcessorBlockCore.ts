@@ -6,7 +6,7 @@ import { QSYSEventsFileProcessorRecord } from "./QSYSEventsFileProcessorRecord";
 
 export class QSYSEventsFileProcessorBlockCore {
   protected INPUT_FILE_ID: string;
-  private _errors: Array<QSYSEventsFileErrorInformationRecord>;
+  private _errors: QSYSEventsFileErrorInformationRecord[];
   private _inputFile: QSYSEventsFileFileIDRecord;
   private _outputFile: QSYSEventsFileFileIDRecord;
   private _currentProcessor: QSYSEventsFileProcessorRecord;
@@ -42,7 +42,7 @@ export class QSYSEventsFileProcessorBlockCore {
 
     this._currentProcessor = record;
     this._mappingTable = new QSYSEventsFileMapTable();
-    this._errors = new Array<QSYSEventsFileErrorInformationRecord>();
+    this._errors = [];
   }
   getInputFile(): QSYSEventsFileFileIDRecord {
     return this._inputFile;
@@ -142,11 +142,11 @@ export class QSYSEventsFileProcessorBlockCore {
     return fileIDRecord.getFlag() === ('1') || ((this._previousProcessorBlock !== null && !this.isFirstInEventsFile()) && this._previousProcessorBlock.getOutputFile() !== null && fileIDRecord.getFilename() === (this._previousProcessorBlock.getOutputFile().getFilename())) || (this.getOutputFile() !== null && fileIDRecord.getFilename() === (this.getOutputFile().getFilename()));
   }
   getAllProcessorErrors() {
-    let allPrevErrs = new Array<QSYSEventsFileErrorInformationRecord>();
+    let allPrevErrs:QSYSEventsFileErrorInformationRecord [] = [];
     if (this._previousProcessorBlock !== null) {
       allPrevErrs = this._previousProcessorBlock.getAllProcessorErrors();
     }
-    allPrevErrs.concat(this._errors);
+    allPrevErrs = allPrevErrs.concat(this._errors);
     return allPrevErrs;
   }
   resolveFileNamesForAllErrors() {
@@ -165,12 +165,13 @@ export class QSYSEventsFileProcessorBlockCore {
   }
   resolveFileNameAndDetermineIfReadOnly(error: QSYSEventsFileErrorInformationRecord) {
     let readOnly = false;
-    if (this._previousProcessorBlock !== null && !this.isFirstInEventsFile() && this.isMappingSupported() && error.getFileId() === (this.INPUT_FILE_ID)) {
+    if (this._previousProcessorBlock && !this.isFirstInEventsFile() && this.isMappingSupported() && error.getFileId() === (this.INPUT_FILE_ID)) {
       this._previousProcessorBlock.modifyErrorInformation(error);
     } else {
       let fileLocation = this._mappingTable.getFileLocationForFileID(error.getFileId());
-      if (fileLocation !== null) {
-        readOnly = this.isFileReadOnly(this._mappingTable.getFileIDRecordForFileID(error.getFileId()));
+      if (fileLocation) {
+        const fileID = this._mappingTable.getFileIDRecordForFileID(error.getFileId());
+        readOnly = fileID ? this.isFileReadOnly(fileID) : false;
         error.setFileName(fileLocation);
       } else {
         readOnly = this.isFileReadOnly(this.getInitialInputFile());

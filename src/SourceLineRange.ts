@@ -6,19 +6,23 @@ class SourceLineRange {
 	// Input File Info
 	private _inputStartLine = 0;
 	private _inputEndLine = -1;
-	private _inputFileID: string | undefined;
+	private _inputFileID: string;
 
 	// Output File Info
 	private _outputStartLine = 0;
 	private _outputEndLine = -1;
 
-	constructor(copy?: SourceLineRange) {
-		if (typeof copy !== 'undefined') {
+	constructor(fileID?: string, copy?: SourceLineRange) {
+		if (copy) {
 			this._inputStartLine = copy.getInputStartLine();
 			this._inputEndLine = copy.getInputEndLine();
 			this._inputFileID = copy.getInputFileID();
 			this._outputStartLine = copy.getOutputStartLine();
 			this._outputEndLine = copy.getOutputEndLine();
+		}
+
+		if (fileID) {
+			this._inputFileID = fileID;
 		}
 	}
 
@@ -30,7 +34,7 @@ class SourceLineRange {
 		this._inputEndLine = endLine;
 	}
 
-	public getInputFileID(): string | undefined {
+	public getInputFileID(): string {
 		return this._inputFileID;
 	}
 

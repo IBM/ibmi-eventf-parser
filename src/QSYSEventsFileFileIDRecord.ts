@@ -7,6 +7,7 @@
  *
  */
 import { IQSYSEventsFileRecordType } from "./IQSYSEventsFileRecordType";
+import { EvfeventRecord } from "./evfeventRecord";
 
 /**
  * This class represents a File ID record in an events file.

@@ -120,7 +120,7 @@ export interface IQSYSEventsFileProcessor {
 	 * @return a list of lists of all parsed errors from all processor blocks of the Events File
 	 * (one list for each processor block).
 	 */
-	getAllErrors(): Array<Array<QSYSEventsFileErrorInformationRecord>>;
+	getAllErrors(): QSYSEventsFileErrorInformationRecord[][];
 
 	/**
 	 * Return all file names. 

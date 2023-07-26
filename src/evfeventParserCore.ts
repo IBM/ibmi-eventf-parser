@@ -14,17 +14,17 @@ export class EventsFileParserCore {
   static Copyright: string;
   static LOGGER: any;
 
-  private _exception: Error | null;
+  private _exception: Error | undefined;
   private _processor: IQSYSEventsFileProcessor | undefined;
-  private _lastOutputFile: SourceFile | null;
-  private _currentOutputFile: SourceFile | null;
+  private _lastOutputFile: SourceFile | undefined;
+  private _currentOutputFile: SourceFile | undefined;
   private _sourceTable: Map<String, SourceFile>;
 
   constructor() {
-    this._exception = null;
-    this._processor = undefined;
-    this._lastOutputFile = null;
-    this._currentOutputFile = null;
+    // this._exception = undefined;
+    // this._processor = undefined;
+    // this._lastOutputFile = undefined;
+    // this._currentOutputFile = undefined;
 
     this._sourceTable = new Map<String, SourceFile>();
   }
@@ -316,7 +316,7 @@ export class EventsFileParserCore {
   getAllErrors() {
     if (this._processor) {
       let nestedErrors = this._processor?.getAllErrors();
-      let allErrors = new Array();
+      let allErrors: QSYSEventsFileErrorInformationRecord[] = [];
       let index = 0;
       while (index + 1 < nestedErrors.length) {
         // let iter1 = nestedErrors[index];
@@ -338,14 +338,14 @@ export class EventsFileParserCore {
       // }
       return allErrors;
     } else {
-      return new Array();
+      return [];
     }
   }
   getAllFileIDRecords() {
-    if (this._processor === null) {
-      return new Array();
+    if (this._processor) {
+      return this._processor.getAllFileIDRecords();
     } else {
-      return this._processor?.getAllFileIDRecords();
+      return [];
     }
   }
 }

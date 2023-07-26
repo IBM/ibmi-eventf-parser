@@ -7,6 +7,7 @@
  *
  */
 import { IQSYSEventsFileRecordType } from "./IQSYSEventsFileRecordType";
+import { EvfeventRecord } from "./evfeventRecord";
 
 /**
  * This class represents a Map Define record in an events file.

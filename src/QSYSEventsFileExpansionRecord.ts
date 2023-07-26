@@ -7,6 +7,7 @@
  *
  */
 import { IQSYSEventsFileRecordType } from "./IQSYSEventsFileRecordType";
+import { EvfeventRecord } from "./evfeventRecord";
 
 /**
  * This class represents an Expansion record in an Events File.

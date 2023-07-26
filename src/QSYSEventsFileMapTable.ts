@@ -15,10 +15,10 @@ import { ArrayStack } from "./Stack";
 // SourceLineRange and FileIDLinesPair
 export class QSYSEventsFileMapTable {
 	// The map: made up of SourceLineRanges
-	private _map: Array<SourceLineRange>;
+	private _map: SourceLineRange[];
 
 	// Holds the EXPANSION records until processed
-	private _queueExpansion: Array<QSYSEventsFileExpansionRecord>;
+	private _queueExpansion: QSYSEventsFileExpansionRecord[];
 
 	// Data needed to determine where copybook SourceLineRange should be inserted in the list
 	private _files: ArrayStack<FileIDLinesPair>;
@@ -28,8 +28,8 @@ export class QSYSEventsFileMapTable {
 	private _fileTable: Map<String, QSYSEventsFileFileIDRecord>;
 
 	constructor() {
-		this._map = new Array<SourceLineRange>();
-		this._queueExpansion = new Array<QSYSEventsFileExpansionRecord>();
+		this._map = [];
+		this._queueExpansion = [];
 		this._files = new ArrayStack<FileIDLinesPair>();
 		this._fileTable = new Map<String, QSYSEventsFileFileIDRecord>();
 		this._lookupIndex = 0;
@@ -122,11 +122,9 @@ export class QSYSEventsFileMapTable {
 				return;
 			}
 
-			let parent = this._files.peek();
-
-			let range = new SourceLineRange();
-			range.setInputFileID(parent?.getID());
-			range.setInputStartLine(parent?.getLinesProcessed() + 1);
+			let parent = this._files.peek()!;
+			let range = new SourceLineRange(parent.getID());
+			range.setInputStartLine(parent.getLinesProcessed() + 1);
 			range.setOutputStartLine(last.getOutputEndLine() + 1);
 
 			this._map.push(range);
@@ -146,9 +144,8 @@ export class QSYSEventsFileMapTable {
 
 			// Otherwise this was the end of an included file
 			// Now add an entry for the remainder of the containing file
-			let parent = this._files.peek();
-			let range = new SourceLineRange();
-			range.setInputFileID(parent.getID());
+			let parent = this._files.peek()!;
+			let range = new SourceLineRange(parent.getID());
 			range.setInputStartLine(parent.getLinesProcessed() + 1);
 			range.setOutputStartLine(last.getOutputStartLine() + 1);
 			this._map.push(range);
@@ -170,8 +167,7 @@ export class QSYSEventsFileMapTable {
 				"Faulty record: " + record.toString());
 		}
 
-		let range = new SourceLineRange();
-		range.setInputFileID(record.getSourceId());
+		let range = new SourceLineRange(record.getSourceId());
 		range.setInputStartLine(1);
 
 
@@ -180,7 +176,9 @@ export class QSYSEventsFileMapTable {
 		if (!this._files.isEmpty()) {
 			let parentRange = this._map[-1];
 			let parentFile = this._files.peek();
-			range.setOutputStartLine(parentRange.getOutputStartLine() + line - parentFile.getLinesProcessed());
+			if (parentFile) {
+				range.setOutputStartLine(parentRange.getOutputStartLine() + line - parentFile.getLinesProcessed());
+			}
 		}
 		else {
 			range.setOutputStartLine(1);
@@ -192,26 +190,18 @@ export class QSYSEventsFileMapTable {
 		this._queueExpansion.push(record);
 	}
 
-	private getSourceLineRangeForOutputLine(line: number): SourceLineRange | null {
-		this._map.forEach(range => {
+	private getSourceLineRangeForOutputLine(line: number): SourceLineRange | undefined {
+		for (const range of this._map) {
 			if (range.containsOutputLine(line)) {
 				return range;
 			}
-		});
-		// let ranges = this._map.iterator();
-		// while(ranges.hasNext()) {
-		// 	let range = ranges.next();
-		// 	if(range.containsOutputLine(line))
-		// 		return range;
-		// }
-
-		return null;
+		}
 	}
 
-	private optimizedSourceLineRangeLookup(line: number): SourceLineRange | null {
+	private optimizedSourceLineRangeLookup(line: number): SourceLineRange | undefined {
 		// Start searching from last known position
-		for (var i = this._lookupIndex; i < this._map.size(); i++) {
-			let range = this._map.get(i);
+		for (var i = this._lookupIndex; i < this._map.length; i++) {
+			let range = this._map[i];
 			if (range.containsOutputLine(line)) {
 				this._lookupIndex = i;
 				return range;
@@ -219,41 +209,32 @@ export class QSYSEventsFileMapTable {
 		}
 
 		// If not found, wrap around and search from beginning
-		for (var i = 0; i < this._lookupIndex && i < this._map.size(); i++) {
-			let range = this._map.get(i);
+		for (var i = 0; i < this._lookupIndex && i < this._map.length; i++) {
+			let range = this._map[i];
 			if (range.containsOutputLine(line)) {
 				this._lookupIndex = i;
 				return range;
 			}
 		}
-
-		return null;
 	}
 
-	private getSourceLineRangeForInputLine(line: number, id: string): SourceLineRange | null {
-		this._map.forEach(range => {
+	private getSourceLineRangeForInputLine(line: number, id: string): SourceLineRange | undefined {
+		for (const range of this._map) {
 			if (range.containsInputLine(line, id)) {
 				return range;
 			}
-		});
-		// Iterator<SourceLineRange> ranges = this._map.iterator();
-		// while(ranges.hasNext()) {
-		// 	SourceLineRange range = ranges.next();
-		// 	if(range.containsInputLine(line, id))
-		// 		return range;
-		// }		
-		return null;
+		}
 	}
 
 	private shiftRangesBy(amount: number, atIndex: number) {
-		for (var i = atIndex; i < this._map.size(); i++) {
-			(this._map.get(i)).shiftOutputLines(amount);
+		for (var i = atIndex; i < this._map.length; i++) {
+			(this._map[i]).shiftOutputLines(amount);
 		}
 	}
 
 	private handleExpansion(record: QSYSEventsFileExpansionRecord) {
 		let expansionRange = this.createSourceLineRange(record);
-		let expandedSource = null;
+		let expandedSource: SourceLineRange | undefined;
 		//Handle the case where the expansion comes at the end of file (right after the last range)
 		if (expansionRange.getOutputStartLine() - (this._map[-1]).getOutputEndLine() === 1) {
 			if (expansionRange.getInputStartLine() === expansionRange.getInputEndLine()) {
@@ -264,10 +245,13 @@ export class QSYSEventsFileMapTable {
 		//05/25/09: There are currently no regular expansion events where the input start and input end lines are different,
 		//so there is currently no implementation to handle such events, 
 		//and this code should only be reached by negative expansion events.
-		else if (expansionRange.getInputStartLine() !== expansionRange.getInputEndLine() || (expansionRange.getOutputStartLine() === 0 && expansionRange.getOutputEndLine() === 0)) { expandedSource = this.getSourceLineRangeForInputLine(expansionRange.getInputStartLine(), expansionRange.getInputFileID()); }
-		else { expandedSource = this.getSourceLineRangeForOutputLine(expansionRange.getOutputStartLine()); }
+		else if (expansionRange.getInputStartLine() !== expansionRange.getInputEndLine() || (expansionRange.getOutputStartLine() === 0 && expansionRange.getOutputEndLine() === 0)) {
+			expandedSource = this.getSourceLineRangeForInputLine(expansionRange.getInputStartLine(), expansionRange.getInputFileID());
+		} else {
+			expandedSource = this.getSourceLineRangeForOutputLine(expansionRange.getOutputStartLine());
+		}
 
-		this.splitExpandedSourceLineRange(expansionRange, expandedSource);
+		this.splitExpandedSourceLineRange(expansionRange, expandedSource!);
 	}
 
 	private splitExpandedSourceLineRange(expansion: SourceLineRange, expanded: SourceLineRange) {
@@ -282,7 +266,7 @@ export class QSYSEventsFileMapTable {
 		if (isExpansionNegative) {
 			if (expansion.getInputStartLine() === expanded.getInputStartLine() && expansion.getInputEndLine() === expanded.getInputEndLine()) {
 				//Assume 1 to 1 mapping
-				this._map.remove(index);
+				this._map.splice(index, 1);
 
 				this.shiftRangesBy(expansionSize, index);
 			}
@@ -300,7 +284,7 @@ export class QSYSEventsFileMapTable {
 				this.shiftRangesBy(expansionSize, index + 1);
 			}
 			else {
-				let extraRange = new SourceLineRange(expanded);
+				let extraRange = new SourceLineRange(undefined, expanded);
 
 				expanded.setInputEndLine(expansion.getInputStartLine() - 1);
 				expanded.fixOutputRangeBasedOnInputRange();
@@ -308,7 +292,7 @@ export class QSYSEventsFileMapTable {
 				extraRange.setInputStartLine(expansion.getInputEndLine() + 1);
 				extraRange.setOutputStartLine(expanded.getOutputEndLine() + Math.abs(expansionSize) + 1);
 
-				this._map.add(index + 1, extraRange);
+				this._map.splice(index + 1, 0, extraRange);
 
 				this.shiftRangesBy(expansionSize, index + 1);
 			}
@@ -320,7 +304,7 @@ export class QSYSEventsFileMapTable {
 			//(to keep the output ranges sorted), and then
 			//shift the output ranges by amount of expansion
 			if (expansion.getInputStartLine() === expansion.getInputEndLine()) {
-				this._map.add(index, expansion);
+				this._map.splice(index, 0, expansion);
 				this.shiftRangesBy(expansionSize, index + 1);
 
 			}
@@ -336,25 +320,24 @@ export class QSYSEventsFileMapTable {
 			//insert the expansion between the two halves, and 
 			//shift the outputs of the the remaining ranges (starting with the second half) 
 			//by the mount of the expansion			
-			let extraRange = new SourceLineRange(expanded);
+			let extraRange = new SourceLineRange(undefined, expanded);
 
 			expanded.setOutputEndLine(expansion.getOutputStartLine() - 1);
 			expanded.fixInputRangeBasedOnOutputRange();
 
-			this._map.add(index + 1, expansion);
+			this._map.splice(index + 1, 0, expansion);
 
 			extraRange.setInputStartLine(expanded.getInputEndLine() + 1);
 			extraRange.setOutputStartLine(expanded.getOutputEndLine() + 1);
-			this._map.add(index + 2, extraRange);
+			this._map.splice(index + 2, 0, extraRange);
 
 			this.shiftRangesBy(expansionSize, index + 2);
 		}
 	}
 
 	private createSourceLineRange(record: QSYSEventsFileExpansionRecord): SourceLineRange {
-		let range = new SourceLineRange();
+		let range = new SourceLineRange(record.getInputFileID());
 
-		range.setInputFileID(record.getInputFileID());
 		let iStart = 0, iEnd = 0, oStart = 0, oEnd = 0;
 
 		try {
@@ -381,16 +364,15 @@ export class QSYSEventsFileMapTable {
 	 * @param ID - the ID of the file to look for 
 	 * @return - the QSYSEventsFileFileIDRecord corresponding to the file ID if it exists in the table, null otherwise
 	 */
-	public getFileIDRecordForFileID(ID: string): QSYSEventsFileFileIDRecord {
+	public getFileIDRecordForFileID(ID: string): QSYSEventsFileFileIDRecord | undefined {
 		return this._fileTable.get(ID);
 	}
 
-	public getFileLocationForFileID(ID: string): string | null {
+	public getFileLocationForFileID(ID: string): string | undefined {
 		let fileRecord = this.getFileIDRecordForFileID(ID);
-		if (fileRecord === null) {
-			return null;
+		if (fileRecord) {
+			return fileRecord.getFilename();
 		}
-		return fileRecord.getFilename();
 	}
 
 	/**
@@ -398,32 +380,29 @@ export class QSYSEventsFileMapTable {
 	 * @param record the Error record to be modified.
 	 */
 	public modifyErrorInformation(record: QSYSEventsFileErrorInformationRecord) {
-		let statementLine, startLineNumber, endLineNumber;
+		let statementLine = parseInt(record.getStmtLine());
+		let range = this.optimizedSourceLineRangeLookup(statementLine);
 
-		let range;
-		statementLine = parseInt(record.getStmtLine());
-		range = this.optimizedSourceLineRangeLookup(statementLine);
-
-		if (range === null) {
+		if (!range) {
 			throw new Error("The line number on which ERROR occurs could not be found in the map." + "\n" +
 				"Faulty event: " + record.toString());
-		}
+		} else {
+			try {
+				record.setStmtLine(this.getLineFromSourceLineRange(range, statementLine).toString());
+				record.setFileId(range.getInputFileID());
 
-		try {
-			record.setStmtLine(this.getLineFromSourceLineRange(range, statementLine).toString());
-			record.setFileId(range.getInputFileID());
+				let startLineNumber = parseInt(record.getStartErrLine());
+				record.setStartErrLine(this.getLineFromSourceLineRange(range, startLineNumber).toString());
 
-			startLineNumber = parseInt(record.getStartErrLine());
-			record.setStartErrLine(this.getLineFromSourceLineRange(range, startLineNumber).toString());
+				let endLineNumber = parseInt(record.getEndErrLine());
+				record.setEndErrLine(this.getLineFromSourceLineRange(range, endLineNumber).toString());
 
-			endLineNumber = parseInt(record.getEndErrLine());
-			record.setEndErrLine(this.getLineFromSourceLineRange(range, endLineNumber).toString());
+				record.setFileName((this._fileTable.get(range.getInputFileID())!).getFilename());
+			} catch (e) {
+				throw new Error("Unable to parse the line fields of the ERROR record to integers" + "\n" +
+					"Faulty record: " + record.toString());
+			}
 
-			record.setFileName((this._fileTable.get(range.getInputFileID())).getFilename());
-		}
-		catch (e) {
-			throw new Error("Unable to parse the line fields of the ERROR record to integers" + "\n" +
-				"Faulty record: " + record.toString());
 		}
 	}
 
@@ -460,31 +439,27 @@ export class QSYSEventsFileMapTable {
 
 		// This handles errors at line 0 of the main source file.
 		// Those are usually sev 40 errors.
-		let header = new SourceLineRange();
-		header.setInputFileID("001");
+		let header = new SourceLineRange("001");
 		header.setInputStartLine(0);
 		header.setInputEndLine(0);
 		header.setOutputStartLine(0);
 		header.setOutputEndLine(0);
 
-		this._map.addFirst(header);
+		this._map.unshift(header);
 	}
 
 	/**
 	 * Get all file locations.
 	 */
-	public getAllFileIDRecords(): Array<QSYSEventsFileFileIDRecord> {
-		if (this._fileTable === null || this._fileTable.size === 0) {
-			let emptySet = new Set<QSYSEventsFileFileIDRecord>();
-			return emptySet;
+	public getAllFileIDRecords(): QSYSEventsFileFileIDRecord[] {
+		if (!this._fileTable || this._fileTable.size === 0) {
+			return [];
 		}
 
 		let fileIDRecords = new Set<QSYSEventsFileFileIDRecord>();
-		let fileRecordID: string;
-		let fileIDRecord: QSYSEventsFileFileIDRecord;
+
 		for (let key of this._fileTable.keys()) {
-			fileRecordID = keyIter;
-			fileIDRecord = this._fileTable.get(fileRecordID);
+			let fileIDRecord = this._fileTable.get(key)!;
 			fileIDRecords.add(fileIDRecord);
 		}
 		// while (keyIter.hasNext()){
@@ -492,6 +467,6 @@ export class QSYSEventsFileMapTable {
 		// 	fileIDRecord = this._fileTable.get(fileRecordID);
 		// 	fileIDRecords.add(fileIDRecord);
 		// }
-		return fileIDRecords;
+		return Array.from(fileIDRecords.values());
 	}
 }

@@ -8,6 +8,7 @@
  */
 
 import { IQSYSEventsFileRecordType } from './IQSYSEventsFileRecordType';
+import { EvfeventRecord } from './evfeventRecord';
 
 /**
  * This class represents a Timestamp record in an events file.

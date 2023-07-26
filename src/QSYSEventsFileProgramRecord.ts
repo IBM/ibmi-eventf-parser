@@ -7,6 +7,8 @@
  *
  */
 
+import { EvfeventRecord } from "./evfeventRecord";
+
 /**
  * This class represents a Program record in an events file.
  */
