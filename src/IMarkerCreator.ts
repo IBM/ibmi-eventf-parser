@@ -3,8 +3,8 @@ import { QSYSEventsFileErrorInformationRecord } from "./QSYSEventsFileErrorInfor
 export interface IMarkerCreator {
 
 	createMarker(
-			 record: QSYSEventsFileErrorInformationRecord, fileLocation: string,
-			 isReadOnly: string) : void;
+		record: QSYSEventsFileErrorInformationRecord, fileLocation: string,
+		isReadOnly: string): void;
 
 	/**
 	 * If we encounter a connection name on the FILE
@@ -15,6 +15,6 @@ export interface IMarkerCreator {
 	 * @return
 	 */
 	updateConnectionName(location: string,
-			indexEndBracket: number): void;
+		indexEndBracket: number): void;
 
 }

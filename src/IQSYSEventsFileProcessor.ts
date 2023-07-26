@@ -13,8 +13,6 @@ import { QSYSEventsFileFileIDRecord } from "./QSYSEventsFileFileIDRecord";
 import { QSYSEventsFileProcessorRecord } from "./QSYSEventsFileProcessorRecord";
 import { QSYSEventsFileTimestampRecord } from "./QSYSEventsFileTimestampRecord";
 
- 
-
 /**
  * This interface defines a backbone for processing Events File Records.<br>
  * 
@@ -26,77 +24,76 @@ import { QSYSEventsFileTimestampRecord } from "./QSYSEventsFileTimestampRecord";
  * For instance, an SQL compile might need a different processor to make use of the
  * Expansion record.
  */
-export interface IQSYSEventsFileProcessor
-{
+export interface IQSYSEventsFileProcessor {
 	/**
 	 * Processes a File ID record object.
 	 * @param record
 	 * @throws SecondLevelHelpException 
 	 */
 	processFileIDRecord(record: QSYSEventsFileFileIDRecord): void;
-	
+
 	/**
 	 * Processes a File End record object.
 	 * @param record
 	 * @throws SecondLevelHelpException 
 	 */
 	processFileEndRecord(record: QSYSEventsFileFileEndRecord): void;
-	
+
 	/**
 	 * Processes a Processor record object.
 	 * @param record
 	 * @throws SecondLevelHelpException 
 	 */
 	processProcessorRecord(record: QSYSEventsFileProcessorRecord): void;
-	
+
 	/**
 	 * Processes a Timestamp record object.
 	 * @param record
 	 */
 	processTimestampRecord(record: QSYSEventsFileTimestampRecord): void;
-	
+
 	/**
 	 * Processes an Error record object.
 	 * @param record
 	 */
 	processErrorRecord(record: QSYSEventsFileErrorInformationRecord): void;
-	
+
 	/**
 	 * Processes a Program record object.
 	 * @param record
 	 */
 	processProgramRecord(record: QSYSEventsFileProcessorRecord): void;
-	
+
 	/**
 	 * Processes a Feedback Code record object.
 	 * @param record
 	 */
 	processFeedbackCodeRecord(record: QSYSEventsFileFileEndRecord): void;
-	
+
 	/**
 	 * Processes a Map Define record object.
 	 * @param record
 	 */
 	processMapDefineRecord(record: QSYSEventsFileFileIDRecord): void;
-	
+
 	/**
 	 * Processes a Map Start record object.
 	 * @param record
 	 */
 	processMapStartRecord(record: QSYSEventsFileTimestampRecord): void;
-	
+
 	/**
 	 * Processes a Map End record object.
 	 * @param record
 	 */
 	processMapEndRecord(record: QSYSEventsFileFileEndRecord): void;
-	
+
 	/**
 	 * Processes an Expansion record object.
 	 * @param record
 	 */
 	processExpansionRecord(record: QSYSEventsFileExpansionRecord): void;
-	
+
 	/**
 	 * After parsing all records in the Events File, this method will be called to
 	 * process the records.
@@ -104,7 +101,7 @@ export interface IQSYSEventsFileProcessor
 	 * @throws SecondLevelHelpException 
 	 */
 	doPostProcessing(): boolean;
-	
+
 	/**
 	 * Before parsing all records in the Events File, this method will be called to
 	 * allow the processor to perform initialization.
@@ -124,7 +121,7 @@ export interface IQSYSEventsFileProcessor
 	 * (one list for each processor block).
 	 */
 	getAllErrors(): Array<Array<QSYSEventsFileErrorInformationRecord>>;
-	
+
 	/**
 	 * Return all file names. 
 	 */

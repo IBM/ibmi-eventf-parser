@@ -5,21 +5,21 @@
  * The source code for this program is not published or otherwise divested of its trade secrets,
  * irrespective of what has been deposited with the U.S. Copyright Office.
  *
- */ 
-
+ */
+import { IQSYSEventsFileRecordType } from "./IQSYSEventsFileRecordType";
 
 /**
  * This class represents a Feedback Code record in an events file.
  */
-class QSYSEventsFileFeedbackCodeRecord implements EvfeventRecord {
+export class QSYSEventsFileFeedbackCodeRecord implements EvfeventRecord {
 
-   public Copyright = "(C) Copyright IBM Corp. 2003  All Rights Reserved.";
+	public Copyright = "(C) Copyright IBM Corp. 2003  All Rights Reserved.";
 
-	
+
 	private returnCode: string;
 	private reasonCode: string;
 
-	constructor(returnCode: string, reasonCode: string){
+	constructor(returnCode: string, reasonCode: string) {
 		this.returnCode = returnCode;
 		this.reasonCode = reasonCode;
 	}
@@ -30,7 +30,7 @@ class QSYSEventsFileFeedbackCodeRecord implements EvfeventRecord {
 	public getRecordType(): string {
 		return IQSYSEventsFileRecordType.FEEDBACK_CODE;
 	}
-	
+
 	/**
 	 * Set the return code.
 	 * @param the return code
@@ -38,7 +38,7 @@ class QSYSEventsFileFeedbackCodeRecord implements EvfeventRecord {
 	public setReturnCode(returnCode: string) {
 		this.returnCode = returnCode;
 	}
-	
+
 	/**
 	 * Get the return code.
 	 * @return the return code
@@ -46,7 +46,7 @@ class QSYSEventsFileFeedbackCodeRecord implements EvfeventRecord {
 	public getReturnCode(): string {
 		return this.returnCode;
 	}
-	
+
 	/**
 	 * Set the reason code.
 	 * @param the reason code
@@ -54,7 +54,7 @@ class QSYSEventsFileFeedbackCodeRecord implements EvfeventRecord {
 	public setReasonCode(reasonCode: string) {
 		this.reasonCode = reasonCode;
 	}
-	
+
 	/**
 	 * Get the reason code.
 	 * @return the reason code

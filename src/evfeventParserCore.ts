@@ -1,21 +1,21 @@
-import {IQSYSEventsFileRecordType} from './IQSYSEventsFileRecordType';
-import {QSYSEventsFileTimestampRecord} from './QSYSEventsFileTimestampRecord';
-import {QSYSEventsFileProcessorRecord} from './QSYSEventsFileProcessorRecord';
-import {SourceFile} from './SourceFile';
-import {QSYSEventsFileFileIDRecord} from './QSYSEventsFileFileIDRecord';
-import {IQSYSEventsFileProcessor} from './IQSYSEventsFileProcessor';
-import {ISequentialFileReader} from './ISequentialFileReader';
-import {IMarkerCreator} from './IMarkerCreator';
-import {QSYSEventsFileErrorInformationRecord} from './QSYSEventsFileErrorInformationRecord';
-import {QSYSEventsFileFileEndRecord} from './QSYSEventsFileFileEndRecord';
-import {QSYSEventsFileExpansionRecord} from './QSYSEventsFileExpansionRecord';
+import { IQSYSEventsFileRecordType } from './IQSYSEventsFileRecordType';
+import { QSYSEventsFileTimestampRecord } from './QSYSEventsFileTimestampRecord';
+import { QSYSEventsFileProcessorRecord } from './QSYSEventsFileProcessorRecord';
+import { SourceFile } from './SourceFile';
+import { QSYSEventsFileFileIDRecord } from './QSYSEventsFileFileIDRecord';
+import { IQSYSEventsFileProcessor } from './IQSYSEventsFileProcessor';
+import { ISequentialFileReader } from './ISequentialFileReader';
+import { IMarkerCreator } from './IMarkerCreator';
+import { QSYSEventsFileErrorInformationRecord } from './QSYSEventsFileErrorInformationRecord';
+import { QSYSEventsFileFileEndRecord } from './QSYSEventsFileFileEndRecord';
+import { QSYSEventsFileExpansionRecord } from './QSYSEventsFileExpansionRecord';
 
 export class EventsFileParserCore {
-    static Copyright: string;
-    static LOGGER: any;
+  static Copyright: string;
+  static LOGGER: any;
 
   private _exception: Error | null;
-  private _processor: IQSYSEventsFileProcessor | null;
+  private _processor: IQSYSEventsFileProcessor | undefined;
   private _lastOutputFile: SourceFile | null;
   private _currentOutputFile: SourceFile | null;
   private _sourceTable: Map<String, SourceFile>;
@@ -28,14 +28,14 @@ export class EventsFileParserCore {
 
     this._sourceTable = new Map<String, SourceFile>();
   }
-  getUntilTheEndOfTheLine(startIndex: number, st: string[]): string{
+  getUntilTheEndOfTheLine(startIndex: number, st: string[]): string {
     let message = st[startIndex++];
-          while (startIndex < st.length) {
-              message.concat(' ');
-              let curr_msg = st[startIndex++];
-              message.concat(curr_msg);
-          }
-      return message;
+    while (startIndex < st.length) {
+      message.concat(' ');
+      let curr_msg = st[startIndex++];
+      message.concat(curr_msg);
+    }
+    return message;
   }
 
   getRemainderAfterToken(str: string, tokenIndex: number): string {
@@ -51,30 +51,20 @@ export class EventsFileParserCore {
     }
   }
 
-  logError(content: Error){
+  logError(content: Error) {
     console.log(content);
   }
 
   parse(reader: ISequentialFileReader, ccsid: number, markerCreator: IMarkerCreator) {
-    let lineText: string;
     let st = null;
     let word: string;
     let id = null;
-    let message = null;
-    let severity = null;
-    let severityText = null;
-    let line = null;
-    let charStart = null;
-    let lineStart = null;
-    let charEnd = null;
-    let lineEnd = null;
-    let fileProcessed = null;
     let fileId: string;
     // if (this._processor === null) {
     //   this._processor: IQSYSEventsFileProcessor; // Why we need to initialize this?
     // }
     this._processor?.doPreProcessing();
-    lineText = reader.readNextLine();
+    let lineText = reader.readNextLine();
     while (lineText !== null) {
       let st = lineText.split(" ");
       let i = 0
@@ -83,7 +73,7 @@ export class EventsFileParserCore {
         if (word === IQSYSEventsFileRecordType.ERROR_INFORMATION) {
           let version = st[i++];
           fileId = st[i++];
-          fileProcessed = this._sourceTable[fileId];
+          let fileProcessed = this._sourceTable[fileId];
           if (fileProcessed === null) {
             if (fileId === ('000')) {
               let location001 = this._sourceTable['001'];
@@ -97,18 +87,18 @@ export class EventsFileParserCore {
             }
           }
           let annotationClass = st[i++];
-          line = st[i++];
-          lineStart = st[i++];
-          charStart = st[i++];
-          lineEnd = st[i++];
-          charEnd = st[i++];
-          id = st[i++];
-          severityText = st[i++];
-          severity = st[i++];
+          let line = st[i++];
+          let lineStart = st[i++];
+          let charStart = st[i++];
+          let lineEnd = st[i++];
+          let charEnd = st[i++];
+          let id = st[i++];
+          let severityText = st[i++];
+          let severity = st[i++];
           let totalMessageLen = st[i++];
           // TODO: Handle continued message lines.
           let message = this.getUntilTheEndOfTheLine(i, st);
-          
+
           // let msgToken = st.nextToken('\n\r\f');
           // let msgTokenNl = new StringNL(msgToken, ccsid, true);
 
@@ -140,7 +130,7 @@ export class EventsFileParserCore {
           //     message += ' ' + msgTokenNl.trim().convertFromVisualToLogical(true);
           //   }
           // }
-          let record = new QSYSEventsFileErrorInformationRecord(version, fileId, annotationClass, line, lineStart, charStart, 
+          let record = new QSYSEventsFileErrorInformationRecord(version, fileId, annotationClass, line, lineStart, charStart,
             lineEnd, charEnd, id, severityText, severity, totalMessageLen, message);
           record.setFileName(fileProcessed.getLocation());
           if (this._processor !== null) {
@@ -216,7 +206,7 @@ export class EventsFileParserCore {
             if ((this._lastOutputFile !== null && location === (this._lastOutputFile.getLocation())) || this._currentOutputFile !== null && location === (this._currentOutputFile.getLocation())) {
               fileEntry.setReadOnly(true);
             }
-            if ('999'===fileId) {
+            if ('999' === fileId) {
               if (this._lastOutputFile === null) {
                 this._lastOutputFile = this._currentOutputFile = fileEntry;
               } else {
@@ -245,7 +235,7 @@ export class EventsFileParserCore {
                   this._processor?.processFileEndRecord(record);
                 } catch (e) {
                   this.logError(e);
-                  this._exception = e; 
+                  this._exception = e;
                 }
               }
               break;
@@ -324,31 +314,32 @@ export class EventsFileParserCore {
     this._processor = processor;
   }
   getAllErrors() {
-    if (this._processor === null) {
+    if (this._processor) {
+      let nestedErrors = this._processor?.getAllErrors();
+      let allErrors = new Array();
+      let index = 0;
+      while (index + 1 < nestedErrors.length) {
+        // let iter1 = nestedErrors[index];
+        let curErrorList = nestedErrors[index + 1];
+        let index1 = 0;
+        while (index1 + 1 < curErrorList.length) {
+          // let iter2 = curErrorList[index1];
+          let next = curErrorList[index1 + 1];
+          allErrors.push(next);
+          index1++;
+        }
+        index++;
+      }
+      // for (let iter1 = nestedErrors?.iterator(); iter1.hasNext();) {
+      //   let curErrorList = iter1.next();
+      //   for (let iter2 = curErrorList.iterator(); iter2.hasNext();) {
+      //     allErrors.push((iter2.next()));
+      //   }
+      // }
+      return allErrors;
+    } else {
       return new Array();
     }
-    let nestedErrors = this._processor?.getAllErrors();
-    let allErrors = new Array();
-    let index = 0;
-    while (index + 1 < nestedErrors.length) {
-      // let iter1 = nestedErrors[index];
-      let curErrorList = nestedErrors[index + 1];
-      let index1 = 0;
-      while (index1 + 1 < curErrorList.length) {
-        // let iter2 = curErrorList[index1];
-        let next = curErrorList[index1 + 1];
-        allErrors.push(next);
-        index1++;
-      }
-      index++;
-    }
-    // for (let iter1 = nestedErrors?.iterator(); iter1.hasNext();) {
-    //   let curErrorList = iter1.next();
-    //   for (let iter2 = curErrorList.iterator(); iter2.hasNext();) {
-    //     allErrors.push((iter2.next()));
-    //   }
-    // }
-    return allErrors;
   }
   getAllFileIDRecords() {
     if (this._processor === null) {

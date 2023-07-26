@@ -5,23 +5,23 @@
  * The source code for this program is not published or otherwise divested of its trade secrets,
  * irrespective of what has been deposited with the U.S. Copyright Office.
  *
- */ 
-
+ */
+import { IQSYSEventsFileRecordType } from "./IQSYSEventsFileRecordType";
 
 /**
  * This class represents a Map End record in an events file.
  */
-class QSYSEventsFileMapEndRecord implements EvfeventRecord {
+export class QSYSEventsFileMapEndRecord implements EvfeventRecord {
 
-   public Copyright = "(C) Copyright IBM Corp. 2003  All Rights Reserved.";
+	public Copyright = "(C) Copyright IBM Corp. 2003  All Rights Reserved.";
 
-	
+
 	private version: string;
 	private macroId: string;
 	private line: string;
 	private expansion: string;
 
-	constructor(version: string, macroId: string, line: string, expansion: string){
+	constructor(version: string, macroId: string, line: string, expansion: string) {
 		this.version = version;
 		this.macroId = macroId;
 		this.line = line;
@@ -34,7 +34,7 @@ class QSYSEventsFileMapEndRecord implements EvfeventRecord {
 	public getRecordType(): string {
 		return IQSYSEventsFileRecordType.MAP_END;
 	}
-	
+
 	/**
 	 * Set the version.
 	 * @param the version
@@ -42,7 +42,7 @@ class QSYSEventsFileMapEndRecord implements EvfeventRecord {
 	public setVersion(version: string) {
 		this.version = version;
 	}
-	
+
 	/**
 	 * Get the version.
 	 * @return the version
@@ -50,7 +50,7 @@ class QSYSEventsFileMapEndRecord implements EvfeventRecord {
 	public getVersion(): string {
 		return this.version;
 	}
-	
+
 	/**
 	 * Set the macro id.
 	 * @param the macro id
@@ -58,7 +58,7 @@ class QSYSEventsFileMapEndRecord implements EvfeventRecord {
 	public setMacroId(macroId: string) {
 		this.macroId = macroId;
 	}
-	
+
 	/**
 	 * Get the macro id.
 	 * @return the macro id
@@ -66,7 +66,7 @@ class QSYSEventsFileMapEndRecord implements EvfeventRecord {
 	public getMacroId(): string {
 		return this.macroId;
 	}
-	
+
 	/**
 	 * Set the line.
 	 * @param the line
@@ -74,7 +74,7 @@ class QSYSEventsFileMapEndRecord implements EvfeventRecord {
 	public setLine(line: string) {
 		this.line = line;
 	}
-	
+
 	/**
 	 * Get the line.
 	 * @return the line
@@ -82,7 +82,7 @@ class QSYSEventsFileMapEndRecord implements EvfeventRecord {
 	public getLine(): string {
 		return this.line;
 	}
-	
+
 	/**
 	 * Set the expansion.
 	 * @param the expansion
@@ -90,7 +90,7 @@ class QSYSEventsFileMapEndRecord implements EvfeventRecord {
 	public setExpansion(expansion: string) {
 		this.expansion = expansion;
 	}
-	
+
 	/**
 	 * Get the expansion.
 	 * @return the expansion

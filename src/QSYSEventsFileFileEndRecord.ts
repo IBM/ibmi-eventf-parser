@@ -5,22 +5,22 @@
  * The source code for this program is not published or otherwise divested of its trade secrets,
  * irrespective of what has been deposited with the U.S. Copyright Office.
  *
- */ 
-
+ */
+import { IQSYSEventsFileRecordType } from "./IQSYSEventsFileRecordType";
 
 /**
  * This class represents a File End record in an events file.
  */
 export class QSYSEventsFileFileEndRecord implements EvfeventRecord {
 
-   public static Copyright = "(C) Copyright IBM Corp. 2003  All Rights Reserved.";
+	public static Copyright = "(C) Copyright IBM Corp. 2003  All Rights Reserved.";
 
-	
+
 	private version: string;
 	private fileId: string;
 	private expansion: string;
 
-	constructor(version: string, fileId: string, expansion: string){
+	constructor(version: string, fileId: string, expansion: string) {
 		this.version = version;
 		this.fileId = fileId;
 		this.expansion = expansion;
@@ -32,7 +32,7 @@ export class QSYSEventsFileFileEndRecord implements EvfeventRecord {
 	public getRecordType(): string {
 		return IQSYSEventsFileRecordType.FILE_END;
 	}
-	
+
 	/**
 	 * Set the version.
 	 * @param the version
@@ -40,7 +40,7 @@ export class QSYSEventsFileFileEndRecord implements EvfeventRecord {
 	public setVersion(version: string) {
 		this.version = version;
 	}
-	
+
 	/**
 	 * Get the version.
 	 * @return the version
@@ -48,7 +48,7 @@ export class QSYSEventsFileFileEndRecord implements EvfeventRecord {
 	public getVersion(): string {
 		return this.version;
 	}
-	
+
 	/**
 	 * Set the file id.
 	 * @param the file id
@@ -56,7 +56,7 @@ export class QSYSEventsFileFileEndRecord implements EvfeventRecord {
 	public setFileId(fileId: string) {
 		this.fileId = fileId;
 	}
-	
+
 	/**
 	 * Get the file id.
 	 * @return the file id
@@ -64,7 +64,7 @@ export class QSYSEventsFileFileEndRecord implements EvfeventRecord {
 	public getFileId(): string {
 		return this.fileId;
 	}
-	
+
 	/**
 	 * Set the expansion.
 	 * @param the expansion
@@ -72,7 +72,7 @@ export class QSYSEventsFileFileEndRecord implements EvfeventRecord {
 	public setExpansion(expansion: string) {
 		this.expansion = expansion;
 	}
-	
+
 	/**
 	 * Get the expansion.
 	 * @return the expansion

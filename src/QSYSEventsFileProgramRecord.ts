@@ -5,20 +5,20 @@
  * The source code for this program is not published or otherwise divested of its trade secrets,
  * irrespective of what has been deposited with the U.S. Copyright Office.
  *
- */ 
+ */
 
 /**
  * This class represents a Program record in an events file.
  */
-class QSYSEventsFileProgramRecord implements EvfeventRecord {
+export class QSYSEventsFileProgramRecord implements EvfeventRecord {
 
-   public Copyright = "(C) Copyright IBM Corp. 2003  All Rights Reserved.";
+	public Copyright = "(C) Copyright IBM Corp. 2003  All Rights Reserved.";
 
-	
+
 	private version: string;
 	private line: string;
 
-	constructor(version: string, line: string){
+	constructor(version: string, line: string) {
 		this.version = version;
 		this.line = line;
 	}
@@ -29,7 +29,7 @@ class QSYSEventsFileProgramRecord implements EvfeventRecord {
 	public getRecordType() {
 		return null;
 	}
-	
+
 	/**
 	 * Set the version.
 	 * @param the version
@@ -37,7 +37,7 @@ class QSYSEventsFileProgramRecord implements EvfeventRecord {
 	public setVersion(version: string) {
 		this.version = version;
 	}
-	
+
 	/**
 	 * Get the version.
 	 * @return the version
@@ -45,7 +45,7 @@ class QSYSEventsFileProgramRecord implements EvfeventRecord {
 	public getVersion(): string {
 		return this.version;
 	}
-	
+
 	/**
 	 * Set the line.
 	 * @param the line
@@ -53,7 +53,7 @@ class QSYSEventsFileProgramRecord implements EvfeventRecord {
 	public setLine(line: string) {
 		this.line = line;
 	}
-	
+
 	/**
 	 * Get the line.
 	 * @return the line

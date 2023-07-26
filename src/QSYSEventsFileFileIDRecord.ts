@@ -8,15 +8,12 @@
  */
 import { IQSYSEventsFileRecordType } from "./IQSYSEventsFileRecordType";
 
- 
-
-
 /**
  * This class represents a File ID record in an events file.
  */
 export class QSYSEventsFileFileIDRecord implements EvfeventRecord {
 
-   public static Copyright = "(C) Copyright IBM Corp. 2003, 2023  All Rights Reserved.";
+	public static Copyright = "(C) Copyright IBM Corp. 2003, 2023  All Rights Reserved.";
 
 
 	private version: string;
@@ -27,24 +24,24 @@ export class QSYSEventsFileFileIDRecord implements EvfeventRecord {
 	private timestamp: string;
 	private flag: string;
 
-    constructor(version: string, sourceId: string, line: string, length: string, 
-        filename: string, timestamp: string, flag: string){
-            this.version = version;
-            this.sourceId = sourceId;
-            this.line = line;
-            this.length = length;
-            this.filename = filename;
-            this.timestamp = timestamp;
-            this.flag = flag;
-        }
-	
+	constructor(version: string, sourceId: string, line: string, length: string,
+		filename: string, timestamp: string, flag: string) {
+		this.version = version;
+		this.sourceId = sourceId;
+		this.line = line;
+		this.length = length;
+		this.filename = filename;
+		this.timestamp = timestamp;
+		this.flag = flag;
+	}
+
 	/**
 	 * @see com.ibm.etools.iseries.core.evfparser.IISeriesEventsFileRecordType#getRecordType()
 	 */
 	public getRecordType(): string {
 		return IQSYSEventsFileRecordType.FILE_ID;
 	}
-	
+
 	/**
 	 * Get the version.
 	 * @return the version
@@ -52,7 +49,7 @@ export class QSYSEventsFileFileIDRecord implements EvfeventRecord {
 	public getVersion(): string {
 		return this.version;
 	}
-	
+
 	/**
 	 * Get the source id.
 	 * @return the source id
@@ -68,7 +65,7 @@ export class QSYSEventsFileFileIDRecord implements EvfeventRecord {
 	public getLine(): string {
 		return this.line;
 	}
-	
+
 	/**
 	 * Get the length.
 	 * @return the length
@@ -76,7 +73,7 @@ export class QSYSEventsFileFileIDRecord implements EvfeventRecord {
 	public getLength(): string {
 		return this.length;
 	}
-	
+
 	/**
 	 * Get the filename.
 	 * @return the filename
@@ -84,7 +81,7 @@ export class QSYSEventsFileFileIDRecord implements EvfeventRecord {
 	public getFilename(): string {
 		return this.filename;
 	}
-	
+
 	/**
 	 * Get the timestamp.
 	 * @return the timestamp
@@ -92,7 +89,7 @@ export class QSYSEventsFileFileIDRecord implements EvfeventRecord {
 	public getTimestamp(): string {
 		return this.timestamp;
 	}
-	
+
 	/**
 	 * Get the flag.
 	 * @return the flag
