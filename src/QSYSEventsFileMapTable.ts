@@ -6,6 +6,7 @@
  * irrespective of what has been deposited with the U.S. Copyright Office.
  *
  */
+import { FileIDLinesPair } from "./FileIDLinesPair";
 import { QSYSEventsFileErrorInformationRecord } from "./QSYSEventsFileErrorInformationRecord";
 import { QSYSEventsFileExpansionRecord } from "./QSYSEventsFileExpansionRecord";
 import { QSYSEventsFileFileEndRecord } from "./QSYSEventsFileFileEndRecord";

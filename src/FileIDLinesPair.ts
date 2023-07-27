@@ -1,7 +1,7 @@
 /**
  * Class used as a container of the file ID and the number of lines processed so far.
  */
-class FileIDLinesPair {
+export class FileIDLinesPair {
     private _ID: string;
     private _lines: number;
 
