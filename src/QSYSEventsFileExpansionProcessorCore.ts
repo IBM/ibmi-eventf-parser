@@ -6,6 +6,7 @@
  * irrespective of what has been deposited with the U.S. Copyright Office.
  *
  */
+import { IQSYSEventsFileProcessor } from "./IQSYSEventsFileProcessor";
 import { QSYSEventsFileErrorInformationRecord } from "./QSYSEventsFileErrorInformationRecord";
 import { QSYSEventsFileExpansionRecord } from "./QSYSEventsFileExpansionRecord";
 import { QSYSEventsFileFeedbackCodeRecord } from "./QSYSEventsFileFeedbackCodeRecord";
@@ -18,9 +19,8 @@ import { QSYSEventsFileProcessorBlockCore } from "./QSYSEventsFileProcessorBlock
 import { QSYSEventsFileProcessorRecord } from "./QSYSEventsFileProcessorRecord";
 import { QSYSEventsFileProgramRecord } from "./QSYSEventsFileProgramRecord";
 import { QSYSEventsFileTimestampRecord } from "./QSYSEventsFileTimestampRecord";
-import { EvfeventRecord } from "./evfeventRecord";
 
-class QSYSEventsFileExpansionProcessorCore implements EvfeventRecord {
+export class QSYSEventsFileExpansionProcessorCore implements IQSYSEventsFileProcessor {
 
 	private PRE_COMPILE_PROCESSOR_ID = "999";
 
@@ -79,18 +79,18 @@ class QSYSEventsFileExpansionProcessorCore implements EvfeventRecord {
 
 			if (!this._currentProcessor.isProcessorIDZero()) {
 				if (fileID > 1) {
-					if (this._currentProcessor.getOutputFile() === null) {
+					if (!this._currentProcessor.getOutputFile()) {
 						this._currentProcessor.setOutputFile(record);
 						return;
 					}
 				}
-				else if (fileID === 1 && this._currentProcessor.getInputFile() === null) {
+				else if (fileID === 1 && !this._currentProcessor.getInputFile()) {
 					this._currentProcessor.setInputFile(record);
 				}
 				this._currentProcessor.addFile(record);
 			}
 			else {//We need to keep track of all files in the compiler processor block to be able to get the location for files
-				if (fileID === 1 && this._currentProcessor.getInputFile() === null) { this._currentProcessor.setInputFile(record); }
+				if (fileID === 1 && !this._currentProcessor.getInputFile()) { this._currentProcessor.setInputFile(record); }
 				this._currentProcessor.getMappingTable().addFileToFileTable(record);
 			}
 		}
@@ -117,7 +117,7 @@ class QSYSEventsFileExpansionProcessorCore implements EvfeventRecord {
 		if (!this._containsPreCompileProcessorBlocks && record.getOutputId() === this.PRE_COMPILE_PROCESSOR_ID) { this._containsPreCompileProcessorBlocks = true; }
 
 		try {
-			if (this._currentProcessor !== null) { this._currentProcessor.processorEnded(); }
+			if (this._currentProcessor) { this._currentProcessor.processorEnded(); }
 		} catch (ex) {
 			this._postProcessingNeeded = false;
 			throw ex;
@@ -170,16 +170,23 @@ class QSYSEventsFileExpansionProcessorCore implements EvfeventRecord {
 	 */
 	protected determineAndSetMappingSupport(lastProcessorBlock: QSYSEventsFileProcessorBlockCore): boolean {
 		let isMappingSupportedByAny = false;
-		let curProc: QSYSEventsFileProcessorBlockCore;
-		for (curProc = lastProcessorBlock; curProc !== null;) {
+		let curProc: QSYSEventsFileProcessorBlockCore = lastProcessorBlock;
+		while (curProc) {
 			let curSupport = this.isMappingSupportedByCurrentEventsFile(curProc);
 			this.setMappingSupportForCurrentEventsFile(curProc, curSupport);
-			if (!isMappingSupportedByAny && curSupport) { isMappingSupportedByAny = true; }
+			if (!isMappingSupportedByAny && curSupport) {
+				isMappingSupportedByAny = true;
+			}
 
 			//Iterate to the first processor block in the current "sub" events file,
-			while (curProc !== null && !curProc.isFirstInEventsFile()) { curProc = curProc.getPreviousProcessorBlock(); }
+			while (curProc && !curProc.isFirstInEventsFile()) {
+				curProc = curProc.getPreviousProcessorBlock();
+			}
+
 			//use it to get the previous "sub" events file's last processor block			
-			if (curProc !== null) { curProc = curProc.getPreviousProcessorBlock(); }
+			if (curProc) {
+				curProc = curProc.getPreviousProcessorBlock();
+			}
 		}
 		return isMappingSupportedByAny;
 	}
@@ -193,16 +200,15 @@ class QSYSEventsFileExpansionProcessorCore implements EvfeventRecord {
 	 * @param support - boolean value corresponding to whether the current events file requires and supports mappings.
 	 */
 	private setMappingSupportForCurrentEventsFile(lastProcessorBlock: QSYSEventsFileProcessorBlockCore, support: boolean) {
-		let curProc: QSYSEventsFileProcessorBlockCore | null;
-		for (curProc = lastProcessorBlock; curProc !== null;) {
+		let curProc: QSYSEventsFileProcessorBlockCore | undefined = lastProcessorBlock;
+		while (curProc) {
 			curProc.setMappingSupported(support);
 
 			if (curProc.isFirstInEventsFile()) {
-				curProc = null;
+				curProc = undefined;
 			}
 			else { curProc = curProc.getPreviousProcessorBlock(); }
 		}
-
 	}
 
 	/**
@@ -227,15 +233,23 @@ class QSYSEventsFileExpansionProcessorCore implements EvfeventRecord {
 	private isMappingSupportedByCurrentEventsFile(lastProcessorBlock: QSYSEventsFileProcessorBlockCore): boolean {
 		let supported: boolean;
 
-		if (lastProcessorBlock.getOutputFile() === null) {//compile processor block case
-			if (lastProcessorBlock.getPreviousProcessorBlock() === null || lastProcessorBlock.isFirstInEventsFile()) { supported = false; }
-			else { supported = true; }
+		if (!lastProcessorBlock.getOutputFile()) {//compile processor block case
+			if (!lastProcessorBlock.getPreviousProcessorBlock() || lastProcessorBlock.isFirstInEventsFile()) {
+				supported = false;
+			} else {
+				supported = true;
+			}
+		} else if (lastProcessorBlock.containsExpansionEvents()) {
+			supported = true;
+		} else if (lastProcessorBlock.getTotalNumberOfLinesInOutputFile() === 0) {
+			supported = false;
+		} else {
+			supported = lastProcessorBlock.getTotalNumberOfLinesInOutputFile() === lastProcessorBlock.getTotalNumberOfLinesInInputFiles();
 		}
-		else if (lastProcessorBlock.containsExpansionEvents()) { supported = true; }
-		else if (lastProcessorBlock.getTotalNumberOfLinesInOutputFile() === 0) { supported = false; }
-		else { supported = lastProcessorBlock.getTotalNumberOfLinesInOutputFile() === lastProcessorBlock.getTotalNumberOfLinesInInputFiles(); }
 
-		if (lastProcessorBlock.getPreviousProcessorBlock() !== null && !lastProcessorBlock.isFirstInEventsFile()) { supported = supported && this.isMappingSupportedByCurrentEventsFile(lastProcessorBlock.getPreviousProcessorBlock()); }
+		if (lastProcessorBlock.getPreviousProcessorBlock() && !lastProcessorBlock.isFirstInEventsFile()) {
+			supported = supported && this.isMappingSupportedByCurrentEventsFile(lastProcessorBlock.getPreviousProcessorBlock());
+		}
 
 		return supported;
 	}

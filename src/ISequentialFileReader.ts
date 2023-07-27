@@ -8,6 +8,6 @@ export interface ISequentialFileReader {
 	 * @see ReaderLineScanner  
 	 * @exception IOException if there is any problem reading 
 	 **/
-	readNextLine(): string | null;
+	readNextLine(): string | undefined;
 
 } // ISequentialFileReader

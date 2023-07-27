@@ -29,7 +29,7 @@ export class QSYSEventsFileProgramRecord implements EvfeventRecord {
 	 * @see com.ibm.etools.iseries.core.evfparser.IISeriesEventsFileRecordType#getRecordType()
 	 */
 	public getRecordType() {
-		return null;
+		return;
 	}
 
 	/**

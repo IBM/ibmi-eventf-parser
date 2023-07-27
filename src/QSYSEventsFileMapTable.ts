@@ -10,6 +10,7 @@ import { QSYSEventsFileErrorInformationRecord } from "./QSYSEventsFileErrorInfor
 import { QSYSEventsFileExpansionRecord } from "./QSYSEventsFileExpansionRecord";
 import { QSYSEventsFileFileEndRecord } from "./QSYSEventsFileFileEndRecord";
 import { QSYSEventsFileFileIDRecord } from "./QSYSEventsFileFileIDRecord";
+import { SourceLineRange } from "./SourceLineRange";
 import { ArrayStack } from "./Stack";
 
 // SourceLineRange and FileIDLinesPair
@@ -362,7 +363,7 @@ export class QSYSEventsFileMapTable {
 	/**
 	 * Returns the QSYSEventsFileFileIDRecord corresponding to a file ID
 	 * @param ID - the ID of the file to look for 
-	 * @return - the QSYSEventsFileFileIDRecord corresponding to the file ID if it exists in the table, null otherwise
+	 * @return - the QSYSEventsFileFileIDRecord corresponding to the file ID if it exists in the table, undefined otherwise
 	 */
 	public getFileIDRecordForFileID(ID: string): QSYSEventsFileFileIDRecord | undefined {
 		return this._fileTable.get(ID);
@@ -413,7 +414,9 @@ export class QSYSEventsFileMapTable {
 	 * @return the new line number
 	 */
 	private getLineFromSourceLineRange(range: SourceLineRange, initial: number): number {
-		if (range === null) { return initial; }
+		if (!range) { 
+			return initial; 
+		}
 
 		if (range.getInputEndLine() - range.getInputStartLine() === range.getOutputEndLine() - range.getOutputStartLine()) { return initial - range.getOutputStartLine() + range.getInputStartLine(); }
 		//Temporary fix for the problem where all errors in the last range get mapped to getInputStartLine

@@ -7,12 +7,12 @@ export default class TestDataReader implements ISequentialFileReader {
     currLineNum = 0;
 
     public readNextLine() {
-        let line: string | null;
+        let line: string | undefined;
         if (this.currLineNum < this.linesArray.length) {
             line = this.linesArray[this.currLineNum];
             this.currLineNum++;
         } else {
-            line = null;
+            line = undefined;
         }
         return line;
     }

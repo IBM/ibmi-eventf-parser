@@ -2,7 +2,7 @@
  * Class used as a container of line numbers and file IDs for each range
  * of lines in the map.
  */
-class SourceLineRange {
+export class SourceLineRange {
 	// Input File Info
 	private _inputStartLine = 0;
 	private _inputEndLine = -1;

@@ -9,6 +9,7 @@ import { IMarkerCreator } from './IMarkerCreator';
 import { QSYSEventsFileErrorInformationRecord } from './QSYSEventsFileErrorInformationRecord';
 import { QSYSEventsFileFileEndRecord } from './QSYSEventsFileFileEndRecord';
 import { QSYSEventsFileExpansionRecord } from './QSYSEventsFileExpansionRecord';
+import { QSYSEventsFileExpansionProcessorCore } from './QSYSEventsFileExpansionProcessorCore';
 
 export class EventsFileParserCore {
   static Copyright: string;
@@ -56,16 +57,14 @@ export class EventsFileParserCore {
   }
 
   parse(reader: ISequentialFileReader, ccsid: number, markerCreator: IMarkerCreator) {
-    let st = null;
     let word: string;
-    let id = null;
     let fileId: string;
-    // if (this._processor === null) {
-    //   this._processor: IQSYSEventsFileProcessor; // Why we need to initialize this?
-    // }
+    if (!this._processor) {
+      this._processor = new QSYSEventsFileExpansionProcessorCore();
+    }
     this._processor?.doPreProcessing();
     let lineText = reader.readNextLine();
-    while (lineText !== null) {
+    while (lineText) {
       let st = lineText.split(" ");
       let i = 0
       while (i < st.length) {
@@ -74,10 +73,10 @@ export class EventsFileParserCore {
           let version = st[i++];
           fileId = st[i++];
           let fileProcessed = this._sourceTable[fileId];
-          if (fileProcessed === null) {
+          if (!fileProcessed) {
             if (fileId === ('000')) {
               let location001 = this._sourceTable['001'];
-              if (location001 !== null) {
+              if (location001) {
                 fileProcessed = location001;
               } else {
                 fileProcessed = new SourceFile('', false);
@@ -133,10 +132,10 @@ export class EventsFileParserCore {
           let record = new QSYSEventsFileErrorInformationRecord(version, fileId, annotationClass, line, lineStart, charStart,
             lineEnd, charEnd, id, severityText, severity, totalMessageLen, message);
           record.setFileName(fileProcessed.getLocation());
-          if (this._processor !== null) {
+          if (this._processor) {
             this._processor?.processErrorRecord(record);
           }
-          if (markerCreator !== null) {
+          if (markerCreator) {
             markerCreator.createMarker(record, record.getFileName(), fileProcessed.isReadOnly());
           }
           // if (!messageLenCorrect) {
@@ -197,17 +196,17 @@ export class EventsFileParserCore {
             }
             let index = location.indexOf('>');
             if (index !== -1 && location.indexOf('<') === 0) {
-              if (markerCreator !== null) {
+              if (markerCreator) {
                 markerCreator.updateConnectionName(location, index);
               }
               location = location.substring(index + 1);
             }
             let fileEntry = new SourceFile(location, browseMode);
-            if ((this._lastOutputFile !== null && location === (this._lastOutputFile.getLocation())) || this._currentOutputFile !== null && location === (this._currentOutputFile.getLocation())) {
+            if ((this._lastOutputFile && location === (this._lastOutputFile.getLocation())) || this._currentOutputFile && location === (this._currentOutputFile.getLocation())) {
               fileEntry.setReadOnly(true);
             }
             if ('999' === fileId) {
-              if (this._lastOutputFile === null) {
+              if (!this._lastOutputFile) {
                 this._lastOutputFile = this._currentOutputFile = fileEntry;
               } else {
                 this._lastOutputFile = this._currentOutputFile;
@@ -215,7 +214,7 @@ export class EventsFileParserCore {
               }
             }
             this._sourceTable[fileId] = fileEntry;
-            if (this._processor !== null) {
+            if (this._processor) {
               let record = new QSYSEventsFileFileIDRecord(version, fileId, lineNumber, locationLength.toString(), location, timestamp.toString(), tempFlag);
               try {
                 this._processor?.processFileIDRecord(record);
@@ -226,7 +225,7 @@ export class EventsFileParserCore {
             }
           } else {
             if (word === (IQSYSEventsFileRecordType.FILE_END)) {
-              if (this._processor !== null) {
+              if (this._processor) {
                 let version = st[i++];
                 let fileId = st[i++];
                 let expansion = st[i++];
@@ -241,7 +240,7 @@ export class EventsFileParserCore {
               break;
             } else {
               if (word === (IQSYSEventsFileRecordType.EXPANSION)) {
-                if (this._processor !== null) {
+                if (this._processor) {
                   let record = new QSYSEventsFileExpansionRecord(st[i++], st[i++], st[i++], st[i++], st[i++], st[i++], st[i++]);
                   // record.setVersion(st[i++]); // use split
                   // record.setInputFileID(st[i++]);
@@ -255,7 +254,7 @@ export class EventsFileParserCore {
                 break;
               } else {
                 if (word === (IQSYSEventsFileRecordType.TIMESTAMP)) {
-                  if (this._processor !== null) {
+                  if (this._processor) {
                     let record = new QSYSEventsFileTimestampRecord(st[i++], st[i++]);
                     // record.setVersion(st[i++]);
                     // record.setTimestamp(st[i++]);
@@ -264,7 +263,7 @@ export class EventsFileParserCore {
                   break;
                 } else {
                   if (word === (IQSYSEventsFileRecordType.PROCESSOR)) {
-                    if (this._processor !== null) {
+                    if (this._processor) {
                       let record = new QSYSEventsFileProcessorRecord(st[i++], st[i++], st[i++]);
                       // record.setVersion(st[i++]);
                       // record.setOutputId(st[i++]);
@@ -290,11 +289,11 @@ export class EventsFileParserCore {
           }
         }
       }
-      if (lineText !== null) {
+      if (lineText) {
         lineText = reader.readNextLine();
       }
     }
-    if (this._processor !== null) {
+    if (this._processor) {
       try {
         this._processor?.doPostProcessing();
       } catch (ex) {

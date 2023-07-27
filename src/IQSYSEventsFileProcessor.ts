@@ -8,9 +8,14 @@
  */
 import { QSYSEventsFileErrorInformationRecord } from "./QSYSEventsFileErrorInformationRecord";
 import { QSYSEventsFileExpansionRecord } from "./QSYSEventsFileExpansionRecord";
+import { QSYSEventsFileFeedbackCodeRecord } from "./QSYSEventsFileFeedbackCodeRecord";
 import { QSYSEventsFileFileEndRecord } from "./QSYSEventsFileFileEndRecord";
 import { QSYSEventsFileFileIDRecord } from "./QSYSEventsFileFileIDRecord";
+import { QSYSEventsFileMapDefineRecord } from "./QSYSEventsFileMapDefineRecord";
+import { QSYSEventsFileMapEndRecord } from "./QSYSEventsFileMapEndRecord";
+import { QSYSEventsFileMapStartRecord } from "./QSYSEventsFileMapStartRecord";
 import { QSYSEventsFileProcessorRecord } from "./QSYSEventsFileProcessorRecord";
+import { QSYSEventsFileProgramRecord } from "./QSYSEventsFileProgramRecord";
 import { QSYSEventsFileTimestampRecord } from "./QSYSEventsFileTimestampRecord";
 
 /**
@@ -62,31 +67,31 @@ export interface IQSYSEventsFileProcessor {
 	 * Processes a Program record object.
 	 * @param record
 	 */
-	processProgramRecord(record: QSYSEventsFileProcessorRecord): void;
+	processProgramRecord(record: QSYSEventsFileProgramRecord): void;
 
 	/**
 	 * Processes a Feedback Code record object.
 	 * @param record
 	 */
-	processFeedbackCodeRecord(record: QSYSEventsFileFileEndRecord): void;
+	processFeedbackCodeRecord(record: QSYSEventsFileFeedbackCodeRecord): void;
 
 	/**
 	 * Processes a Map Define record object.
 	 * @param record
 	 */
-	processMapDefineRecord(record: QSYSEventsFileFileIDRecord): void;
+	processMapDefineRecord(record: QSYSEventsFileMapDefineRecord): void;
 
 	/**
 	 * Processes a Map Start record object.
 	 * @param record
 	 */
-	processMapStartRecord(record: QSYSEventsFileTimestampRecord): void;
+	processMapStartRecord(record: QSYSEventsFileMapStartRecord): void;
 
 	/**
 	 * Processes a Map End record object.
 	 * @param record
 	 */
-	processMapEndRecord(record: QSYSEventsFileFileEndRecord): void;
+	processMapEndRecord(record: QSYSEventsFileMapEndRecord): void;
 
 	/**
 	 * Processes an Expansion record object.
@@ -125,5 +130,5 @@ export interface IQSYSEventsFileProcessor {
 	/**
 	 * Return all file names. 
 	 */
-	getAllFileIDRecords(): Set<QSYSEventsFileFileIDRecord>;
+	getAllFileIDRecords(): QSYSEventsFileFileIDRecord[];
 }

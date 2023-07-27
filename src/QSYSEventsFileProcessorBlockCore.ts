@@ -17,14 +17,14 @@ export class QSYSEventsFileProcessorBlockCore {
   private _mappingSupported: boolean;
   private _totalNumberOfLinesInOutputFile: number;
   private _totalNumberOfLinesInInputFiles: number;
-  _connection: string | null;
-  private _profile: string | null;
-  private _type: string | null;
-  private _project: string | null;
+  _connection: string | undefined;
+  private _profile: string | undefined;
+  private _type: string | undefined;
+  private _project: string | undefined;
 
   constructor(record: QSYSEventsFileProcessorRecord) {
     this.INPUT_FILE_ID = '001';
-    // this._errors = null;
+    // this._errors = undefined;
     this._inputFile = new QSYSEventsFileFileIDRecord('', '', '', '', '', '', '');
     this._outputFile = new QSYSEventsFileFileIDRecord('', '', '', '', '', '', '');;
     this._currentProcessor = new QSYSEventsFileProcessorRecord('', '', '');
@@ -35,10 +35,10 @@ export class QSYSEventsFileProcessorBlockCore {
     this._mappingSupported = false;
     this._totalNumberOfLinesInOutputFile = 0;
     this._totalNumberOfLinesInInputFiles = 0;
-    this._connection = null;
-    this._profile = null;
-    this._type = null;
-    this._project = null;
+    this._connection = undefined;
+    this._profile = undefined;
+    this._type = undefined;
+    this._project = undefined;
 
     this._currentProcessor = record;
     this._mappingTable = new QSYSEventsFileMapTable();
@@ -48,7 +48,7 @@ export class QSYSEventsFileProcessorBlockCore {
     return this._inputFile;
   }
   getInitialInputFile(): QSYSEventsFileFileIDRecord {
-    if (this._previousProcessorBlock !== null && !this.isFirstInEventsFile()) {
+    if (this._previousProcessorBlock && !this.isFirstInEventsFile()) {
       return this._previousProcessorBlock.getInitialInputFile();
     }
     return this.getInputFile();
@@ -60,7 +60,7 @@ export class QSYSEventsFileProcessorBlockCore {
     this._mappingTable.addFileInformation(file);
   }
   closeFile(file: QSYSEventsFileFileEndRecord) {
-    if (this._outputFile === null) {
+    if (!this._outputFile) {
       return undefined;
     }
     if (!(file.getFileId() === (this._outputFile.getSourceId()))) {
@@ -118,11 +118,11 @@ export class QSYSEventsFileProcessorBlockCore {
     this._mappingTable.modifyErrorInformation(error);
     let inputFileLocation = '';
     let inputFileId = '';
-    if (this.getInputFile() !== null) {
+    if (this.getInputFile()) {
       inputFileLocation = this.getInputFile().getFilename();
       inputFileId = this.getInputFile().getSourceId();
     }
-    if (this._previousProcessorBlock !== null && !this.isFirstInEventsFile() && this.isMappingSupported() && (error.getFileId() === (inputFileId) || error.getFileId() === (inputFileLocation))) {
+    if (this._previousProcessorBlock && !this.isFirstInEventsFile() && this.isMappingSupported() && (error.getFileId() === (inputFileId) || error.getFileId() === (inputFileLocation))) {
       this._previousProcessorBlock.modifyErrorInformation(error);
     }
   }
@@ -139,18 +139,18 @@ export class QSYSEventsFileProcessorBlockCore {
     return this._mappingSupported;
   }
   isFileReadOnly(fileIDRecord: QSYSEventsFileFileIDRecord) {
-    return fileIDRecord.getFlag() === ('1') || ((this._previousProcessorBlock !== null && !this.isFirstInEventsFile()) && this._previousProcessorBlock.getOutputFile() !== null && fileIDRecord.getFilename() === (this._previousProcessorBlock.getOutputFile().getFilename())) || (this.getOutputFile() !== null && fileIDRecord.getFilename() === (this.getOutputFile().getFilename()));
+    return fileIDRecord.getFlag() === ('1') || ((this._previousProcessorBlock && !this.isFirstInEventsFile()) && this._previousProcessorBlock.getOutputFile() && fileIDRecord.getFilename() === (this._previousProcessorBlock.getOutputFile().getFilename())) || (this.getOutputFile() && fileIDRecord.getFilename() === (this.getOutputFile().getFilename()));
   }
   getAllProcessorErrors() {
     let allPrevErrs:QSYSEventsFileErrorInformationRecord [] = [];
-    if (this._previousProcessorBlock !== null) {
+    if (this._previousProcessorBlock) {
       allPrevErrs = this._previousProcessorBlock.getAllProcessorErrors();
     }
     allPrevErrs = allPrevErrs.concat(this._errors);
     return allPrevErrs;
   }
   resolveFileNamesForAllErrors() {
-    if (this._previousProcessorBlock !== null) {
+    if (this._previousProcessorBlock) {
       this._previousProcessorBlock.resolveFileNamesForAllErrors();
     }
     this._errors.forEach(error => {
