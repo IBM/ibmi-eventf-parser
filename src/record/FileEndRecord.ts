@@ -6,32 +6,21 @@
  * irrespective of what has been deposited with the U.S. Copyright Office.
  *
  */
-import { IQSYSEventsFileRecordType } from "./IQSYSEventsFileRecordType";
-import { EvfeventRecord } from "./evfeventRecord";
+import { IRecordType } from "./IRecordType";
+import { IRecord } from "./IRecord";
 
 /**
  * This class represents a File End record in an events file.
  */
-export class QSYSEventsFileFileEndRecord implements EvfeventRecord {
-
-	public static Copyright = "(C) Copyright IBM Corp. 2003  All Rights Reserved.";
-
-
-	private version: string;
-	private fileId: string;
-	private expansion: string;
-
-	constructor(version: string, fileId: string, expansion: string) {
-		this.version = version;
-		this.fileId = fileId;
-		this.expansion = expansion;
+export class FileEndRecord implements IRecord {
+	constructor(private version: string, private fileId: string, private expansion: string) {
 	}
 
 	/**
 	 * @see com.ibm.etools.iseries.core.evfparser.IISeriesEventsFileRecordType#getRecordType()
 	 */
 	public getRecordType(): string {
-		return IQSYSEventsFileRecordType.FILE_END;
+		return IRecordType.FILE_END;
 	}
 
 	/**

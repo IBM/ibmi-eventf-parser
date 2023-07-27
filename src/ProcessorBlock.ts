@@ -1,65 +1,49 @@
-import { QSYSEventsFileErrorInformationRecord } from "./QSYSEventsFileErrorInformationRecord";
-import { QSYSEventsFileFileEndRecord } from "./QSYSEventsFileFileEndRecord";
-import { QSYSEventsFileFileIDRecord } from "./QSYSEventsFileFileIDRecord";
-import { QSYSEventsFileMapTable } from "./QSYSEventsFileMapTable";
-import { QSYSEventsFileProcessorRecord } from "./QSYSEventsFileProcessorRecord";
+import { ErrorInformationRecord } from "./record/ErrorInformationRecord";
+import { FileEndRecord } from "./record/FileEndRecord";
+import { FileIDRecord } from "./record/FileIDRecord";
+import { MapTable } from "./MapTable";
+import { ProcessorRecord } from "./record/ProcessorRecord";
 
-export class QSYSEventsFileProcessorBlockCore {
-  protected INPUT_FILE_ID: string;
-  private _errors: QSYSEventsFileErrorInformationRecord[];
-  private _inputFile: QSYSEventsFileFileIDRecord;
-  private _outputFile: QSYSEventsFileFileIDRecord;
-  private _currentProcessor: QSYSEventsFileProcessorRecord;
-  private _mappingTable: QSYSEventsFileMapTable;
-  private _previousProcessorBlock: QSYSEventsFileProcessorBlockCore;
-  private _containsExpansionEvents: boolean;
-  private _isFirstInEventsFile: boolean;
-  private _mappingSupported: boolean;
-  private _totalNumberOfLinesInOutputFile: number;
-  private _totalNumberOfLinesInInputFiles: number;
-  _connection: string | undefined;
-  private _profile: string | undefined;
-  private _type: string | undefined;
-  private _project: string | undefined;
+export class ProcessorBlock {
+  readonly INPUT_FILE_ID: string = '001';
+  private _errors: ErrorInformationRecord[];
+  private _inputFile: FileIDRecord;
+  private _outputFile: FileIDRecord;
+  private _currentProcessor: ProcessorRecord;
+  private _mappingTable: MapTable;
+  private _previousProcessorBlock: ProcessorBlock;
+  private _containsExpansionEvents: boolean = false;
+  private _isFirstInEventsFile: boolean = false;
+  private _mappingSupported: boolean = false;
+  private _totalNumberOfLinesInOutputFile: number = 0;
+  private _totalNumberOfLinesInInputFiles: number = 0;
 
-  constructor(record: QSYSEventsFileProcessorRecord) {
-    this.INPUT_FILE_ID = '001';
-    // this._errors = undefined;
-    this._inputFile = new QSYSEventsFileFileIDRecord('', '', '', '', '', '', '');
-    this._outputFile = new QSYSEventsFileFileIDRecord('', '', '', '', '', '', '');;
-    this._currentProcessor = new QSYSEventsFileProcessorRecord('', '', '');
-    this._mappingTable = new QSYSEventsFileMapTable();
-    this._previousProcessorBlock = new QSYSEventsFileProcessorBlockCore(record);
-    this._containsExpansionEvents = false;
-    this._isFirstInEventsFile = false;
-    this._mappingSupported = false;
-    this._totalNumberOfLinesInOutputFile = 0;
-    this._totalNumberOfLinesInInputFiles = 0;
-    this._connection = undefined;
-    this._profile = undefined;
-    this._type = undefined;
-    this._project = undefined;
-
+  constructor(record: ProcessorRecord) {
     this._currentProcessor = record;
-    this._mappingTable = new QSYSEventsFileMapTable();
+    this._mappingTable = new MapTable();
     this._errors = [];
   }
-  getInputFile(): QSYSEventsFileFileIDRecord {
+
+  getInputFile(): FileIDRecord {
     return this._inputFile;
   }
-  getInitialInputFile(): QSYSEventsFileFileIDRecord {
+
+  getInitialInputFile(): FileIDRecord {
     if (this._previousProcessorBlock && !this.isFirstInEventsFile()) {
       return this._previousProcessorBlock.getInitialInputFile();
     }
     return this.getInputFile();
   }
-  setInputFile(file: QSYSEventsFileFileIDRecord) {
+
+  setInputFile(file: FileIDRecord) {
     this._inputFile = file;
   }
-  addFile(file: QSYSEventsFileFileIDRecord) {
+
+  addFile(file: FileIDRecord) {
     this._mappingTable.addFileInformation(file);
   }
-  closeFile(file: QSYSEventsFileFileEndRecord) {
+
+  closeFile(file: FileEndRecord) {
     if (!this._outputFile) {
       return undefined;
     }
@@ -71,50 +55,64 @@ export class QSYSEventsFileProcessorBlockCore {
     }
     this._mappingTable.closeFile(file);
   }
+
   getOutputFile() {
     return this._outputFile;
   }
-  setOutputFile(file: QSYSEventsFileFileIDRecord) {
+
+  setOutputFile(file: FileIDRecord) {
     this._outputFile = file;
   }
+
   getMappingTable() {
     return this._mappingTable;
   }
+
   isProcessorIDZero() {
     let procID = parseInt(this._currentProcessor.getOutputId());
     return procID === 0;
   }
-  addErrorInformation(record: QSYSEventsFileErrorInformationRecord) {
+
+  addErrorInformation(record: ErrorInformationRecord) {
     this._errors.push(record);
   }
+
   processorEnded() {
     this._mappingTable.finalizeMap();
   }
-  setPreviousProcessor(previous: QSYSEventsFileProcessorBlockCore) {
+  setPreviousProcessor(previous: ProcessorBlock) {
     this._previousProcessorBlock = previous;
   }
+
   setContainsExpansionEvents(containsExpansionEvents: boolean) {
     this._containsExpansionEvents = containsExpansionEvents;
   }
+
   containsExpansionEvents() {
     return this._containsExpansionEvents;
   }
+
   increaseTotalNumberOfLinesInInputFiles(numberOfLines: number) {
     this._totalNumberOfLinesInInputFiles += numberOfLines;
   }
+
   getTotalNumberOfLinesInInputFiles() {
     return this._totalNumberOfLinesInInputFiles;
   }
+
   setTotalNumberOfLinesInOutputFile(numberOfLines: number) {
     this._totalNumberOfLinesInOutputFile = numberOfLines;
   }
+
   getTotalNumberOfLinesInOutputFile() {
     return this._totalNumberOfLinesInOutputFile;
   }
-  getPreviousProcessorBlock(): QSYSEventsFileProcessorBlockCore {
+
+  getPreviousProcessorBlock(): ProcessorBlock {
     return this._previousProcessorBlock;
   }
-  modifyErrorInformation(error: QSYSEventsFileErrorInformationRecord) {
+
+  modifyErrorInformation(error: ErrorInformationRecord) {
     this._mappingTable.modifyErrorInformation(error);
     let inputFileLocation = '';
     let inputFileId = '';
@@ -126,29 +124,36 @@ export class QSYSEventsFileProcessorBlockCore {
       this._previousProcessorBlock.modifyErrorInformation(error);
     }
   }
+
   setFirstInEventsFile(isFirstInEventsFile: boolean) {
     this._isFirstInEventsFile = isFirstInEventsFile;
   }
+
   isFirstInEventsFile() {
     return this._isFirstInEventsFile;
   }
+
   setMappingSupported(mappingSupported: boolean) {
     this._mappingSupported = mappingSupported;
   }
+
   isMappingSupported() {
     return this._mappingSupported;
   }
-  isFileReadOnly(fileIDRecord: QSYSEventsFileFileIDRecord) {
+
+  isFileReadOnly(fileIDRecord: FileIDRecord) {
     return fileIDRecord.getFlag() === ('1') || ((this._previousProcessorBlock && !this.isFirstInEventsFile()) && this._previousProcessorBlock.getOutputFile() && fileIDRecord.getFilename() === (this._previousProcessorBlock.getOutputFile().getFilename())) || (this.getOutputFile() && fileIDRecord.getFilename() === (this.getOutputFile().getFilename()));
   }
+
   getAllProcessorErrors() {
-    let allPrevErrs:QSYSEventsFileErrorInformationRecord [] = [];
+    let allPrevErrs:ErrorInformationRecord [][] = [];
     if (this._previousProcessorBlock) {
       allPrevErrs = this._previousProcessorBlock.getAllProcessorErrors();
     }
-    allPrevErrs = allPrevErrs.concat(this._errors);
+    allPrevErrs.push(this._errors);
     return allPrevErrs;
   }
+
   resolveFileNamesForAllErrors() {
     if (this._previousProcessorBlock) {
       this._previousProcessorBlock.resolveFileNamesForAllErrors();
@@ -161,9 +166,9 @@ export class QSYSEventsFileProcessorBlockCore {
     //   let error = errors.next();
     //   this.resolveFileNameAndDetermineIfReadOnly(error);
     // }
-
   }
-  resolveFileNameAndDetermineIfReadOnly(error: QSYSEventsFileErrorInformationRecord) {
+  
+  resolveFileNameAndDetermineIfReadOnly(error: ErrorInformationRecord) {
     let readOnly = false;
     if (this._previousProcessorBlock && !this.isFirstInEventsFile() && this.isMappingSupported() && error.getFileId() === (this.INPUT_FILE_ID)) {
       this._previousProcessorBlock.modifyErrorInformation(error);

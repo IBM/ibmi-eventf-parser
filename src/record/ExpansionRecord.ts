@@ -6,40 +6,22 @@
  * irrespective of what has been deposited with the U.S. Copyright Office.
  *
  */
-import { IQSYSEventsFileRecordType } from "./IQSYSEventsFileRecordType";
-import { EvfeventRecord } from "./evfeventRecord";
+import { IRecordType } from "./IRecordType";
+import { IRecord } from "./IRecord";
 
 /**
  * This class represents an Expansion record in an Events File.
  */
-export class QSYSEventsFileExpansionRecord implements EvfeventRecord {
-	public static Copyright = "(C) Copyright IBM Corp. 2006  All Rights Reserved.";
-
-	private _version: string;
-	private _inputFileID: string;
-	private _inputLineStart: string;
-	private _inputLineEnd: string;
-	private _outputFileID: string;
-	private _outputLineStart: string;
-	private _outputLineEnd: string;
-
-	constructor(version: string, inputFileID: string, inputLineStart: string, inputLineEnd: string,
-		outputFileID: string, outputLineStart: string, outputLineEnd: string) {
-		this._version = version;
-		this._inputFileID = inputFileID;
-		this._inputLineStart = inputLineStart;
-		this._inputLineEnd = inputLineEnd;
-		this._outputFileID = outputFileID;
-		this._outputLineStart = outputLineStart;
-		this._outputLineEnd = outputLineEnd;
-
+export class ExpansionRecord implements IRecord {
+	constructor(private _version: string, private _inputFileID: string, private _inputLineStart: string, private _inputLineEnd: string,
+		private _outputFileID: string, private _outputLineStart: string, private _outputLineEnd: string) {
 	}
 
 	/**
 	 * @see com.ibm.etools.iseries.core.evfparser.IISeriesEventsFileRecordType#getRecordType()
 	 */
 	public getRecordType(): string {
-		return IQSYSEventsFileRecordType.EXPANSION;
+		return IRecordType.EXPANSION;
 	}
 
 	/**

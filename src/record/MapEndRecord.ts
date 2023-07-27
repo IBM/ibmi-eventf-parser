@@ -6,34 +6,21 @@
  * irrespective of what has been deposited with the U.S. Copyright Office.
  *
  */
-import { IQSYSEventsFileRecordType } from "./IQSYSEventsFileRecordType";
-import { EvfeventRecord } from "./evfeventRecord";
+import { IRecordType } from "./IRecordType";
+import { IRecord } from "./IRecord";
 
 /**
  * This class represents a Map End record in an events file.
  */
-export class QSYSEventsFileMapEndRecord implements EvfeventRecord {
-
-	public Copyright = "(C) Copyright IBM Corp. 2003  All Rights Reserved.";
-
-
-	private version: string;
-	private macroId: string;
-	private line: string;
-	private expansion: string;
-
-	constructor(version: string, macroId: string, line: string, expansion: string) {
-		this.version = version;
-		this.macroId = macroId;
-		this.line = line;
-		this.expansion = expansion;
+export class MapEndRecord implements IRecord {
+	constructor(private version: string, private macroId: string, private line: string, private expansion: string) {
 	}
 
 	/**
 	 * @see com.ibm.etools.iseries.core.evfparser.IISeriesEventsFileRecordType#getRecordType()
 	 */
 	public getRecordType(): string {
-		return IQSYSEventsFileRecordType.MAP_END;
+		return IRecordType.MAP_END;
 	}
 
 	/**

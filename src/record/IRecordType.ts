@@ -3,7 +3,7 @@
  * This interface should be implemented by all classes that represent
  * records in an events file.
  */
-export enum IQSYSEventsFileRecordType {
+export enum IRecordType {
     TIMESTAMP = "TIMESTAMP",
     PROCESSOR = "PROCESSOR",
     FILE_ID = "FILEID",

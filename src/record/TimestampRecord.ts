@@ -7,30 +7,21 @@
  *
  */
 
-import { IQSYSEventsFileRecordType } from './IQSYSEventsFileRecordType';
-import { EvfeventRecord } from './evfeventRecord';
+import { IRecordType } from './IRecordType';
+import { IRecord } from './IRecord';
 
 /**
  * This class represents a Timestamp record in an events file.
  */
-export class QSYSEventsFileTimestampRecord implements EvfeventRecord {
-
-	public Copyright = "(C) Copyright IBM Corp. 2003  All Rights Reserved.";
-
-
-	private version: string;
-	private timestamp: string;
-
-	constructor(version: string, timestamp: string) {
-		this.version = version;
-		this.timestamp = timestamp;
+export class TimestampRecord implements IRecord {
+	constructor(private version: string, private timestamp: string) {
 	}
 
 	/**
 	 * @see com.ibm.etools.iseries.core.evfparser.IISeriesEventsFileRecordType#getRecordType()
 	 */
 	public getRecordType() {
-		return IQSYSEventsFileRecordType.TIMESTAMP;
+		return IRecordType.TIMESTAMP;
 	}
 
 	/**

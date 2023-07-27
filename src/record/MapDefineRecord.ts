@@ -6,32 +6,21 @@
  * irrespective of what has been deposited with the U.S. Copyright Office.
  *
  */
-import { IQSYSEventsFileRecordType } from "./IQSYSEventsFileRecordType";
-import { EvfeventRecord } from "./evfeventRecord";
+import { IRecordType } from "./IRecordType";
+import { IRecord } from "./IRecord";
 
 /**
- * This class represents a Map Start record in an events file.
+ * This class represents a Map Define record in an events file.
  */
-export class QSYSEventsFileMapStartRecord implements EvfeventRecord {
-
-	public Copyright = "(C) Copyright IBM Corp. 2003  All Rights Reserved.";
-
-
-	private version: string;
-	private macroId: string;
-	private line: string;
-
-	constructor(version: string, macroId: string, line: string) {
-		this.version = version;
-		this.macroId = macroId;
-		this.line = line;
+export class MapDefineRecord implements IRecord {
+	constructor(private version: string, private macroId: string, private line: string, private length: string, private macroName: string) {
 	}
 
 	/**
 	 * @see com.ibm.etools.iseries.core.evfparser.IISeriesEventsFileRecordType#getRecordType()
 	 */
-	public getRecordType() {
-		return IQSYSEventsFileRecordType.MAP_START;
+	public getRecordType(): string {
+		return IRecordType.MAP_DEFINE;
 	}
 
 	/**
@@ -80,5 +69,37 @@ export class QSYSEventsFileMapStartRecord implements EvfeventRecord {
 	 */
 	public getLine(): string {
 		return this.line;
+	}
+
+	/**
+	 * Set the length.
+	 * @param the length
+	 */
+	public setLength(length: string) {
+		this.length = length;
+	}
+
+	/**
+	 * Get the length.
+	 * @return the length
+	 */
+	public getLength(): string {
+		return this.length;
+	}
+
+	/**
+	 * Set the macro name.
+	 * @param the macro name
+	 */
+	public setMacroName(macroName: string) {
+		this.macroName = macroName;
+	}
+
+	/**
+	 * Get the macro name.
+	 * @return the macro name
+	 */
+	public getMacroName(): string {
+		return this.macroName;
 	}
 }

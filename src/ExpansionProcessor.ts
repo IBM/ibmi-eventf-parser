@@ -1,30 +1,30 @@
-/* IBM Confidential
+/* 
+ * IBM Confidential
  * OCO Source Materials
  * 5900-AN9
  * (c) Copyright IBM Corp. 2009, 2023
  * The source code for this program is not published or otherwise divested of its trade secrets,
  * irrespective of what has been deposited with the U.S. Copyright Office.
- *
  */
-import { IQSYSEventsFileProcessor } from "./IQSYSEventsFileProcessor";
-import { QSYSEventsFileErrorInformationRecord } from "./QSYSEventsFileErrorInformationRecord";
-import { QSYSEventsFileExpansionRecord } from "./QSYSEventsFileExpansionRecord";
-import { QSYSEventsFileFeedbackCodeRecord } from "./QSYSEventsFileFeedbackCodeRecord";
-import { QSYSEventsFileFileEndRecord } from "./QSYSEventsFileFileEndRecord";
-import { QSYSEventsFileFileIDRecord } from "./QSYSEventsFileFileIDRecord";
-import { QSYSEventsFileMapDefineRecord } from "./QSYSEventsFileMapDefineRecord";
-import { QSYSEventsFileMapEndRecord } from "./QSYSEventsFileMapEndRecord";
-import { QSYSEventsFileMapStartRecord } from "./QSYSEventsFileMapStartRecord";
-import { QSYSEventsFileProcessorBlockCore } from "./QSYSEventsFileProcessorBlockCore";
-import { QSYSEventsFileProcessorRecord } from "./QSYSEventsFileProcessorRecord";
-import { QSYSEventsFileProgramRecord } from "./QSYSEventsFileProgramRecord";
-import { QSYSEventsFileTimestampRecord } from "./QSYSEventsFileTimestampRecord";
+import { IProcessor } from "./IProcessor";
+import { ErrorInformationRecord } from "./record/ErrorInformationRecord";
+import { ExpansionRecord } from "./record/ExpansionRecord";
+import { FeedbackCodeRecord } from "./record/FeedbackCodeRecord";
+import { FileEndRecord } from "./record/FileEndRecord";
+import { FileIDRecord } from "./record/FileIDRecord";
+import { MapDefineRecord } from "./record/MapDefineRecord";
+import { MapEndRecord } from "./record/MapEndRecord";
+import { MapStartRecord } from "./record/MapStartRecord";
+import { ProcessorBlock } from "./ProcessorBlock";
+import { ProcessorRecord } from "./record/ProcessorRecord";
+import { ProgramRecord } from "./record/ProgramRecord";
+import { TimestampRecord } from "./record/TimestampRecord";
 
-export class QSYSEventsFileExpansionProcessorCore implements IQSYSEventsFileProcessor {
+export class ExpansionProcessor implements IProcessor {
 
 	private PRE_COMPILE_PROCESSOR_ID = "999";
 
-	protected _currentProcessor: QSYSEventsFileProcessorBlockCore;
+	protected _currentProcessor: ProcessorBlock;
 
 	// Flags any errors that occur during processing and disables the processor if needed
 	protected _postProcessingNeeded = true;
@@ -43,25 +43,25 @@ export class QSYSEventsFileExpansionProcessorCore implements IQSYSEventsFileProc
 	protected _containsPreCompileProcessorBlocks = false;
 
 	constructor() {
-		let record = new QSYSEventsFileProcessorRecord('', '', '');
-		this._currentProcessor = new QSYSEventsFileProcessorBlockCore(record);
+		let record = new ProcessorRecord('', '', '');
+		this._currentProcessor = new ProcessorBlock(record);
 	}
 
-	public processErrorRecord(record: QSYSEventsFileErrorInformationRecord) {
+	public processErrorRecord(record: ErrorInformationRecord) {
 		this._currentProcessor.addErrorInformation(record);
 	}
 
-	public processExpansionRecord(record: QSYSEventsFileExpansionRecord) {
+	public processExpansionRecord(record: ExpansionRecord) {
 		//		_containsExpansionEvents = true;
 		this._currentProcessor.setContainsExpansionEvents(true);
 		this._currentProcessor.getMappingTable().addExpansionRecord(record);
 	}
 
-	public processFeedbackCodeRecord(record: QSYSEventsFileFeedbackCodeRecord) {
+	public processFeedbackCodeRecord(record: FeedbackCodeRecord) {
 		return;
 	}
 
-	public processFileEndRecord(record: QSYSEventsFileFileEndRecord) { // throws SecondLevelHelpException
+	public processFileEndRecord(record: FileEndRecord) { // throws SecondLevelHelpException
 		try {
 			this._currentProcessor.closeFile(record);
 		} catch (ex) {
@@ -70,7 +70,7 @@ export class QSYSEventsFileExpansionProcessorCore implements IQSYSEventsFileProc
 		}
 	}
 
-	public processFileIDRecord(record: QSYSEventsFileFileIDRecord) { // throws SecondLevelHelpException
+	public processFileIDRecord(record: FileIDRecord) { // throws SecondLevelHelpException
 		// The Try-Catch block is there to flag any problems, disable processing and allow regular Events File processing to continue
 		try {
 			let fileID: number;
@@ -101,19 +101,19 @@ export class QSYSEventsFileExpansionProcessorCore implements IQSYSEventsFileProc
 
 	}
 
-	public processMapDefineRecord(record: QSYSEventsFileMapDefineRecord) {
+	public processMapDefineRecord(record: MapDefineRecord) {
 		return;
 	}
 
-	public processMapEndRecord(record: QSYSEventsFileMapEndRecord) {
+	public processMapEndRecord(record: MapEndRecord) {
 		return;
 	}
 
-	public processMapStartRecord(record: QSYSEventsFileMapStartRecord) {
+	public processMapStartRecord(record: MapStartRecord) {
 		return;
 	}
 
-	public processProcessorRecord(record: QSYSEventsFileProcessorRecord) { //throws SecondLevelHelpException
+	public processProcessorRecord(record: ProcessorRecord) { //throws SecondLevelHelpException
 		if (!this._containsPreCompileProcessorBlocks && record.getOutputId() === this.PRE_COMPILE_PROCESSOR_ID) { this._containsPreCompileProcessorBlocks = true; }
 
 		try {
@@ -135,15 +135,15 @@ export class QSYSEventsFileExpansionProcessorCore implements IQSYSEventsFileProc
 	}
 
 
-	protected constructEventsFileProcessorBlock(record: QSYSEventsFileProcessorRecord): QSYSEventsFileProcessorBlockCore {
-		return new QSYSEventsFileProcessorBlockCore(record);
+	protected constructEventsFileProcessorBlock(record: ProcessorRecord): ProcessorBlock {
+		return new ProcessorBlock(record);
 	}
 
-	public processProgramRecord(record: QSYSEventsFileProgramRecord) {
+	public processProgramRecord(record: ProgramRecord) {
 		return;
 	}
 
-	public processTimestampRecord(record: QSYSEventsFileTimestampRecord) {
+	public processTimestampRecord(record: TimestampRecord) {
 		this._noProcessorEventsYet = true;
 	}
 
@@ -168,9 +168,9 @@ export class QSYSEventsFileExpansionProcessorCore implements IQSYSEventsFileProc
 	 * the top level, this should be the very last processor block of the [combined] events file.
 	 * @return true if any of the events files support mapping of errors, false otherwise
 	 */
-	protected determineAndSetMappingSupport(lastProcessorBlock: QSYSEventsFileProcessorBlockCore): boolean {
+	protected determineAndSetMappingSupport(lastProcessorBlock: ProcessorBlock): boolean {
 		let isMappingSupportedByAny = false;
-		let curProc: QSYSEventsFileProcessorBlockCore = lastProcessorBlock;
+		let curProc: ProcessorBlock = lastProcessorBlock;
 		while (curProc) {
 			let curSupport = this.isMappingSupportedByCurrentEventsFile(curProc);
 			this.setMappingSupportForCurrentEventsFile(curProc, curSupport);
@@ -199,8 +199,8 @@ export class QSYSEventsFileExpansionProcessorCore implements IQSYSEventsFileProc
 	 * @param lastProcessorBlock - the last processor block of the current events file.
 	 * @param support - boolean value corresponding to whether the current events file requires and supports mappings.
 	 */
-	private setMappingSupportForCurrentEventsFile(lastProcessorBlock: QSYSEventsFileProcessorBlockCore, support: boolean) {
-		let curProc: QSYSEventsFileProcessorBlockCore | undefined = lastProcessorBlock;
+	private setMappingSupportForCurrentEventsFile(lastProcessorBlock: ProcessorBlock, support: boolean) {
+		let curProc: ProcessorBlock | undefined = lastProcessorBlock;
 		while (curProc) {
 			curProc.setMappingSupported(support);
 
@@ -230,7 +230,7 @@ export class QSYSEventsFileExpansionProcessorCore implements IQSYSEventsFileProc
 	 * @return true if the current events file supports mapping of errors,
 	 * false otherwise
 	 */
-	private isMappingSupportedByCurrentEventsFile(lastProcessorBlock: QSYSEventsFileProcessorBlockCore): boolean {
+	private isMappingSupportedByCurrentEventsFile(lastProcessorBlock: ProcessorBlock): boolean {
 		let supported: boolean;
 
 		if (!lastProcessorBlock.getOutputFile()) {//compile processor block case
@@ -267,7 +267,7 @@ export class QSYSEventsFileExpansionProcessorCore implements IQSYSEventsFileProc
 	 * @return a list of lists of all parsed errors from all processor blocks of the Events File
 	 * (one list for each processor block).
 	 */
-	public getAllErrors(): QSYSEventsFileErrorInformationRecord[] {
+	public getAllErrors(): ErrorInformationRecord[][] {
 		if (this._currentProcessor) {
 			return this._currentProcessor.getAllProcessorErrors();
 		}
@@ -278,7 +278,7 @@ export class QSYSEventsFileExpansionProcessorCore implements IQSYSEventsFileProc
 	/**
 	 * Return all file ID records.
 	 */
-	public getAllFileIDRecords(): QSYSEventsFileFileIDRecord[] {
+	public getAllFileIDRecords(): FileIDRecord[] {
 		if (this._currentProcessor) {
 			return this._currentProcessor.getMappingTable().getAllFileIDRecords();
 		} else {

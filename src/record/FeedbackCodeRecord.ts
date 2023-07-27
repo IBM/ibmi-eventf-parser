@@ -6,30 +6,21 @@
  * irrespective of what has been deposited with the U.S. Copyright Office.
  *
  */
-import { IQSYSEventsFileRecordType } from "./IQSYSEventsFileRecordType";
-import { EvfeventRecord } from "./evfeventRecord";
+import { IRecordType } from "./IRecordType";
+import { IRecord } from "./IRecord";
 
 /**
  * This class represents a Feedback Code record in an events file.
  */
-export class QSYSEventsFileFeedbackCodeRecord implements EvfeventRecord {
-
-	public Copyright = "(C) Copyright IBM Corp. 2003  All Rights Reserved.";
-
-
-	private returnCode: string;
-	private reasonCode: string;
-
-	constructor(returnCode: string, reasonCode: string) {
-		this.returnCode = returnCode;
-		this.reasonCode = reasonCode;
+export class FeedbackCodeRecord implements IRecord {
+	constructor(private returnCode: string, private reasonCode: string) {
 	}
 
 	/**
 	 * @see com.ibm.etools.iseries.core.evfparser.IISeriesEventsFileRecordType#getRecordType()
 	 */
 	public getRecordType(): string {
-		return IQSYSEventsFileRecordType.FEEDBACK_CODE;
+		return IRecordType.FEEDBACK_CODE;
 	}
 
 	/**

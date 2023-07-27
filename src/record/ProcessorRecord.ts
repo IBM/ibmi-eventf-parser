@@ -6,32 +6,21 @@
  * irrespective of what has been deposited with the U.S. Copyright Office.
  *
  */
-import { IQSYSEventsFileRecordType } from "./IQSYSEventsFileRecordType";
-import { EvfeventRecord } from "./evfeventRecord";
+import { IRecordType } from "./IRecordType";
+import { IRecord } from "./IRecord";
 
 /**
  * This class represents a Processor record in an events file.
  */
-export class QSYSEventsFileProcessorRecord implements EvfeventRecord {
-
-	public Copyright = "(C) Copyright IBM Corp. 2003  All Rights Reserved.";
-
-
-	private version: string;
-	private outputId: string;
-	private lineClass: string;
-
-	constructor(version: string, outputId: string, lineClass: string) {
-		this.version = version;
-		this.outputId = outputId;
-		this.lineClass = lineClass;
+export class ProcessorRecord implements IRecord {
+	constructor(private version: string, private outputId: string, private lineClass: string) {
 	}
 
 	/**
 	 * @see com.ibm.etools.iseries.core.evfparser.IISeriesEventsFileRecordType#getRecordType()
 	 */
 	public getRecordType() {
-		return IQSYSEventsFileRecordType.PROCESSOR;
+		return IRecordType.PROCESSOR;
 	}
 
 	/**

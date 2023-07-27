@@ -10,4 +10,4 @@ export interface ISequentialFileReader {
 	 **/
 	readNextLine(): string | undefined;
 
-} // ISequentialFileReader
+}

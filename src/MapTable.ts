@@ -6,34 +6,31 @@
  * irrespective of what has been deposited with the U.S. Copyright Office.
  *
  */
-import { FileIDLinesPair } from "./FileIDLinesPair";
-import { QSYSEventsFileErrorInformationRecord } from "./QSYSEventsFileErrorInformationRecord";
-import { QSYSEventsFileExpansionRecord } from "./QSYSEventsFileExpansionRecord";
-import { QSYSEventsFileFileEndRecord } from "./QSYSEventsFileFileEndRecord";
-import { QSYSEventsFileFileIDRecord } from "./QSYSEventsFileFileIDRecord";
-import { SourceLineRange } from "./SourceLineRange";
-import { ArrayStack } from "./Stack";
+import { ErrorInformationRecord } from "./record/ErrorInformationRecord";
+import { ExpansionRecord } from "./record/ExpansionRecord";
+import { FileEndRecord } from "./record/FileEndRecord";
+import { FileIDRecord } from "./record/FileIDRecord";
 
 // SourceLineRange and FileIDLinesPair
-export class QSYSEventsFileMapTable {
+export class MapTable {
 	// The map: made up of SourceLineRanges
 	private _map: SourceLineRange[];
 
 	// Holds the EXPANSION records until processed
-	private _queueExpansion: QSYSEventsFileExpansionRecord[];
+	private _queueExpansion: ExpansionRecord[];
 
 	// Data needed to determine where copybook SourceLineRange should be inserted in the list
 	private _files: ArrayStack<FileIDLinesPair>;
 	private _lookupIndex: number;
 
 	// Hashtable of File IDs and locations for fast lookup
-	private _fileTable: Map<String, QSYSEventsFileFileIDRecord>;
+	private _fileTable: Map<String, FileIDRecord>;
 
 	constructor() {
 		this._map = [];
 		this._queueExpansion = [];
 		this._files = new ArrayStack<FileIDLinesPair>();
-		this._fileTable = new Map<String, QSYSEventsFileFileIDRecord>();
+		this._fileTable = new Map<String, FileIDRecord>();
 		this._lookupIndex = 0;
 	}
 
@@ -41,7 +38,7 @@ export class QSYSEventsFileMapTable {
 	 * Adds file information to the map
 	 * @param record The File ID record
 	 */
-	public addFileInformation(record: QSYSEventsFileFileIDRecord) {
+	public addFileInformation(record: FileIDRecord) {
 		let range = this.createOpenEndedSourceLineRange(record);
 		let file = new FileIDLinesPair(record.getSourceId());
 
@@ -73,7 +70,7 @@ export class QSYSEventsFileMapTable {
 	 * and FileIDLinesPair pairings.
 	 * @param record The File ID record
 	 */
-	public addFileToFileTable(record: QSYSEventsFileFileIDRecord) {
+	public addFileToFileTable(record: FileIDRecord) {
 		this._fileTable.set(record.getSourceId(), record);
 	}
 
@@ -81,7 +78,7 @@ export class QSYSEventsFileMapTable {
 	 * Sets the correct bounds for the files in the map that were added using <code>AddFileInformation()</code>.
 	 * @param record The FileEnd record that contains the number of lines in the source.
 	 */
-	public closeFile(record: QSYSEventsFileFileEndRecord) {
+	public closeFile(record: FileEndRecord) {
 		// Make sure that the stack is not empty
 		if (this._files.isEmpty()) {
 			throw new Error("A FILEEND event does not have a matching FILEID." + "\n" +
@@ -158,7 +155,7 @@ export class QSYSEventsFileMapTable {
 	 * Create a <code>SourceLineRange</code> with open bounds. The bounds will be set once the FileEnd record is read.
 	 * @param record The FileID record that contains information about where the <code>SourceLineRange</code> should start.
 	 */
-	private createOpenEndedSourceLineRange(record: QSYSEventsFileFileIDRecord): SourceLineRange {
+	private createOpenEndedSourceLineRange(record: FileIDRecord): SourceLineRange {
 		let line = 1;
 
 		try {
@@ -188,7 +185,7 @@ export class QSYSEventsFileMapTable {
 		return range;
 	}
 
-	public addExpansionRecord(record: QSYSEventsFileExpansionRecord) {
+	public addExpansionRecord(record: ExpansionRecord) {
 		this._queueExpansion.push(record);
 	}
 
@@ -234,7 +231,7 @@ export class QSYSEventsFileMapTable {
 		}
 	}
 
-	private handleExpansion(record: QSYSEventsFileExpansionRecord) {
+	private handleExpansion(record: ExpansionRecord) {
 		let expansionRange = this.createSourceLineRange(record);
 		let expandedSource: SourceLineRange | undefined;
 		//Handle the case where the expansion comes at the end of file (right after the last range)
@@ -337,7 +334,7 @@ export class QSYSEventsFileMapTable {
 		}
 	}
 
-	private createSourceLineRange(record: QSYSEventsFileExpansionRecord): SourceLineRange {
+	private createSourceLineRange(record: ExpansionRecord): SourceLineRange {
 		let range = new SourceLineRange(record.getInputFileID());
 
 		let iStart = 0, iEnd = 0, oStart = 0, oEnd = 0;
@@ -366,7 +363,7 @@ export class QSYSEventsFileMapTable {
 	 * @param ID - the ID of the file to look for 
 	 * @return - the QSYSEventsFileFileIDRecord corresponding to the file ID if it exists in the table, undefined otherwise
 	 */
-	public getFileIDRecordForFileID(ID: string): QSYSEventsFileFileIDRecord | undefined {
+	public getFileIDRecordForFileID(ID: string): FileIDRecord | undefined {
 		return this._fileTable.get(ID);
 	}
 
@@ -381,7 +378,7 @@ export class QSYSEventsFileMapTable {
 	 * Modifies the information contained in the Error record based on the available map.
 	 * @param record the Error record to be modified.
 	 */
-	public modifyErrorInformation(record: QSYSEventsFileErrorInformationRecord) {
+	public modifyErrorInformation(record: ErrorInformationRecord) {
 		let statementLine = parseInt(record.getStmtLine());
 		let range = this.optimizedSourceLineRangeLookup(statementLine);
 
@@ -415,8 +412,8 @@ export class QSYSEventsFileMapTable {
 	 * @return the new line number
 	 */
 	private getLineFromSourceLineRange(range: SourceLineRange, initial: number): number {
-		if (!range) { 
-			return initial; 
+		if (!range) {
+			return initial;
 		}
 
 		if (range.getInputEndLine() - range.getInputStartLine() === range.getOutputEndLine() - range.getOutputStartLine()) { return initial - range.getOutputStartLine() + range.getInputStartLine(); }
@@ -455,12 +452,12 @@ export class QSYSEventsFileMapTable {
 	/**
 	 * Get all file locations.
 	 */
-	public getAllFileIDRecords(): QSYSEventsFileFileIDRecord[] {
+	public getAllFileIDRecords(): FileIDRecord[] {
 		if (!this._fileTable || this._fileTable.size === 0) {
 			return [];
 		}
 
-		let fileIDRecords = new Set<QSYSEventsFileFileIDRecord>();
+		let fileIDRecords = new Set<FileIDRecord>();
 
 		for (let key of this._fileTable.keys()) {
 			let fileIDRecord = this._fileTable.get(key)!;
@@ -472,5 +469,189 @@ export class QSYSEventsFileMapTable {
 		// 	fileIDRecords.add(fileIDRecord);
 		// }
 		return Array.from(fileIDRecords.values());
+	}
+}
+
+/**
+ * Class used as a container of the file ID and the number of lines processed so far.
+ */
+class FileIDLinesPair {
+	private _ID: string;
+	private _lines: number;
+
+	constructor(ID: string) {
+		this._ID = ID;
+		this._lines = 0;
+	}
+
+	public getID(): string {
+		return this._ID;
+	}
+
+	public getLinesProcessed(): number {
+		return this._lines;
+	}
+
+	public increaseLinesProcessed(amount: number) {
+		this._lines += amount;
+	}
+}
+
+/**
+ * Class used as a container of line numbers and file IDs for each range
+ * of lines in the map.
+ */
+class SourceLineRange {
+	// Input File Info
+	private _inputStartLine = 0;
+	private _inputEndLine = -1;
+	private _inputFileID: string;
+
+	// Output File Info
+	private _outputStartLine = 0;
+	private _outputEndLine = -1;
+
+	constructor(fileID?: string, copy?: SourceLineRange) {
+		if (copy) {
+			this._inputStartLine = copy.getInputStartLine();
+			this._inputEndLine = copy.getInputEndLine();
+			this._inputFileID = copy.getInputFileID();
+			this._outputStartLine = copy.getOutputStartLine();
+			this._outputEndLine = copy.getOutputEndLine();
+		}
+
+		if (fileID) {
+			this._inputFileID = fileID;
+		}
+	}
+
+	public getInputEndLine(): number {
+		return this._inputEndLine;
+	}
+
+	public setInputEndLine(endLine: number) {
+		this._inputEndLine = endLine;
+	}
+
+	public getInputFileID(): string {
+		return this._inputFileID;
+	}
+
+	public setInputFileID(fileID: string) {
+		this._inputFileID = fileID;
+	}
+
+	public getInputStartLine(): number {
+		return this._inputStartLine;
+	}
+
+	public setInputStartLine(startLine: number) {
+		this._inputStartLine = startLine;
+	}
+
+	public getOutputEndLine(): number {
+		return this._outputEndLine;
+	}
+
+	public setOutputEndLine(endLine: number) {
+		this._outputEndLine = endLine;
+	}
+
+	public getOutputStartLine(): number {
+		return this._outputStartLine;
+	}
+
+	public setOutputStartLine(startLine: number) {
+		this._outputStartLine = startLine;
+	}
+
+	/**
+	 * Shifts the output file start and end lines by a certain amount.
+	 * If the end line is -1, no need to change it.
+	 * @param amount by which the line numbers need to be shifted
+	 */
+	public shiftOutputLines(amount: number) {
+		this._outputStartLine += amount;
+		if (this._outputEndLine > 0) {
+			this._outputEndLine += amount;
+		}
+	}
+
+	/**
+	 * Checks if the output file line number is present in this container.
+	 * @param line the line number to be checked
+	 * @return <code>true</code>, if the line is present in the range. <code>false</code> otherwise.
+	 */
+	public containsOutputLine(line: number): boolean {
+		if (this._outputEndLine === -1) {
+			return line >= this._outputStartLine;
+		}
+
+		return line >= this._outputStartLine && line <= this._outputEndLine;
+	}
+
+	/**
+	 * Checks if the input file line number is present in this container.
+	 * @param line the line number to be checked
+	 * @param ID of the input file that contains the line
+	 * @return <code>true</code>, if the line is present in the range. <code>false</code> otherwise.
+	 */
+	public containsInputLine(line: number, ID: string): boolean {
+		if (this._inputEndLine === -1) {
+			return line >= this._inputStartLine && ID === (this._inputFileID);
+		}
+
+		return line >= this._inputStartLine && line <= this._inputEndLine && ID === (this._inputFileID);
+	}
+
+	/**
+	 * A helper method to compute the input file end line number based on the other line numbers.
+	 */
+	public fixInputRangeBasedOnOutputRange() {
+		this._inputEndLine = this._outputEndLine - this._outputStartLine + this._inputStartLine;
+	}
+
+	/**
+	 * A helper method to compute the output file end line number based on the other line numbers.
+	 */
+	public fixOutputRangeBasedOnInputRange() {
+		this._outputEndLine = this._inputEndLine - this._inputStartLine + this._outputStartLine;
+	}
+
+	// @Override
+	// public toString() {
+	// 	return "SourceLineRange: "+this._inputFileID+" in:"+this._inputStartLine+"->"+this._inputEndLine+" out:"+this._outputStartLine+"->"+this._outputEndLine;
+	// }
+}
+
+interface Stack<T> {
+	push(item: T): void;
+	pop(): T | undefined;
+	peek(): T | undefined;
+	isEmpty(): boolean;
+	size(): number;
+}
+
+class ArrayStack<T> implements Stack<T> {
+	private stack: T[] = [];
+
+	push(item: T): void {
+		this.stack.push(item);
+	}
+
+	pop(): T | undefined {
+		return this.stack.pop();
+	}
+
+	peek(): T | undefined {
+		return this.stack[this.stack.length - 1];
+	}
+
+	isEmpty(): boolean {
+		return this.stack.length === 0;
+	}
+
+	size(): number {
+		return this.stack.length;
 	}
 }

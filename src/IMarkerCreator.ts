@@ -1,9 +1,8 @@
-import { QSYSEventsFileErrorInformationRecord } from "./QSYSEventsFileErrorInformationRecord";
+import { ErrorInformationRecord } from "./record/ErrorInformationRecord";
 
 export interface IMarkerCreator {
-
 	createMarker(
-		record: QSYSEventsFileErrorInformationRecord, fileLocation: string,
+		record: ErrorInformationRecord, fileLocation: string,
 		isReadOnly: string): void;
 
 	/**
@@ -16,5 +15,4 @@ export interface IMarkerCreator {
 	 */
 	updateConnectionName(location: string,
 		indexEndBracket: number): void;
-
 }

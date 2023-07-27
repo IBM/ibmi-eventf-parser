@@ -1,35 +1,26 @@
 /* IBM Confidential
  * OCO Source Materials
  * 5900-AN9
- * (c) Copyright IBM Corp. 2021
+ * (c) Copyright IBM Corp. 2003, 2021
  * The source code for this program is not published or otherwise divested of its trade secrets,
  * irrespective of what has been deposited with the U.S. Copyright Office.
  *
  */
-
-import { EvfeventRecord } from "./evfeventRecord";
+import { IRecordType } from "./IRecordType";
+import { IRecord } from "./IRecord";
 
 /**
- * This class represents a Program record in an events file.
+ * This class represents a Map Start record in an events file.
  */
-export class QSYSEventsFileProgramRecord implements EvfeventRecord {
-
-	public Copyright = "(C) Copyright IBM Corp. 2003  All Rights Reserved.";
-
-
-	private version: string;
-	private line: string;
-
-	constructor(version: string, line: string) {
-		this.version = version;
-		this.line = line;
+export class MapStartRecord implements IRecord {
+	constructor(private version: string, private macroId: string, private line: string) {
 	}
 
 	/**
 	 * @see com.ibm.etools.iseries.core.evfparser.IISeriesEventsFileRecordType#getRecordType()
 	 */
 	public getRecordType() {
-		return;
+		return IRecordType.MAP_START;
 	}
 
 	/**
@@ -46,6 +37,22 @@ export class QSYSEventsFileProgramRecord implements EvfeventRecord {
 	 */
 	public getVersion(): string {
 		return this.version;
+	}
+
+	/**
+	 * Set the macro id.
+	 * @param the macro id
+	 */
+	public setMacroId(macroId: string) {
+		this.macroId = macroId;
+	}
+
+	/**
+	 * Get the macro id.
+	 * @return the macro id
+	 */
+	public getMacroId(): string {
+		return this.macroId;
 	}
 
 	/**

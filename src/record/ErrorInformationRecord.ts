@@ -6,57 +6,27 @@
  * irrespective of what has been deposited with the U.S. Copyright Office.
  *
  */
-import { IQSYSEventsFileRecordType } from "./IQSYSEventsFileRecordType";
-import { EvfeventRecord } from "./evfeventRecord";
+import { IRecordType } from "./IRecordType";
+import { IRecord } from "./IRecord";
 
 /**
  * This class represents a Error Information record in an events file.
  */
-export class QSYSEventsFileErrorInformationRecord implements EvfeventRecord {
-
-	private version: string;
-	private fileId: string;
-	private annotClass: string;
-	private stmtLine: string;
-	private startErrLine: string;
-	private tokenStart: string;
-	private endErrLine: string;
-	private tokenEnd: string;
-	private msgId: string;
-	private sevChar: string;
-	private sevNum: string;
-	private length: string;
-	private msg: string;
-
+export class ErrorInformationRecord implements IRecord {
 	// source file name corresponding to file id - is computed later
-	private fileName: string;
+	private fileName: string = "";
 
-	constructor(version: string, fileId: string, annotClass: string, stmtLine: string,
-		startErrLine: string, tokenStart: string, endErrLine: string, tokenEnd: string,
-		msgId: string, sevChar: string, sevNum: string, length: string, msg: string) {
-		this.version = version;
-		this.fileId = fileId;
-		this.annotClass = annotClass;
-		this.stmtLine = stmtLine;
-		this.startErrLine = startErrLine;
-		this.tokenStart = tokenStart;
-		this.endErrLine = endErrLine;
-		this.tokenEnd = tokenEnd;
-		this.msgId = msgId;
-		this.sevChar = sevChar;
-		this.sevNum = sevNum;
-		this.length = length;
-		this.msg = msg;
-		this.fileName = "";
+	constructor(private version: string, private fileId: string, private annotClass: string, private stmtLine: string,
+		private startErrLine: string, private tokenStart: string, private endErrLine: string, private tokenEnd: string,
+		private msgId: string, private sevChar: string, private sevNum: string, private length: string, private msg: string) {
 	}
 
 	/**
 	 * @see com.ibm.etools.iseries.core.evfparser.IISeriesEventsFileRecordType#getRecordType()
 	 */
 	getRecordType(): string {
-		return IQSYSEventsFileRecordType.ERROR_INFORMATION;
+		return IRecordType.ERROR_INFORMATION;
 	}
-
 
 	/**
 	 * Get the version.
