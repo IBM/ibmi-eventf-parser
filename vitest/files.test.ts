@@ -50,4 +50,18 @@ describe('Tests', () => {
 
         //assert here
     });
+
+    it('test LONG_SOURCE_FILE_PATH', () => {
+        const fileReader = new TestDataReader('LONG_SOURCE_FILE_PATH.PGM.evfevent');
+        parser.parse(fileReader, 37);
+
+        //assert here
+    });
+
+    it('test NESTED_COPYBOOK', () => {
+        const fileReader = new TestDataReader('NESTED_COPYBOOK.PGM.evfevent');
+        parser.parse(fileReader, 37);
+
+        //assert here
+    });
 });

@@ -1,0 +1,20 @@
+TIMESTAMP  0 20230619181512
+PROCESSOR  0 000 1
+FILEID     0 001 000000 060 /home/ANGELORPA/builds/fix1200/display/qrpglesrc/hello.rpgle 20230619181454 0
+FILEID     0 002 000004 063 /home/ANGELORPA/builds/fix1200/display/qprotsrc/constants.rpgle 20230619180115 0
+FILEID     0 003 000007 064 /home/ANGELORPA/builds/fix1200/display/qprotsrc/constLeve2.rpgle 20230619181501 0
+ERROR      0 003 1 000004 000004 002 000004 002 RNF0734 S 30 052 The statement must be complete before the file ends.
+FILEEND    0 003 000004
+ERROR      0 003 1 000004 000004 002 000004 002 RNF0734 S 30 052 The statement must be complete before the file ends.
+FILEEND    0 002 000007
+ERROR      0 001 1 000006 000006 001 000006 005 RNF3312 E 20 075 A keyword is specified more than once for a definition; keyword is ignored.
+ERROR      0 001 1 000006 000006 007 000006 011 RNF3312 E 20 075 A keyword is specified more than once for a definition; keyword is ignored.
+ERROR      0 001 1 000006 000006 013 000006 025 RNF3312 E 20 075 A keyword is specified more than once for a definition; keyword is ignored.
+ERROR      0 001 1 000012 000012 001 000012 001 RNF0637 S 30 068 An operand was expected but was not found; specification is ignored.
+ERROR      0 001 1 000012 000012 007 000012 007 RNF0637 S 30 068 An operand was expected but was not found; specification is ignored.
+ERROR      0 003 1 000003 000003 007 000003 010 RNF7031 I 00 045 The name or indicator FILE is not referenced.
+ERROR      0 002 1 000003 000003 007 000003 015 RNF7031 I 00 050 The name or indicator FIRST_DAY is not referenced.
+ERROR      0 001 1 000012 000012 002 000012 005 RNF7030 S 30 042 The name or indicator INLR is not defined.
+ERROR      0 002 1 000004 000004 007 000004 016 RNF7031 I 00 051 The name or indicator SECOND_DAY is not referenced.
+ERROR      0 001 0 000000 000000 000 000000 000 RNS9308 T 50 057 Compilation stopped.Severity 30 errors found in program.
+FILEEND    0 001 000013

@@ -51,13 +51,14 @@ export class Parser {
     console.log(content);
   }
 
-  parse(reader: ISequentialFileReader, ccsid: number, markerCreator?: IMarkerCreator) {
+  parse(fileReader: ISequentialFileReader, ccsid: number, markerCreator?: IMarkerCreator) {
     let word: string;
     let fileId: string;
     if (!this._processor) {
       this._processor = new ExpansionProcessor();
     }
     this._processor?.doPreProcessing();
+    const reader = new LookAheadReader(fileReader);
     let lineText = reader.readNextLine();
     while (lineText) {
       let st = lineText.split(/\s+/).filter(token => token !== "");
@@ -147,7 +148,22 @@ export class Parser {
             let lineNumber = st[i++];
             let locationLength = parseInt(st[i++]);
             // location = st.nextToken('\n\r\f').trim();
-            let location = this.getUntilTheEndOfTheLine(i, st);
+            let location = lineText.substring(28);
+
+            this.log(`EventsFileParser: location from line 1 = ${location}`);
+            let nextRecordType = reader.peakNextRecordType();
+            while (nextRecordType === IRecordType.FILE_CONT) {
+              lineText = reader.readNextLine();
+              if (lineText) {
+                st = lineText.split(' ');
+                location += (lineText.substring(28));
+                this.log(`EventsFileParser: location from line 1 = ${location}`);
+                nextRecordType = reader.peakNextRecordType();
+              } else {
+                throw new Error('Events file has incorrect format. End of file encountered before location length satisfied.');
+              }
+            }
+
             let timestamp = location.substring(location.length - 16, location.length - 2);
             try {
               parseInt(timestamp);
@@ -161,39 +177,9 @@ export class Parser {
             } else {
               browseMode = false;
             }
-            if (location.length > locationLength) {
-              location = location.substring(0, locationLength);
-              location = this.resolveRelativePath(location);
-            } else {
-              if (location.length < locationLength) {
-                location = location.trim();
-                let log = 'EventsFileParser: location from line 1 = ' + location;
-                this.log(log);
-                while (location.length < locationLength) {
-                  lineText = reader.readNextLine();
-                  if (lineText) {
-                    st = lineText.split(' ');
-                    if (st[i++] === (IRecordType.FILE_CONT)) {
-                      st[i++];
-                      st[i++];
-                      st[i++];
-                      st[i++];
-                      location += (this.getUntilTheEndOfTheLine(i, st));
-                      if (location.length > locationLength) {
-                        location = location.substring(0, locationLength);
-                        location = this.resolveRelativePath(location);
-                      }
-                      log = 'EventsFileParser: location from line 1 = ' + location;
-                      this.log(log);
-                    } else {
-                      throw new Error('Events file has incorrect format.');
-                    }
-                  } else {
-                    throw new Error('Events file has incorrect format. End of file encountered before location length satisfied.');
-                  }
-                }
-              }
-            }
+            location = location.substring(0, location.length - 17);
+            location = this.resolveRelativePath(location);
+
             let index = location.indexOf('>');
             if (index !== -1 && location.indexOf('<') === 0) {
               if (markerCreator) {
@@ -351,6 +337,30 @@ export class Parser {
     } else {
       return [];
     }
+  }
+}
+
+class LookAheadReader implements ISequentialFileReader {
+  private iSequentialFileReader: ISequentialFileReader;
+  private peakLine: string | undefined;
+
+  constructor(iSequentialFileReader: ISequentialFileReader) {
+    this.iSequentialFileReader = iSequentialFileReader;
+  }
+
+  readNextLine(): string | undefined {
+    if (this.peakLine) {
+      const nextLine = this.peakLine;
+      this.peakLine = undefined;
+      return nextLine;
+    } else {
+      return this.iSequentialFileReader.readNextLine();
+    }
+  }
+
+  peakNextRecordType() {
+    this.peakLine = this.iSequentialFileReader.readNextLine();
+    return this.peakLine?.split(/\s+/).filter(token => token !== "")[0];
   }
 }
 

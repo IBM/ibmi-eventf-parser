@@ -10,7 +10,7 @@ export default class TestDataReader implements ISequentialFileReader {
 
     constructor(fileName: string) {
         this.file = readFileSync(`${TEST_DIR}/${fileName}`, 'utf-8');
-        this.linesArray = this.file.split('\n');
+        this.linesArray = this.file.split(/\r?\n/)
     }
 
     public readNextLine() {
