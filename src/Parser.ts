@@ -24,7 +24,7 @@ export class Parser {
   constructor() {
     this._sourceTable = new Map<String, SourceFile>();
   }
-  getUntilTheEndOfTheLine(startIndex: number, st: string[]): string {
+  private getUntilTheEndOfTheLine(startIndex: number, st: string[]): string {
     let message = st[startIndex++];
     while (startIndex < st.length) {
       message = message.concat(' ');
@@ -34,20 +34,20 @@ export class Parser {
     return message;
   }
 
-  getRemainderAfterToken(str: string, tokenIndex: number): string {
+  private getRemainderAfterToken(str: string, tokenIndex: number): string {
     const tokens = str.split(' ');
     const remainderTokens = tokens.slice(tokenIndex + 1);
     const remainder = remainderTokens.join(' ');
     return remainder;
   }
 
-  log(content: string) {
+  private log(content: string) {
     if (process.env.DEBUG) {
       console.log(content);
     }
   }
 
-  logError(content: Error) {
+  private logError(content: Error) {
     console.log(content);
   }
 
@@ -128,7 +128,7 @@ export class Parser {
             lineEnd, charEnd, id, severityText, severity, totalMessageLen, message);
           record.setFileName(fileProcessed.getLocation());
           if (this._processor) {
-            this._processor?.processErrorRecord(record);
+            this._processor.processErrorRecord(record);
           }
           if (markerCreator) {
             markerCreator.createMarker(record, record.getFileName(), fileProcessed.isReadOnly());
@@ -138,6 +138,7 @@ export class Parser {
           //   st = msgToken.split(" ")
           //   continue;
           // }
+          break;
         } else {
           if (word === (IRecordType.FILE_ID)) {
             let browseMode = false;
@@ -222,6 +223,7 @@ export class Parser {
                 this._exception = e;
               }
             }
+            break;
           } else {
             if (word === (IRecordType.FILE_END)) {
               if (this._processor) {
@@ -300,7 +302,7 @@ export class Parser {
       }
     }
   }
-  resolveRelativePath(location: string) {
+  private resolveRelativePath(location: string) {
     // normalize the location in case the location is a relative path
     location = path.normalize(location).toString();
 
