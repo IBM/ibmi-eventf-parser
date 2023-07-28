@@ -5,32 +5,24 @@
  * The source code for this program is not published or otherwise divested of its trade secrets,
  * irrespective of what has been deposited with the U.S. Copyright Office.
  *
- */ 
+ */
 
+import { IRecord } from "./IRecord";
 
 /**
- * This class represents a Timestamp record in an events file.
+ * This class represents a Program record in an events file.
  */
-class QSYSEventsFileTimestampRecord implements EvfeventRecord {
-
-   public Copyright = "(C) Copyright IBM Corp. 2003  All Rights Reserved.";
-
-	
-	private version: string;
-	private timestamp: string;
-
-	constructor(version: string, timestamp: string){
-		this.version = version;
-		this.timestamp = timestamp;
+export class ProgramRecord implements IRecord {
+	constructor(private version: string, private line: string) {
 	}
-	
+
 	/**
 	 * @see com.ibm.etools.iseries.core.evfparser.IISeriesEventsFileRecordType#getRecordType()
 	 */
 	public getRecordType() {
-		return IQSYSEventsFileRecordType.TIMESTAMP;
-	}	
-	
+		return;
+	}
+
 	/**
 	 * Set the version.
 	 * @param the version
@@ -38,7 +30,7 @@ class QSYSEventsFileTimestampRecord implements EvfeventRecord {
 	public setVersion(version: string) {
 		this.version = version;
 	}
-	
+
 	/**
 	 * Get the version.
 	 * @return the version
@@ -46,20 +38,20 @@ class QSYSEventsFileTimestampRecord implements EvfeventRecord {
 	public getVersion(): string {
 		return this.version;
 	}
-	
+
 	/**
-	 * Set the timestamp.
-	 * @param the timestamp
+	 * Set the line.
+	 * @param the line
 	 */
-	public setTimestamp(timestamp: string) {
-		this.timestamp = timestamp;
+	public setLine(line: string) {
+		this.line = line;
 	}
-		
+
 	/**
-	 * Get the timestamp.
-	 * @return the timestamp
+	 * Get the line.
+	 * @return the line
 	 */
-	public getTimestamp(): string {
-		return this.timestamp;
+	public getLine(): string {
+		return this.line;
 	}
 }

@@ -5,57 +5,29 @@
  * The source code for this program is not published or otherwise divested of its trade secrets,
  * irrespective of what has been deposited with the U.S. Copyright Office.
  *
- */ 
+ */
+import { IRecordType } from "./IRecordType";
+import { IRecord } from "./IRecord";
 
 /**
  * This class represents a Error Information record in an events file.
  */
-class QSYSEventsFileErrorInformationRecord implements EvfeventRecord {
-	
-	private version: string;
-	private fileId: string;
-	private annotClass: string;
-	private stmtLine: string;
-	private startErrLine: string;
-	private tokenStart: string;
-	private endErrLine: string;
-	private tokenEnd: string;
-	private msgId: string;
-	private sevChar: string;
-	private sevNum: string;
-	private length: string;
-	private msg: string;
-
+export class ErrorInformationRecord implements IRecord {
 	// source file name corresponding to file id - is computed later
-	private fileName: string;
+	private fileName: string = "";
 
-	constructor(version: string, fileId: string, annotClass: string, stmtLine: string,
-		startErrLine: string, tokenStart: string, endErrLine: string, tokenEnd: string,
-		msgId: string, sevChar: string, sevNum: string, length: string, msg: string){
-		this.version = version;
-		this.fileId = fileId;
-		this.annotClass = annotClass;
-		this.stmtLine = stmtLine;
-		this.startErrLine = startErrLine;
-		this.tokenStart = tokenStart;
-		this.endErrLine = endErrLine;
-		this.tokenEnd = tokenEnd;
-		this.msgId = msgId;
-		this.sevChar = sevChar;
-		this.sevNum = sevNum;
-		this.length = length;
-		this.msg = msg;
-		this.fileName = "";
+	constructor(private version: string, private fileId: string, private annotClass: string, private stmtLine: string,
+		private startErrLine: string, private tokenStart: string, private endErrLine: string, private tokenEnd: string,
+		private msgId: string, private sevChar: string, private sevNum: string, private length: string, private msg: string) {
 	}
 
 	/**
 	 * @see com.ibm.etools.iseries.core.evfparser.IISeriesEventsFileRecordType#getRecordType()
 	 */
 	getRecordType(): string {
-		return IQSYSEventsFileRecordType.ERROR_INFORMATION;
+		return IRecordType.ERROR_INFORMATION;
 	}
-	
-	
+
 	/**
 	 * Get the version.
 	 * @return the version
@@ -63,7 +35,7 @@ class QSYSEventsFileErrorInformationRecord implements EvfeventRecord {
 	public getVersion(): string {
 		return this.version;
 	}
-	
+
 	/**
 	 * Set the file id.
 	 * @param the file id
@@ -71,7 +43,7 @@ class QSYSEventsFileErrorInformationRecord implements EvfeventRecord {
 	public setFileId(fileId: string) {
 		this.fileId = fileId;
 	}
-	
+
 	/**
 	 * Get the file id.
 	 * @return the file id
@@ -86,7 +58,7 @@ class QSYSEventsFileErrorInformationRecord implements EvfeventRecord {
 	public setFileName(fileName: string) {
 		this.fileName = fileName;
 	}
-	
+
 	/**
 	 * Get the file name.
 	 * @return the file id
@@ -101,7 +73,7 @@ class QSYSEventsFileErrorInformationRecord implements EvfeventRecord {
 	public setAnnotClass(annotClass: string) {
 		this.annotClass = annotClass;
 	}
-	
+
 	/**
 	 * Get the annotation class.
 	 * @return the annotation class
@@ -109,7 +81,7 @@ class QSYSEventsFileErrorInformationRecord implements EvfeventRecord {
 	public getAnnotClass(): string {
 		return this.annotClass;
 	}
-	
+
 	/**
 	 * Set the statement line.
 	 * @param the statement line
@@ -117,7 +89,7 @@ class QSYSEventsFileErrorInformationRecord implements EvfeventRecord {
 	public setStmtLine(stmtLine: string) {
 		this.stmtLine = stmtLine;
 	}
-	
+
 	/**
 	 * Get the statement line.
 	 * @return the statement line
@@ -125,7 +97,7 @@ class QSYSEventsFileErrorInformationRecord implements EvfeventRecord {
 	public getStmtLine(): string {
 		return this.stmtLine;
 	}
-	
+
 	/**
 	 * Set the starting error line.
 	 * @param the starting error line
@@ -133,7 +105,7 @@ class QSYSEventsFileErrorInformationRecord implements EvfeventRecord {
 	public setStartErrLine(startErrLine: string) {
 		this.startErrLine = startErrLine;
 	}
-	
+
 	/**
 	 * Get the starting error line.
 	 * @return the starting error line
@@ -141,7 +113,7 @@ class QSYSEventsFileErrorInformationRecord implements EvfeventRecord {
 	public getStartErrLine(): string {
 		return this.startErrLine;
 	}
-	
+
 	/**
 	 * Set the starting error column.
 	 * @param the starting error column
@@ -149,7 +121,7 @@ class QSYSEventsFileErrorInformationRecord implements EvfeventRecord {
 	public setTokenStart(tokenStart: string) {
 		this.tokenStart = tokenStart;
 	}
-	
+
 	/**
 	 * Get the starting error column.
 	 * @return the starting error column
@@ -157,7 +129,7 @@ class QSYSEventsFileErrorInformationRecord implements EvfeventRecord {
 	public getTokenStart(): string {
 		return this.tokenStart;
 	}
-	
+
 	/**
 	 * Set the ending error line.
 	 * @param the ending error line
@@ -165,7 +137,7 @@ class QSYSEventsFileErrorInformationRecord implements EvfeventRecord {
 	public setEndErrLine(endErrLine: string) {
 		this.endErrLine = endErrLine;
 	}
-	
+
 	/**
 	 * Get the ending error line.
 	 * @return the ending error line
@@ -173,7 +145,7 @@ class QSYSEventsFileErrorInformationRecord implements EvfeventRecord {
 	public getEndErrLine(): string {
 		return this.endErrLine;
 	}
-	
+
 	/**
 	 * Set the ending error column.
 	 * @param the ending error column
@@ -181,7 +153,7 @@ class QSYSEventsFileErrorInformationRecord implements EvfeventRecord {
 	public setTokenEnd(tokenEnd: string) {
 		this.tokenEnd = tokenEnd;
 	}
-	
+
 	/**
 	 * Get the ending error column.
 	 * @return the ending error column
@@ -189,7 +161,7 @@ class QSYSEventsFileErrorInformationRecord implements EvfeventRecord {
 	public getTokenEnd(): string {
 		return this.tokenEnd;
 	}
-	
+
 	/**
 	 * Get the message id.
 	 * @return the message id
@@ -197,7 +169,7 @@ class QSYSEventsFileErrorInformationRecord implements EvfeventRecord {
 	public getMsgId(): string {
 		return this.msgId;
 	}
-	
+
 	/**
 	 * Get the severity code.
 	 * @return the severity code
@@ -205,7 +177,7 @@ class QSYSEventsFileErrorInformationRecord implements EvfeventRecord {
 	public getSevChar(): string {
 		return this.sevChar;
 	}
-	
+
 	/**
 	 * Get the severity level number.
 	 * @return the severity level number
@@ -213,7 +185,7 @@ class QSYSEventsFileErrorInformationRecord implements EvfeventRecord {
 	public getSevNum(): string {
 		return this.sevNum;
 	}
-	
+
 	/**
 	 * Set the length of the message.
 	 * @param the length of the message
@@ -221,7 +193,7 @@ class QSYSEventsFileErrorInformationRecord implements EvfeventRecord {
 	public setLength(length: string) {
 		this.length = length;
 	}
-	
+
 	/**
 	 * Get the length of the message.
 	 * @return the length of the message
@@ -229,7 +201,7 @@ class QSYSEventsFileErrorInformationRecord implements EvfeventRecord {
 	public getLength(): string {
 		return this.length;
 	}
-	
+
 	/**
 	 * Get the message.
 	 * @return the message
@@ -241,8 +213,7 @@ class QSYSEventsFileErrorInformationRecord implements EvfeventRecord {
 	/* (non-Javadoc)
 	 * @see java.lang.Object#toString()
 	 */
-	public toString(): string
-	{
+	public toString(): string {
 		return JSON.stringify(this);
 	}
 }

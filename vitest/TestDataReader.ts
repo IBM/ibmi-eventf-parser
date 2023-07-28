@@ -1,7 +1,19 @@
-import ISequentialFileReader from '../src/ISequentialFileReader';
+import { ISequentialFileReader } from '../src/ISequentialFileReader';
+import { readFileSync } from 'fs';
 
-export default class TestDataReader implements ISequentialFileReader{
-    public readNextLine(){
-        return "TIMESTAMP  0 20230713190126";
+export default class TestDataReader implements ISequentialFileReader {
+    file = readFileSync('testfixtures/evf/LITINERR.PGM.evfevent', 'utf-8');
+    linesArray = this.file.split('\n');
+    currLineNum = 0;
+
+    public readNextLine() {
+        let line: string | undefined;
+        if (this.currLineNum < this.linesArray.length) {
+            line = this.linesArray[this.currLineNum];
+            this.currLineNum++;
+        } else {
+            line = undefined;
+        }
+        return line;
     }
 }

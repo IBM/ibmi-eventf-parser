@@ -5,7 +5,18 @@
  * The source code for this program is not published or otherwise divested of its trade secrets,
  * irrespective of what has been deposited with the U.S. Copyright Office.
  *
- */ 
+ */
+import { ErrorInformationRecord } from "./record/ErrorInformationRecord";
+import { ExpansionRecord } from "./record/ExpansionRecord";
+import { FeedbackCodeRecord } from "./record/FeedbackCodeRecord";
+import { FileEndRecord } from "./record/FileEndRecord";
+import { FileIDRecord } from "./record/FileIDRecord";
+import { MapDefineRecord } from "./record/MapDefineRecord";
+import { MapEndRecord } from "./record/MapEndRecord";
+import { MapStartRecord } from "./record/MapStartRecord";
+import { ProcessorRecord } from "./record/ProcessorRecord";
+import { ProgramRecord } from "./record/ProgramRecord";
+import { TimestampRecord } from "./record/TimestampRecord";
 
 /**
  * This interface defines a backbone for processing Events File Records.<br>
@@ -18,77 +29,76 @@
  * For instance, an SQL compile might need a different processor to make use of the
  * Expansion record.
  */
-interface IQSYSEventsFileProcessor
-{
+export interface IProcessor {
 	/**
 	 * Processes a File ID record object.
 	 * @param record
 	 * @throws SecondLevelHelpException 
 	 */
-	processFileIDRecord(record: QSYSEventsFileFileIDRecord): void;
-	
+	processFileIDRecord(record: FileIDRecord): void;
+
 	/**
 	 * Processes a File End record object.
 	 * @param record
 	 * @throws SecondLevelHelpException 
 	 */
-	processFileEndRecord(record: QSYSEventsFileFileEndRecord): void;
-	
+	processFileEndRecord(record: FileEndRecord): void;
+
 	/**
 	 * Processes a Processor record object.
 	 * @param record
 	 * @throws SecondLevelHelpException 
 	 */
-	processProcessorRecord(record: QSYSEventsFileProcessorRecord): void;
-	
+	processProcessorRecord(record: ProcessorRecord): void;
+
 	/**
 	 * Processes a Timestamp record object.
 	 * @param record
 	 */
-	processTimestampRecord(record: QSYSEventsFileTimestampRecord): void;
-	
+	processTimestampRecord(record: TimestampRecord): void;
+
 	/**
 	 * Processes an Error record object.
 	 * @param record
 	 */
-	processErrorRecord(record: QSYSEventsFileErrorInformationRecord): void;
-	
+	processErrorRecord(record: ErrorInformationRecord): void;
+
 	/**
 	 * Processes a Program record object.
 	 * @param record
 	 */
-	processProgramRecord(record: QSYSEventsFileProgramRecord): void;
-	
+	processProgramRecord(record: ProgramRecord): void;
+
 	/**
 	 * Processes a Feedback Code record object.
 	 * @param record
 	 */
-	processFeedbackCodeRecord(record: QSYSEventsFileFeedbackCodeRecord): void;
-	
+	processFeedbackCodeRecord(record: FeedbackCodeRecord): void;
+
 	/**
 	 * Processes a Map Define record object.
 	 * @param record
 	 */
-	processMapDefineRecord(record: QSYSEventsFileMapDefineRecord): void;
-	
+	processMapDefineRecord(record: MapDefineRecord): void;
+
 	/**
 	 * Processes a Map Start record object.
 	 * @param record
 	 */
-	processMapStartRecord(record: QSYSEventsFileMapStartRecord): void;
-	
+	processMapStartRecord(record: MapStartRecord): void;
+
 	/**
 	 * Processes a Map End record object.
 	 * @param record
 	 */
-	processMapEndRecord(record: QSYSEventsFileMapEndRecord): void;
-	
+	processMapEndRecord(record: MapEndRecord): void;
+
 	/**
 	 * Processes an Expansion record object.
 	 * @param record
 	 */
-	processExpansionRecord(record: QSYSEventsFileExpansionRecord): void;
-	
+	processExpansionRecord(record: ExpansionRecord): void;
+
 	/**
 	 * After parsing all records in the Events File, this method will be called to
 	 * process the records.
@@ -96,7 +106,7 @@ interface IQSYSEventsFileProcessor
 	 * @throws SecondLevelHelpException 
 	 */
 	doPostProcessing(): boolean;
-	
+
 	/**
 	 * Before parsing all records in the Events File, this method will be called to
 	 * allow the processor to perform initialization.
@@ -115,10 +125,10 @@ interface IQSYSEventsFileProcessor
 	 * @return a list of lists of all parsed errors from all processor blocks of the Events File
 	 * (one list for each processor block).
 	 */
-	getAllErrors(): Array<Array<QSYSEventsFileErrorInformationRecord>>;
-	
+	getAllErrors(): ErrorInformationRecord[][];
+
 	/**
 	 * Return all file names. 
 	 */
-	getAllFileIDRecords(): Set<QSYSEventsFileFileIDRecord>;
+	getAllFileIDRecords(): FileIDRecord[];
 }

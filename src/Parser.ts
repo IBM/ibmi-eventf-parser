@@ -1,83 +1,77 @@
 
+import * as path from "path";
+import { IRecordType } from './record/IRecordType';
+import { TimestampRecord } from './record/TimestampRecord';
+import { ProcessorRecord } from './record/ProcessorRecord';
+import { FileIDRecord } from './record/FileIDRecord';
+import { IProcessor } from './IProcessor';
+import { ISequentialFileReader } from './ISequentialFileReader';
+import { IMarkerCreator } from './IMarkerCreator';
+import { ErrorInformationRecord } from './record/ErrorInformationRecord';
+import { FileEndRecord } from './record/FileEndRecord';
+import { ExpansionRecord } from './record/ExpansionRecord';
+import { ExpansionProcessor } from './ExpansionProcessor';
 
-export class EventsFileParserCore {
-    static Copyright: string;
-    static LOGGER: any;
+export class Parser {
+  static LOGGER: any;
 
-  private _exception: Error | null;
-  private _processor: IQSYSEventsFileProcessor | undefined;
-  private _lastOutputFile: SourceFile | null;
-  private _currentOutputFile: SourceFile | null;
+  private _exception: Error;
+  private _processor: IProcessor;
+  private _lastOutputFile: SourceFile | undefined;
+  private _currentOutputFile: SourceFile;
   private _sourceTable: Map<String, SourceFile>;
 
   constructor() {
-    this._exception = null;
-    this._processor = undefined;
-    this._lastOutputFile = null;
-    this._currentOutputFile = null;
-
     this._sourceTable = new Map<String, SourceFile>();
   }
-  getUntilTheEndOfTheLine(startIndex: number, st: string[]): string{
+  private getUntilTheEndOfTheLine(startIndex: number, st: string[]): string {
     let message = st[startIndex++];
-          while (startIndex < st.length) {
-              message.concat(' ');
-              let curr_msg = st[startIndex++];
-              message.concat(curr_msg);
-          }
-      return message;
+    while (startIndex < st.length) {
+      message = message.concat(' ');
+      let curr_msg = st[startIndex++];
+      message = message.concat(curr_msg);
+    }
+    return message;
   }
 
-  getRemainderAfterToken(str: string, tokenIndex: number): string {
+  private getRemainderAfterToken(str: string, tokenIndex: number): string {
     const tokens = str.split(' ');
     const remainderTokens = tokens.slice(tokenIndex + 1);
     const remainder = remainderTokens.join(' ');
     return remainder;
   }
 
-  log(content: string) {
+  private log(content: string) {
     if (process.env.DEBUG) {
       console.log(content);
     }
   }
 
-  logError(content: Error){
+  private logError(content: Error) {
     console.log(content);
   }
 
-  parse(reader: ISequentialFileReader, ccsid: number, markerCreator: IMarkerCreator) {
-    let lineText = null;
-    let st = null;
-    let word = null;
-    let id = null;
-    let message = null;
-    let severity = null;
-    let severityText = null;
-    let line = null;
-    let charStart = null;
-    let lineStart = null;
-    let charEnd = null;
-    let lineEnd = null;
-    let fileProcessed = null;
-    let fileId = null;
-    if (this._processor === null) {
-      this._processor = new IQSYSEventsFileProcessor(); // Why we need to initialize this?
+  parse(reader: ISequentialFileReader, ccsid: number, markerCreator?: IMarkerCreator) {
+    let word: string;
+    let fileId: string;
+    if (!this._processor) {
+      this._processor = new ExpansionProcessor();
     }
     this._processor?.doPreProcessing();
-    lineText = reader.readNextLine();
-    while (lineText !== null) {
-      let st = lineText.split(" ");
+    let lineText = reader.readNextLine();
+    while (lineText) {
+      let st = lineText.split(/\s+/).filter(token => token !== "");
       let i = 0
       while (i < st.length) {
         word = st[i++];
-        if (word === IQSYSEventsFileRecordType.ERROR_INFORMATION) {
+        if (word === IRecordType.ERROR_INFORMATION) {
           let version = st[i++];
           fileId = st[i++];
-          fileProcessed = this._sourceTable[fileId];
-          if (fileProcessed === null) {
+          let fileProcessed = this._sourceTable[fileId];
+          if (!fileProcessed) {
             if (fileId === ('000')) {
               let location001 = this._sourceTable['001'];
-              if (location001 !== null) {
+              if (location001) {
                 fileProcessed = location001;
               } else {
                 fileProcessed = new SourceFile('', false);
@@ -87,18 +81,18 @@ export class EventsFileParserCore {
             }
           }
           let annotationClass = st[i++];
-          line = st[i++];
-          lineStart = st[i++];
-          charStart = st[i++];
-          lineEnd = st[i++];
-          charEnd = st[i++];
-          id = st[i++];
-          severityText = st[i++];
-          severity = st[i++];
+          let line = st[i++];
+          let lineStart = st[i++];
+          let charStart = st[i++];
+          let lineEnd = st[i++];
+          let charEnd = st[i++];
+          let id = st[i++];
+          let severityText = st[i++];
+          let severity = st[i++];
           let totalMessageLen = st[i++];
           // TODO: Handle continued message lines.
           let message = this.getUntilTheEndOfTheLine(i, st);
-          
+
           // let msgToken = st.nextToken('\n\r\f');
           // let msgTokenNl = new StringNL(msgToken, ccsid, true);
 
@@ -122,7 +116,7 @@ export class EventsFileParserCore {
           //     msgTokenNl = new StringNL(msgToken, ccsid, true);
           //     stcont = new StringTokenizer(msgToken);
           //     let lineType = stcont.get(i++);
-          //     if (lineType === (IQSYSEventsFileRecordType.TIMESTAMP) || lineType === (IQSYSEventsFileRecordType.PROCESSOR) || lineType === (IQSYSEventsFileRecordType.FILE_ID) || lineType === (IQSYSEventsFileRecordType.FILE_CONT) || lineType === (IQSYSEventsFileRecordType.FILE_END) || lineType === (IQSYSEventsFileRecordType.ERROR_INFORMATION) || lineType === (IQSYSEventsFileRecordType.PROGRAM) || lineType === (IQSYSEventsFileRecordType.MAP_DEFINE) || lineType === (IQSYSEventsFileRecordType.MAP_END) || lineType === (IQSYSEventsFileRecordType.MAP_START) || lineType === (IQSYSEventsFileRecordType.FEEDBACK_CODE)) {
+          //     if (lineType === (RecordType.TIMESTAMP) || lineType === (RecordType.PROCESSOR) || lineType === (RecordType.FILE_ID) || lineType === (RecordType.FILE_CONT) || lineType === (RecordType.FILE_END) || lineType === (RecordType.ERROR_INFORMATION) || lineType === (RecordType.PROGRAM) || lineType === (RecordType.MAP_DEFINE) || lineType === (RecordType.MAP_END) || lineType === (RecordType.MAP_START) || lineType === (RecordType.FEEDBACK_CODE)) {
           //       messageLenCorrect = false;
           //       break;
           //     }
@@ -130,13 +124,13 @@ export class EventsFileParserCore {
           //     message += ' ' + msgTokenNl.trim().convertFromVisualToLogical(true);
           //   }
           // }
-          let record = new QSYSEventsFileErrorInformationRecord(version, fileId, annotationClass, line, lineStart, charStart, 
+          let record = new ErrorInformationRecord(version, fileId, annotationClass, line, lineStart, charStart,
             lineEnd, charEnd, id, severityText, severity, totalMessageLen, message);
           record.setFileName(fileProcessed.getLocation());
-          if (this._processor !== null) {
-            this._processor?.processErrorRecord(record);
+          if (this._processor) {
+            this._processor.processErrorRecord(record);
           }
-          if (markerCreator !== null) {
+          if (markerCreator) {
             markerCreator.createMarker(record, record.getFileName(), fileProcessed.isReadOnly());
           }
           // if (!messageLenCorrect) {
@@ -144,8 +138,9 @@ export class EventsFileParserCore {
           //   st = msgToken.split(" ")
           //   continue;
           // }
+          break;
         } else {
-          if (word === (IQSYSEventsFileRecordType.FILE_ID)) {
+          if (word === (IRecordType.FILE_ID)) {
             let browseMode = false;
             let version = st[i++];
             fileId = st[i++];
@@ -176,38 +171,42 @@ export class EventsFileParserCore {
                 this.log(log);
                 while (location.length < locationLength) {
                   lineText = reader.readNextLine();
-                  st = lineText.split(' ');
-                  if (st[i++] === (IQSYSEventsFileRecordType.FILE_CONT)) {
-                    st[i++];
-                    st[i++];
-                    st[i++];
-                    st[i++];
-                    location += (this.getUntilTheEndOfTheLine(i, st));
-                    if (location.length > locationLength) {
-                      location = location.substring(0, locationLength);
-                      location = this.resolveRelativePath(location);
+                  if (lineText) {
+                    st = lineText.split(' ');
+                    if (st[i++] === (IRecordType.FILE_CONT)) {
+                      st[i++];
+                      st[i++];
+                      st[i++];
+                      st[i++];
+                      location += (this.getUntilTheEndOfTheLine(i, st));
+                      if (location.length > locationLength) {
+                        location = location.substring(0, locationLength);
+                        location = this.resolveRelativePath(location);
+                      }
+                      log = 'EventsFileParser: location from line 1 = ' + location;
+                      this.log(log);
+                    } else {
+                      throw new Error('Events file has incorrect format.');
                     }
-                    log = 'EventsFileParser: location from line 1 = ' + location;
-                    this.log(log);
                   } else {
-                    throw new Error('Events file has incorrect format.');
+                    throw new Error('Events file has incorrect format. End of file encountered before location length satisfied.');
                   }
                 }
               }
             }
             let index = location.indexOf('>');
             if (index !== -1 && location.indexOf('<') === 0) {
-              if (markerCreator !== null) {
+              if (markerCreator) {
                 markerCreator.updateConnectionName(location, index);
               }
               location = location.substring(index + 1);
             }
             let fileEntry = new SourceFile(location, browseMode);
-            if ((this._lastOutputFile !== null && location === (this._lastOutputFile.getLocation())) || this._currentOutputFile !== null && location === (this._currentOutputFile.getLocation())) {
+            if ((this._lastOutputFile && location === (this._lastOutputFile.getLocation())) || this._currentOutputFile && location === (this._currentOutputFile.getLocation())) {
               fileEntry.setReadOnly(true);
             }
-            if ('999'===fileId) {
-              if (this._lastOutputFile === null) {
+            if ('999' === fileId) {
+              if (!this._lastOutputFile) {
                 this._lastOutputFile = this._currentOutputFile = fileEntry;
               } else {
                 this._lastOutputFile = this._currentOutputFile;
@@ -215,34 +214,35 @@ export class EventsFileParserCore {
               }
             }
             this._sourceTable[fileId] = fileEntry;
-            if (this._processor !== null) {
-              let record = new QSYSEventsFileFileIDRecord(version, fileId, lineNumber, locationLength.toString(), location, timestamp.toString(), tempFlag);
+            if (this._processor) {
+              let record = new FileIDRecord(version, fileId, lineNumber, locationLength.toString(), location, timestamp.toString(), tempFlag);
               try {
-                this._processor?.processFileIDRecord(record);
-              } catch (e: Error) {
+                this._processor.processFileIDRecord(record);
+              } catch (e) {
                 this.logError(e);
                 this._exception = e;
               }
             }
+            break;
           } else {
-            if (word === (IQSYSEventsFileRecordType.FILE_END)) {
-              if (this._processor !== null) {
+            if (word === (IRecordType.FILE_END)) {
+              if (this._processor) {
                 let version = st[i++];
                 let fileId = st[i++];
                 let expansion = st[i++];
-                let record = new QSYSEventsFileFileEndRecord(version, fileId, expansion);
+                let record = new FileEndRecord(version, fileId, expansion);
                 try {
                   this._processor?.processFileEndRecord(record);
-                } catch (e: Error) {
+                } catch (e) {
                   this.logError(e);
-                  this._exception = e; 
+                  this._exception = e;
                 }
               }
               break;
             } else {
-              if (word === (IQSYSEventsFileRecordType.EXPANSION)) {
-                if (this._processor !== null) {
-                  let record = new QSYSEventsFileExpansionRecord(st[i++], st[i++], st[i++], st[i++], st[i++], st[i++], st[i++]);
+              if (word === (IRecordType.EXPANSION)) {
+                if (this._processor) {
+                  let record = new ExpansionRecord(st[i++], st[i++], st[i++], st[i++], st[i++], st[i++], st[i++]);
                   // record.setVersion(st[i++]); // use split
                   // record.setInputFileID(st[i++]);
                   // record.setInputLineStart(st[i++]);
@@ -254,31 +254,31 @@ export class EventsFileParserCore {
                 }
                 break;
               } else {
-                if (word === (IQSYSEventsFileRecordType.TIMESTAMP)) {
-                  if (this._processor !== null) {
-                    let record = new QSYSEventsFileTimestampRecord(st[i++], st[i++]);
+                if (word === (IRecordType.TIMESTAMP)) {
+                  if (this._processor) {
+                    let record = new TimestampRecord(st[i++], st[i++]);
                     // record.setVersion(st[i++]);
                     // record.setTimestamp(st[i++]);
                     this._processor?.processTimestampRecord(record);
                   }
                   break;
                 } else {
-                  if (word === (IQSYSEventsFileRecordType.PROCESSOR)) {
-                    if (this._processor !== null) {
-                      let record = new QSYSEventsFileProcessorRecord(st[i++], st[i++], st[i++]);
+                  if (word === (IRecordType.PROCESSOR)) {
+                    if (this._processor) {
+                      let record = new ProcessorRecord(st[i++], st[i++], st[i++]);
                       // record.setVersion(st[i++]);
                       // record.setOutputId(st[i++]);
                       // record.setLineClass(st[i++]);
                       try {
                         this._processor?.processProcessorRecord(record);
-                      } catch (e: Error) {
+                      } catch (e) {
                         this.logError(e);
                         this._exception = e;
                       }
                     }
                     break;
                   } else {
-                    if (word === (IQSYSEventsFileRecordType.PROGRAM) || word === (IQSYSEventsFileRecordType.MAP_DEFINE) || word === (IQSYSEventsFileRecordType.MAP_END) || word === (IQSYSEventsFileRecordType.MAP_START) || word === (IQSYSEventsFileRecordType.FEEDBACK_CODE) || word.trim().length() === 0) {
+                    if (word === (IRecordType.PROGRAM) || word === (IRecordType.MAP_DEFINE) || word === (IRecordType.MAP_END) || word === (IRecordType.MAP_START) || word === (IRecordType.FEEDBACK_CODE) || word.trim().length === 0) {
                       break;
                     } else {
                       throw new Error('Events file has incorrect format. Unexpected line type. LT=' + lineText);
@@ -290,50 +290,83 @@ export class EventsFileParserCore {
           }
         }
       }
-      if (lineText !== null) {
+      if (lineText) {
         lineText = reader.readNextLine();
       }
     }
-    if (this._processor !== null) {
+    if (this._processor) {
       try {
         this._processor?.doPostProcessing();
-      } catch (ex: Error) {
+      } catch (ex) {
         this._exception = ex;
       }
     }
   }
-  resolveRelativePath(location: string) {
-    location = Paths.get(location).normalize().toString();
-    location = location.replaceAll('\\\\', '/');
+  private resolveRelativePath(location: string) {
+    // normalize the location in case the location is a relative path
+    location = path.normalize(location).toString();
+
+    // after normalization, / will be change to \ for windows path
+    // have to change it back
+    location = location.replace(/\\/g, '/');
     return location;
   }
   getException() {
     return this._exception;
   }
-  setProcessor(processor: IQSYSEventsFileProcessor) {
+  setProcessor(processor: IProcessor) {
     this._processor = processor;
   }
   getAllErrors() {
-    if (this._processor === null) {
-      return new Array();
-    }
-    let nestedErrors = this._processor?.getAllErrors();
-    let allErrors = new Array();
-    for (let iter1 = nestedErrors?.iterator(); iter1.hasNext();) {
-      let curErrorList = iter1.next();
-      for (let iter2 = curErrorList.iterator(); iter2.hasNext();) {
-        allErrors.add((iter2.next()));
+    if (this._processor) {
+      let nestedErrors = this._processor?.getAllErrors();
+      let allErrors: ErrorInformationRecord[] = [];
+      let index = 0;
+      while (index + 1 < nestedErrors.length) {
+        // let iter1 = nestedErrors[index];
+        let curErrorList = nestedErrors[index + 1];
+        let index1 = 0;
+        while (index1 + 1 < curErrorList.length) {
+          // let iter2 = curErrorList[index1];
+          let next = curErrorList[index1 + 1];
+          allErrors.push(next);
+          index1++;
+        }
+        index++;
       }
+      // for (let iter1 = nestedErrors?.iterator(); iter1.hasNext();) {
+      //   let curErrorList = iter1.next();
+      //   for (let iter2 = curErrorList.iterator(); iter2.hasNext();) {
+      //     allErrors.push((iter2.next()));
+      //   }
+      // }
+      return allErrors;
+    } else {
+      return [];
     }
-    return allErrors;
   }
   getAllFileIDRecords() {
-    if (this._processor === null) {
-      return Collections.emptySet();
+    if (this._processor) {
+      return this._processor.getAllFileIDRecords();
     } else {
-      return this._processor?.getAllFileIDRecords();
+      return [];
     }
   }
 }
-EventsFileParserCore.Copyright = '(C) Copyright IBM Corp. 2002, 2009.  All Rights Reserved.';
-EventsFileParserCore.LOGGER = LoggerFactory.getLogger(.getName());
+
+class SourceFile {
+  constructor(private location: string, private browseMode: boolean) {
+  }
+
+  public getLocation(): string {
+    return this.location;
+  }
+
+  public isReadOnly(): string {
+    return this.browseMode.toString();
+  }
+  // a member should be opened in Browse Mode
+  public setReadOnly(value: boolean) {
+    this.browseMode = value;
+  }
+}
