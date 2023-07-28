@@ -1,10 +1,17 @@
 import { ISequentialFileReader } from '../src/ISequentialFileReader';
 import { readFileSync } from 'fs';
 
+const TEST_DIR = 'testfixtures/evf';
+
 export default class TestDataReader implements ISequentialFileReader {
-    file = readFileSync('testfixtures/evf/LITINERR.PGM.evfevent', 'utf-8');
-    linesArray = this.file.split('\n');
+    file: string;
+    linesArray: string[];
     currLineNum = 0;
+
+    constructor(fileName: string) {
+        this.file = readFileSync(`${TEST_DIR}/${fileName}`, 'utf-8');
+        this.linesArray = this.file.split('\n');
+    }
 
     public readNextLine() {
         let line: string | undefined;
