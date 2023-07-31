@@ -94,9 +94,9 @@ export class ExpansionProcessor implements IProcessor {
 				this._currentProcessor.getMappingTable().addFileToFileTable(record);
 			}
 		}
-		catch (e) {
+		catch (e: any) {
 			this._postProcessingNeeded = false;
-			throw new Error();
+			throw new Error(e.message ? e.message : e);
 		}
 
 	}

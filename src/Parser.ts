@@ -24,6 +24,7 @@ export class Parser {
   constructor() {
     this._sourceTable = new Map<String, SourceFile>();
   }
+
   private getUntilTheEndOfTheLine(startIndex: number, st: string[]): string {
     let message = st[startIndex++];
     while (startIndex < st.length) {
@@ -167,7 +168,7 @@ export class Parser {
             let timestamp = location.substring(location.length - 16, location.length - 2);
             try {
               parseInt(timestamp);
-            } catch (e) {
+            } catch (e: any) {
               timestamp = '';
             }
             let tempFlag = location.charAt(location.length - 1);
@@ -204,9 +205,9 @@ export class Parser {
               let record = new FileIDRecord(version, fileId, lineNumber, locationLength.toString(), location, timestamp.toString(), tempFlag);
               try {
                 this._processor.processFileIDRecord(record);
-              } catch (e) {
-                this.logError(e);
-                this._exception = e;
+              } catch (e: any) {
+                this.logError(e.message ? e.message : e);
+                this._exception = e.message ? e.message : e;
               }
             }
             break;
@@ -219,9 +220,9 @@ export class Parser {
                 let record = new FileEndRecord(version, fileId, expansion);
                 try {
                   this._processor?.processFileEndRecord(record);
-                } catch (e) {
-                  this.logError(e);
-                  this._exception = e;
+                } catch (e: any) {
+                  this.logError(e.message ? e.message : e);
+                  this._exception = e.message ? e.message : e;
                 }
               }
               break;
@@ -257,9 +258,9 @@ export class Parser {
                       // record.setLineClass(st[i++]);
                       try {
                         this._processor?.processProcessorRecord(record);
-                      } catch (e) {
-                        this.logError(e);
-                        this._exception = e;
+                      } catch (e: any) {
+                        this.logError(e.message ? e.message : e);
+                        this._exception = e.message ? e.message : e;
                       }
                     }
                     break;
