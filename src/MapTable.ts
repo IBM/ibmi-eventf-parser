@@ -46,7 +46,7 @@ export class MapTable {
 		if (!this._files.isEmpty()) {
 			let parentFile = this._files.peek();
 
-			let parentRange = this._map[-1];
+			let parentRange = this._map[this._map.length - 1];
 			if (parentRange.getOutputStartLine() === range.getOutputStartLine()) {
 				this._map.pop();
 			}
@@ -93,7 +93,7 @@ export class MapTable {
 				"Mismatched IDs: \t FILEID: " + file?.getID() + "\t FILEEND: " + record.toString());
 		}
 
-		let last = this._map[-1];
+		let last = this._map[this._map.length - 1];
 
 		// Make sure that last retrieved node matches the ID of the FILEEND
 		if (last.getInputFileID() !== (record.getFileId())) {
@@ -105,8 +105,7 @@ export class MapTable {
 
 		try {
 			expansion = parseInt(record.getExpansion());
-		}
-		catch (e) {
+		} catch (e: any) {
 			throw new Error("Unable to parse the expansion field of the FILEEND record to an integer" + '\n' +
 				"Faulty record: " + record.toString());
 		}
@@ -160,8 +159,7 @@ export class MapTable {
 
 		try {
 			line = parseInt(record.getLine());
-		}
-		catch (e) {
+		} catch (e: any) {
 			throw new Error("Unable to parse the line field of the FILEID record to an integer" + '\n' +
 				"Faulty record: " + record.toString());
 		}
@@ -173,7 +171,7 @@ export class MapTable {
 		//We need to take into consideration lines that have already been mapped to the output file.
 		//line - parentFile.getLinesProcessed() === lines between the new /copy and the old /copy
 		if (!this._files.isEmpty()) {
-			let parentRange = this._map[-1];
+			let parentRange = this._map[this._map.length - 1];
 			let parentFile = this._files.peek();
 			if (parentFile) {
 				range.setOutputStartLine(parentRange.getOutputStartLine() + line - parentFile.getLinesProcessed());
@@ -235,7 +233,7 @@ export class MapTable {
 		let expansionRange = this.createSourceLineRange(record);
 		let expandedSource: SourceLineRange | undefined;
 		//Handle the case where the expansion comes at the end of file (right after the last range)
-		if (expansionRange.getOutputStartLine() - (this._map[-1]).getOutputEndLine() === 1) {
+		if (expansionRange.getOutputStartLine() - (this._map[this._map.length - 1]).getOutputEndLine() === 1) {
 			if (expansionRange.getInputStartLine() === expansionRange.getInputEndLine()) {
 				this._map.push(expansionRange);
 				return;
@@ -344,8 +342,7 @@ export class MapTable {
 			iEnd = parseInt(record.getInputLineEnd());
 			oStart = parseInt(record.getOutputLineStart());
 			oEnd = parseInt(record.getOutputLineEnd());
-		}
-		catch (e) {
+		} catch (e: any) {
 			throw new Error("Unable to parse the fields of the EXPANSION record to integers" + '\n' +
 				"Faulty record: " + record.toString());
 		}
@@ -397,7 +394,7 @@ export class MapTable {
 				record.setEndErrLine(this.getLineFromSourceLineRange(range, endLineNumber).toString());
 
 				record.setFileName((this._fileTable.get(range.getInputFileID())!).getFilename());
-			} catch (e) {
+			} catch (e: any) {
 				throw new Error("Unable to parse the line fields of the ERROR record to integers" + "\n" +
 					"Faulty record: " + record.toString());
 			}
