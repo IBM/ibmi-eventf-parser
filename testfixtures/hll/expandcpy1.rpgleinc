@@ -1,0 +1,6 @@
+
+       /set datfmt(*ymd)
+       dcl-s cpy_y char(10) inz('missing end quote
+
+
+
