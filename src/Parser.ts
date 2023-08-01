@@ -306,27 +306,8 @@ export class Parser {
   }
   getAllErrors() {
     if (this._processor) {
-      let nestedErrors = this._processor?.getAllErrors();
-      let allErrors: ErrorInformationRecord[] = [];
-      let index = 0;
-      while (index + 1 < nestedErrors.length) {
-        // let iter1 = nestedErrors[index];
-        let curErrorList = nestedErrors[index + 1];
-        let index1 = 0;
-        while (index1 + 1 < curErrorList.length) {
-          // let iter2 = curErrorList[index1];
-          let next = curErrorList[index1 + 1];
-          allErrors.push(next);
-          index1++;
-        }
-        index++;
-      }
-      // for (let iter1 = nestedErrors?.iterator(); iter1.hasNext();) {
-      //   let curErrorList = iter1.next();
-      //   for (let iter2 = curErrorList.iterator(); iter2.hasNext();) {
-      //     allErrors.push((iter2.next()));
-      //   }
-      // }
+      const nestedErrors = this._processor?.getAllErrors();
+      const allErrors = [].concat(...nestedErrors);
       return allErrors;
     } else {
       return [];
