@@ -149,6 +149,11 @@ export class Parser {
           const totalMessageLen = st[i++];
           const message = this.getUntilTheEndOfTheLine(i, st);
 
+          // Previous implementation used the location length to determine how many records to 
+          // read in.  This requires NLS process to account for differences in character length 
+          // between the encoding in the original EVENTF and the current one being parsed.
+          // To avoid this, we simply read all subsequent records that are of the continued type
+          //
           // let msgToken = st.nextToken('\n\r\f');
           // let msgTokenNl = new StringNL(msgToken, ccsid, true);
 
@@ -242,17 +247,6 @@ export class Parser {
 
           location = location.substring(0, location.length - 17);
           location = this.resolveRelativePath(location);
-
-          // If <servername> is included as part of the name, get rid of it
-          const index = location.indexOf('>');
-          if (index !== -1 && location.indexOf('<') === 0) {
-            // If on local connection, try to use the servername on the FILEID line to get the actual remote connection
-            if (markerCreator) {
-              markerCreator.updateConnectionName(location, index);
-            }
-
-            location = location.substring(index + 1);
-          }
 
           // If this file was the output file of the previous block, then it should be opened in Browse Mode
           const fileEntry = new SourceFile(location, browseMode);
