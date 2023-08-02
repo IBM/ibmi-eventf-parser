@@ -42,6 +42,23 @@ describe('Tests', () => {
         assert.strictEqual(exceptions, undefined);
     });
 
+    it('test SQLCMOD', () => {
+        const parser = new Parser();
+        const fileReader = new TestDataReader('SQLCMOD.evfevent');
+        parser.parse(fileReader, 37);
+
+        const fileIDRecords = parser.getAllFileIDRecords();
+        assert.strictEqual(fileIDRecords.length, 1);
+        assertFileIDRecord(fileIDRecords[0], '/QSYS.LIB/QTEMP.LIB/QSQLT00103.FILE/ANZ_FILE2.MBR', '001', '0');
+
+        const errors = parser.getAllErrors();
+        assert.strictEqual(errors.length, 1);
+        assertErrorInformationRecord(errors[0], '/QSYS.LIB/QTEMP.LIB/QSQLT00103.FILE/ANZ_FILE2.MBR', '001570', 'Undeclared identifier y.');
+
+        const exceptions = parser.getException();
+        assert.strictEqual(exceptions.message, 'One or more FILEID records do not have matching FILEEND records\nList of outstanding FILEID records: {"stack":[{"ID":"001","lines":0}]}');
+    });
+
     it('test TYPICAL', () => {
         const parser = new Parser();
         const fileReader = new TestDataReader('TYPICAL.PGM.evfevent');
