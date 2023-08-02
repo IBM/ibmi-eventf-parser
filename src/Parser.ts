@@ -19,6 +19,7 @@ import { ErrorInformationRecord } from './record/ErrorInformationRecord';
 import { FileEndRecord } from './record/FileEndRecord';
 import { ExpansionRecord } from './record/ExpansionRecord';
 import { ExpansionProcessor } from './ExpansionProcessor';
+import { readFileSync } from 'fs';
 
 class SourceFile {
   constructor(private location: string, private browseMode: boolean) { }
@@ -91,6 +92,10 @@ export class Parser {
     if (process.env.DEBUG) {
       console.log(content);
     }
+  }
+
+  parseFile(fileName: string, markerCreator?: IMarkerCreator) {
+    this.parse(new FileReader(fileName), markerCreator);
   }
 
   parse(fileReader: ISequentialFileReader, markerCreator?: IMarkerCreator) {
@@ -406,5 +411,27 @@ export class Parser {
     } else {
       return [];
     }
+  }
+}
+
+export default class FileReader implements ISequentialFileReader {
+  file: string;
+  linesArray: string[];
+  currLineNum = 0;
+
+  constructor(fileName: string) {
+    this.file = readFileSync(fileName, 'utf-8');
+    this.linesArray = this.file.split(/\r?\n/)
+  }
+
+  public readNextLine() {
+    let line: string | undefined;
+    if (this.currLineNum < this.linesArray.length) {
+      line = this.linesArray[this.currLineNum];
+      this.currLineNum++;
+    } else {
+      line = undefined;
+    }
+    return line;
   }
 }
