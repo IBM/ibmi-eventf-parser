@@ -5,7 +5,7 @@ export interface IMarkerCreator {
 
 	/**
 	 * If we encounter a connection name on the FILE.
-	 * Keeps track of whether this check has already been done in the field {@link #bDoneServerAliasCheck}.
+	 * Keeps track of whether this check has already been done in the field.
 	 */
 	updateConnectionName(location: string, indexEndBracket: number): void;
 }
