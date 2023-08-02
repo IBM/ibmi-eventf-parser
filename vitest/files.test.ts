@@ -1,3 +1,7 @@
+/*
+ * (c) Copyright IBM Corp. 2023
+ */
+
 import { assert, describe, it } from 'vitest'
 import { Parser } from '../src/Parser';
 import { ErrorInformationRecord } from '../src/record/ErrorInformationRecord';
