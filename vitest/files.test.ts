@@ -8,7 +8,7 @@ describe('Tests', () => {
     it('test LITINERR', () => {
         const parser = new Parser();
         const fileReader = new TestDataReader('LITINERR.PGM.evfevent');
-        parser.parse(fileReader, 37);
+        parser.parse(fileReader);
 
         const fileIDRecords = parser.getAllFileIDRecords();
         assert.strictEqual(fileIDRecords.length, 1);
@@ -26,7 +26,7 @@ describe('Tests', () => {
     it('test SQLRPGLE', () => {
         const parser = new Parser();
         const fileReader = new TestDataReader('SQLRPGLE.PGM.evfevent');
-        parser.parse(fileReader, 37);
+        parser.parse(fileReader);
 
         const fileIDRecords = parser.getAllFileIDRecords();
         assert.strictEqual(fileIDRecords.length, 1);
@@ -45,7 +45,7 @@ describe('Tests', () => {
     it('test SQLCMOD', () => {
         const parser = new Parser();
         const fileReader = new TestDataReader('SQLCMOD.evfevent');
-        parser.parse(fileReader, 37);
+        parser.parse(fileReader);
 
         const fileIDRecords = parser.getAllFileIDRecords();
         assert.strictEqual(fileIDRecords.length, 1);
@@ -62,7 +62,7 @@ describe('Tests', () => {
     it('test TYPICAL', () => {
         const parser = new Parser();
         const fileReader = new TestDataReader('TYPICAL.PGM.evfevent');
-        parser.parse(fileReader, 37);
+        parser.parse(fileReader);
 
         const fileIDRecords = parser.getAllFileIDRecords();
         assert.strictEqual(fileIDRecords.length, 3);
@@ -83,7 +83,7 @@ describe('Tests', () => {
     it('test TYPICAL2', () => {
         const parser = new Parser();
         const fileReader = new TestDataReader('TYPICAL2.PGM.evfevent');
-        parser.parse(fileReader, 37);
+        parser.parse(fileReader);
 
         const fileIDRecords = parser.getAllFileIDRecords();
         assert.strictEqual(fileIDRecords.length, 1);
@@ -102,7 +102,7 @@ describe('Tests', () => {
     it('test LONG_SOURCE_FILE_PATH', () => {
         const parser = new Parser();
         const fileReader = new TestDataReader('LONG_SOURCE_FILE_PATH.PGM.evfevent');
-        parser.parse(fileReader, 37);
+        parser.parse(fileReader);
 
         const fileIDRecords = parser.getAllFileIDRecords();
         assert.strictEqual(fileIDRecords.length, 1);
@@ -128,7 +128,7 @@ describe('Tests', () => {
     it('test NESTED_COPYBOOK', () => {
         const parser = new Parser();
         const fileReader = new TestDataReader('NESTED_COPYBOOK.PGM.evfevent');
-        parser.parse(fileReader, 37);
+        parser.parse(fileReader);
 
         const fileIDRecords = parser.getAllFileIDRecords();
         assert.strictEqual(fileIDRecords.length, 3);
@@ -154,7 +154,7 @@ describe('Tests', () => {
     it('test SQLLVL1', () => {
         const parser = new Parser();
         const fileReader = new TestDataReader('SQLLVL1.PGM.evfevent');
-        parser.parse(fileReader, 37);
+        parser.parse(fileReader);
 
         const fileIDRecords = parser.getAllFileIDRecords();
         assert.strictEqual(fileIDRecords.length, 3);
@@ -179,7 +179,7 @@ describe('Tests', () => {
     it('test SQLLVL2', () => {
         const parser = new Parser();
         const fileReader = new TestDataReader('SQLLVL2.PGM.evfevent');
-        parser.parse(fileReader, 37);
+        parser.parse(fileReader);
 
         const fileIDRecords = parser.getAllFileIDRecords();
         assert.strictEqual(fileIDRecords.length, 1);
