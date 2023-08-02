@@ -413,18 +413,23 @@ export class MapTable {
 			return initial;
 		}
 
-		if (range.getInputEndLine() - range.getInputStartLine() === range.getOutputEndLine() - range.getOutputStartLine()) { return initial - range.getOutputStartLine() + range.getInputStartLine(); }
+		if (range.getInputEndLine() - range.getInputStartLine() === range.getOutputEndLine() - range.getOutputStartLine()) {
+			return initial - range.getOutputStartLine() + range.getInputStartLine();
+		}
 		//Temporary fix for the problem where all errors in the last range get mapped to getInputStartLine
 		//when the last range has open bounds
-		else if (range.getInputEndLine() === -1 && range.getOutputEndLine() === -1) { return initial - range.getOutputStartLine() + range.getInputStartLine(); }
-		else { return range.getInputStartLine(); }
+		else if (range.getInputEndLine() === -1 && range.getOutputEndLine() === -1) {
+			return initial - range.getOutputStartLine() + range.getInputStartLine();
+		} else {
+			return range.getInputStartLine();
+		}
 	}
 
 	public finalizeMap() {
 		if (!this._files.isEmpty()) {
 			throw new Error(
 				"One or more FILEID records do not have matching FILEEND records" + "\n" +
-				"List of outstanding FILEID records:" + this._files);
+				"List of outstanding FILEID records:" + JSON.stringify(this._files));
 		}
 
 		this._queueExpansion.forEach(expansion => {
