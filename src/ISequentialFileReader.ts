@@ -1,13 +1,15 @@
 /**
  * (c) Copyright IBM Corp 2004
- *  Iterates through a sequential file and provides one line at a time
+ */
+
+/**
+ * Iterates through a sequential file and provides one line at a time.
  */
 export interface ISequentialFileReader {
 	/**
-	 * @return String the next line 
-	 * @see ReaderLineScanner  
-	 * @exception IOException if there is any problem reading 
+	 * Get the next line.
+	 * 
+	 * @return The next line.
 	 **/
 	readNextLine(): string | undefined;
-
 }

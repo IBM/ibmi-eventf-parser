@@ -1,139 +1,150 @@
-/* IBM Confidential
+/**
+ * IBM Confidential
  * OCO Source Materials
  * 5900-AN9
  * (c) Copyright IBM Corp. 2006, 2023 
  * The source code for this program is not published or otherwise divested of its trade secrets,
  * irrespective of what has been deposited with the U.S. Copyright Office.
- *
  */
-import { IRecordType } from "./IRecordType";
+
+import { IRecordT } from "./IRecordT";
 import { IRecord } from "./IRecord";
 
 /**
  * This class represents an Expansion record in an Events File.
  */
 export class ExpansionRecord implements IRecord {
-	constructor(private _version: string, private _inputFileID: string, private _inputLineStart: string, private _inputLineEnd: string,
-		private _outputFileID: string, private _outputLineStart: string, private _outputLineEnd: string) {
-	}
+	constructor(private version: string, private inputFileID: string, private inputLineStart: string,
+		private inputLineEnd: string, private outputFileID: string, private outputLineStart: string,
+		private outputLineEnd: string) { }
 
-	/**
-	 * @see com.ibm.etools.iseries.core.evfparser.IISeriesEventsFileRecordType#getRecordType()
-	 */
-	public getRecordType(): string {
-		return IRecordType.EXPANSION;
-	}
-
-	/**
-	 * Get the input file ID.
-	 * @return the input file ID
-	 */
-	public getInputFileID(): string {
-		return this._inputFileID;
-	}
-
-	/**
-	 * Set the input file ID.
-	 * @param the input file ID
-	 */
-	public setInputFileID(fileID: string) {
-		this._inputFileID = fileID;
-	}
-
-	/**
-	 * Get the input line end.
-	 * @return the input line end
-	 */
-	public getInputLineEnd(): string {
-		return this._inputLineEnd;
-	}
-
-	/**
-	 * Set the input line end.
-	 * @param the input line end
-	 */
-	public setInputLineEnd(lineEnd: string) {
-		this._inputLineEnd = lineEnd;
-	}
-
-	/**
-	 * Get the input line start.
-	 * @return the input line start
-	 */
-	public getInputLineStart(): string {
-		return this._inputLineStart;
-	}
-
-	/**
-	 * Set the input line start.
-	 * @param the input line start
-	 */
-	public setInputLineStart(lineStart: string) {
-		this._inputLineStart = lineStart;
-	}
-
-	/**
-	 * Get the output file ID.
-	 * @return the output file ID
-	 */
-	public getOutputFileID(): string {
-		return this._outputFileID;
-	}
-
-	/**
-	 * Set the output file ID.
-	 * @param the output file ID
-	 */
-	public setOutputFileID(fileID: string) {
-		this._outputFileID = fileID;
-	}
-
-	/**
-	 * Get the output line end.
-	 * @return the output line end
-	 */
-	public getOutputLineEnd(): string {
-		return this._outputLineEnd;
-	}
-
-	/**
-	 * Set the output line end.
-	 * @param the output line end
-	 */
-	public setOutputLineEnd(lineEnd: string) {
-		this._outputLineEnd = lineEnd;
-	}
-
-	/**
-	 * Get the output line start.
-	 * @return the output line start
-	 */
-	public getOutputLineStart(): string {
-		return this._outputLineStart;
-	}
-
-	/**
-	 * Set the output line start.
-	 * @param the output line start
-	 */
-	public setOutputLineStart(lineStart: string) {
-		this._outputLineStart = lineStart;
+	public getRecordType(): IRecordT {
+		return IRecordT.EXPANSION;
 	}
 
 	/**
 	 * Get the version.
-	 * @return the version
+	 * 
+	 * @return The version.
 	 */
 	public getVersion(): string {
-		return this._version;
+		return this.version;
 	}
 
 	/**
 	 * Set the version.
-	 * @param the version
+	 * 
+	 * @param version The version.
 	 */
-	public setVersion(_version: string) {
-		this._version = _version;
+	public setVersion(version: string) {
+		this.version = version;
 	}
 
+	/**
+	 * Get the input file ID.
+	 * 
+	 * @return The input file ID.
+	 */
+	public getInputFileID(): string {
+		return this.inputFileID;
+	}
+
+	/**
+	 * Set the input file ID.
+	 * 
+	 * @param fileID The input file ID.
+	 */
+	public setInputFileID(fileID: string) {
+		this.inputFileID = fileID;
+	}
+
+	/**
+	 * Get the input line start.
+	 * 
+	 * @return The input line start.
+	 */
+	public getInputLineStart(): string {
+		return this.inputLineStart;
+	}
+
+	/**
+	 * Set the input line start.
+	 * 
+	 * @param lineStart The input line start.
+	 */
+	public setInputLineStart(lineStart: string) {
+		this.inputLineStart = lineStart;
+	}
+
+	/**
+	 * Get the input line end.
+	 * 
+	 * @return The input line end.
+	 */
+	public getInputLineEnd(): string {
+		return this.inputLineEnd;
+	}
+
+	/**
+	 * Set the input line end.
+	 * 
+	 * @param lineEnd The input line end.
+	 */
+	public setInputLineEnd(lineEnd: string) {
+		this.inputLineEnd = lineEnd;
+	}
+
+	/**
+	 * Get the output file ID.
+	 * 
+	 * @return The output file ID.
+	 */
+	public getOutputFileID(): string {
+		return this.outputFileID;
+	}
+
+	/**
+	 * Set the output file ID.
+	 * 
+	 * @param fileID The output file ID.
+	 */
+	public setOutputFileID(fileID: string) {
+		this.outputFileID = fileID;
+	}
+
+	/**
+	 * Get the output line start.
+	 * 
+	 * @return The output line start.
+	 */
+	public getOutputLineStart(): string {
+		return this.outputLineStart;
+	}
+
+	/**
+	 * Set the output line start.
+	 * 
+	 * @param lineStart The output line start.
+	 */
+	public setOutputLineStart(lineStart: string) {
+		this.outputLineStart = lineStart;
+	}
+
+	/**
+	 * Get the output line end.
+	 * 
+	 * @return The output line end.
+	 */
+	public getOutputLineEnd(): string {
+		return this.outputLineEnd;
+	}
+
+	/**
+	 * Set the output line end.
+	 * 
+	 * @param lineEnd The output line end.
+	 */
+	public setOutputLineEnd(lineEnd: string) {
+		this.outputLineEnd = lineEnd;
+	}
 }

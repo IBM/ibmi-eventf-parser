@@ -1,4 +1,4 @@
-/* 
+/** 
  * IBM Confidential
  * OCO Source Materials
  * 5900-AN9
@@ -6,6 +6,7 @@
  * The source code for this program is not published or otherwise divested of its trade secrets,
  * irrespective of what has been deposited with the U.S. Copyright Office.
  */
+
 import { IProcessor } from "./IProcessor";
 import { ErrorInformationRecord } from "./record/ErrorInformationRecord";
 import { ExpansionRecord } from "./record/ExpansionRecord";
@@ -21,117 +22,113 @@ import { ProgramRecord } from "./record/ProgramRecord";
 import { TimestampRecord } from "./record/TimestampRecord";
 
 export class ExpansionProcessor implements IProcessor {
-
 	private PRE_COMPILE_PROCESSOR_ID = "999";
 
-	protected _currentProcessor: ProcessorBlock;
+	protected currentProcessor: ProcessorBlock;
 
 	// Flags any errors that occur during processing and disables the processor if needed
-	protected _postProcessingNeeded = true;
+	protected postProcessingNeeded: boolean = true;
 
 	// Flags if the Events File contains any EXPANSION Events or not
-	//	private boolean _containsExpansionEvents = false;
+	// private containsExpansionEvents: boolean = false;
 
-	//Needed for events files that contain multiple events files that have been combined into one (as done in iProjects).
-	//Gets set to true at the beginning of each new "sub" events file (marked by a new TIMESTAMP record),
-	//and to false after each first PROCESSOR event in the "sub" events file.
-	//The scope of this variable is only the current "sub" events file.
-	private _noProcessorEventsYet = true;
+	// Needed for events files that contain multiple events files that have been combined into one (as done in iProjects).
+	// Gets set to true at the beginning of each new "sub" events file (marked by a new TIMESTAMP record),
+	// and to false after each first PROCESSOR event in the "sub" events file.
+	// The scope of this variable is only the current "sub" events file.
+	private _noProcessorEventsYet: boolean = true;
 
-	//Needed to decide whether to do mappings of errors to input members
-	//If true, temporary output members are involved, and mappings may be needed (unless not supported by pre-compilers)
-	protected _containsPreCompileProcessorBlocks = false;
+	// Needed to decide whether to do mappings of errors to input members
+	// If true, temporary output members are involved, and mappings may be needed (unless not supported by pre-compilers)
+	protected _containsPreCompileProcessorBlocks: boolean = false;
 
 	constructor() {
-		let record = new ProcessorRecord('', '', '');
-		this._currentProcessor = new ProcessorBlock(record);
+		const record = new ProcessorRecord('', '', '');
+		this.currentProcessor = new ProcessorBlock(record);
 	}
 
 	public processErrorRecord(record: ErrorInformationRecord) {
-		this._currentProcessor.addErrorInformation(record);
+		this.currentProcessor.addErrorInformation(record);
 	}
 
 	public processExpansionRecord(record: ExpansionRecord) {
-		//		_containsExpansionEvents = true;
-		this._currentProcessor.setContainsExpansionEvents(true);
-		this._currentProcessor.getMappingTable().addExpansionRecord(record);
+		// this.containsExpansionEvents = true;
+		this.currentProcessor.setContainsExpansionEvents(true);
+		this.currentProcessor.getMappingTable().addExpansionRecord(record);
 	}
 
-	public processFeedbackCodeRecord(record: FeedbackCodeRecord) {
-		return;
-	}
+	public processFeedbackCodeRecord(record: FeedbackCodeRecord) { }
 
-	public processFileEndRecord(record: FileEndRecord) { // throws SecondLevelHelpException
+	public processFileEndRecord(record: FileEndRecord) {
 		try {
-			this._currentProcessor.closeFile(record);
-		} catch (ex) {
-			this._postProcessingNeeded = false;
-			throw ex;
+			this.currentProcessor.closeFile(record);
+		} catch (e: any) {
+			this.postProcessingNeeded = false;
+			throw new Error(e.message ? e.message : e);
 		}
 	}
 
-	public processFileIDRecord(record: FileIDRecord) { // throws SecondLevelHelpException
-		// The Try-Catch block is there to flag any problems, disable processing and allow regular Events File processing to continue
+	public processFileIDRecord(record: FileIDRecord) {
+		// The try-catch block is there to flag any problems, disable processing and allow regular Events File processing to continue
 		try {
-			let fileID: number;
+			const fileID = parseInt(record.getSourceId());
 
-			fileID = parseInt(record.getSourceId());
-
-			if (!this._currentProcessor.isProcessorIDZero()) {
+			if (!this.currentProcessor.isProcessorIDZero()) {
 				if (fileID > 1) {
-					if (!this._currentProcessor.getOutputFile()) {
-						this._currentProcessor.setOutputFile(record);
+					if (!this.currentProcessor.getOutputFile()) {
+						this.currentProcessor.setOutputFile(record);
 						return;
 					}
+				} else if (fileID === 1 && !this.currentProcessor.getInputFile()) {
+					this.currentProcessor.setInputFile(record);
 				}
-				else if (fileID === 1 && !this._currentProcessor.getInputFile()) {
-					this._currentProcessor.setInputFile(record);
+
+				this.currentProcessor.addFile(record);
+			} else {
+				// We need to keep track of all files in the compiler processor block to be able to get the location for files
+				if (fileID === 1 && !this.currentProcessor.getInputFile()) {
+					this.currentProcessor.setInputFile(record);
 				}
-				this._currentProcessor.addFile(record);
+
+				this.currentProcessor.getMappingTable().addFileToFileTable(record);
 			}
-			else {//We need to keep track of all files in the compiler processor block to be able to get the location for files
-				if (fileID === 1 && !this._currentProcessor.getInputFile()) { this._currentProcessor.setInputFile(record); }
-				this._currentProcessor.getMappingTable().addFileToFileTable(record);
-			}
+		} catch (e: any) {
+			this.postProcessingNeeded = false;
+			throw new Error(e.message ? e.message : e);
 		}
-		catch (e: any) {
-			this._postProcessingNeeded = false;
+	}
+
+	public processMapDefineRecord(record: MapDefineRecord) { }
+
+	public processMapEndRecord(record: MapEndRecord) { }
+
+	public processMapStartRecord(record: MapStartRecord) { }
+
+	public processProcessorRecord(record: ProcessorRecord) {
+		if (!this._containsPreCompileProcessorBlocks && record.getOutputId() === this.PRE_COMPILE_PROCESSOR_ID) {
+			this._containsPreCompileProcessorBlocks = true;
+		}
+
+		try {
+			if (this.currentProcessor) {
+				this.currentProcessor.processorEnded();
+			}
+		} catch (e: any) {
+			this.postProcessingNeeded = false;
 			throw new Error(e.message ? e.message : e);
 		}
 
-	}
+		const newProcessor = this.constructEventsFileProcessorBlock(record);
 
-	public processMapDefineRecord(record: MapDefineRecord) {
-		return;
-	}
-
-	public processMapEndRecord(record: MapEndRecord) {
-		return;
-	}
-
-	public processMapStartRecord(record: MapStartRecord) {
-		return;
-	}
-
-	public processProcessorRecord(record: ProcessorRecord) { //throws SecondLevelHelpException
-		if (!this._containsPreCompileProcessorBlocks && record.getOutputId() === this.PRE_COMPILE_PROCESSOR_ID) { this._containsPreCompileProcessorBlocks = true; }
-
-		try {
-			if (this._currentProcessor) { this._currentProcessor.processorEnded(); }
-		} catch (ex) {
-			this._postProcessingNeeded = false;
-			throw ex;
-		}
-		let newProcessor = this.constructEventsFileProcessorBlock(record);
-		//Set this processor block as the first one in the current "sub" events file 
-		//(needed for events file that contains multiple events files that have been combined into one)
+		// Set this processor block as the first one in the current "sub" events file
+		// (needed for events file that contains multiple events files that have been combined into one)
 		if (this._noProcessorEventsYet) {
 			newProcessor.setFirstInEventsFile(true);
 			this._noProcessorEventsYet = false;
 		}
 
-		newProcessor.setPreviousProcessor(this._currentProcessor);
-		this._currentProcessor = newProcessor;
+		newProcessor.setPreviousProcessor(this.currentProcessor);
+		this.currentProcessor = newProcessor;
 	}
 
 
@@ -139,9 +136,7 @@ export class ExpansionProcessor implements IProcessor {
 		return new ProcessorBlock(record);
 	}
 
-	public processProgramRecord(record: ProgramRecord) {
-		return;
-	}
+	public processProgramRecord(record: ProgramRecord) { }
 
 	public processTimestampRecord(record: TimestampRecord) {
 		this._noProcessorEventsYet = true;
@@ -150,9 +145,13 @@ export class ExpansionProcessor implements IProcessor {
 	public doPreProcessing(): boolean {
 		return false;
 	}
-	public doPostProcessing(): boolean { //throws SecondLevelHelpException
-		if (!this._postProcessingNeeded || !this._containsPreCompileProcessorBlocks || !this.determineAndSetMappingSupport(this._currentProcessor)) { return true; }
-		this._currentProcessor.resolveFileNamesForAllErrors();
+
+	public doPostProcessing(): boolean {
+		if (!this.postProcessingNeeded || !this._containsPreCompileProcessorBlocks || !this.determineAndSetMappingSupport(this.currentProcessor)) {
+			return true;
+		}
+
+		this.currentProcessor.resolveFileNamesForAllErrors();
 		return false;
 	}
 
@@ -164,50 +163,58 @@ export class ExpansionProcessor implements IProcessor {
 	 * Mapping is supported for an events file if all its processor blocks support error mapping.
 	 * IMPORTANT: When called at the top level, this method should only be called on the 
 	 * very last processor block of the [combined] events file.
-	 * @param lastProcessorBlock - the first processor block to check. When called at 
-	 * the top level, this should be the very last processor block of the [combined] events file.
-	 * @return true if any of the events files support mapping of errors, false otherwise
+	 * 
+	 * @param lastProcessorBlock The first processor block to check. When called at the top
+	 * level, this should be the very last processor block of the [combined] events file.
+	 * @return True if any of the events files support mapping of errors, false otherwise.
 	 */
 	protected determineAndSetMappingSupport(lastProcessorBlock: ProcessorBlock): boolean {
 		let isMappingSupportedByAny = false;
 		let curProc: ProcessorBlock = lastProcessorBlock;
+
 		while (curProc) {
-			let curSupport = this.isMappingSupportedByCurrentEventsFile(curProc);
+			const curSupport = this.isMappingSupportedByCurrentEventsFile(curProc);
 			this.setMappingSupportForCurrentEventsFile(curProc, curSupport);
+
 			if (!isMappingSupportedByAny && curSupport) {
 				isMappingSupportedByAny = true;
 			}
 
-			//Iterate to the first processor block in the current "sub" events file,
-			while (curProc && !curProc.isFirstInEventsFile()) {
+			// Iterate to the first processor block in the current "sub" events file,
+			while (curProc && !curProc.getIsFirstInEventsFile()) {
 				curProc = curProc.getPreviousProcessorBlock();
 			}
 
-			//use it to get the previous "sub" events file's last processor block			
+			// Use it to get the previous "sub" events file's last processor block			
 			if (curProc) {
 				curProc = curProc.getPreviousProcessorBlock();
 			}
 		}
+
 		return isMappingSupportedByAny;
 	}
 
 	/**
-	 * Sets the _supportsMappings property for each processor block in the current events file
+	 * Sets the supportsMappings property for each processor block in the current events file
 	 * to the value provided.
 	 * IMPORTANT: This method should only be called on the last processor block
 	 * of the current events file.
-	 * @param lastProcessorBlock - the last processor block of the current events file.
-	 * @param support - boolean value corresponding to whether the current events file requires and supports mappings.
+	 * 
+	 * @param lastProcessorBlock The last processor block of the current events file.
+	 * @param support Boolean value corresponding to whether the current events file requires 
+	 * and supports mappings.
 	 */
 	private setMappingSupportForCurrentEventsFile(lastProcessorBlock: ProcessorBlock, support: boolean) {
 		let curProc: ProcessorBlock | undefined = lastProcessorBlock;
+
 		while (curProc) {
 			curProc.setMappingSupported(support);
 
-			if (curProc.isFirstInEventsFile()) {
+			if (curProc.getIsFirstInEventsFile()) {
 				curProc = undefined;
+			} else {
+				curProc = curProc.getPreviousProcessorBlock();
 			}
-			else { curProc = curProc.getPreviousProcessorBlock(); }
 		}
 	}
 
@@ -226,20 +233,21 @@ export class ExpansionProcessor implements IProcessor {
 	 * file equals the total number of lines read from the input files, and is not zero.
 	 * IMPORTANT: When called at the top level, this method should only be called on 
 	 * the last processor block of the current events file.
-	 * @param lastProcessorBlock - the last processor block of the current events file. 
-	 * @return true if the current events file supports mapping of errors,
-	 * false otherwise
+	 * 
+	 * @param lastProcessorBlock The last processor block of the current events file. 
+	 * @return True if the current events file supports mapping of errors, false otherwise.
 	 */
 	private isMappingSupportedByCurrentEventsFile(lastProcessorBlock: ProcessorBlock): boolean {
 		let supported: boolean;
 
-		if (!lastProcessorBlock.getOutputFile()) {//compile processor block case
-			if (!lastProcessorBlock.getPreviousProcessorBlock() || lastProcessorBlock.isFirstInEventsFile()) {
+		if (!lastProcessorBlock.getOutputFile()) {
+			// Compile processor block case
+			if (!lastProcessorBlock.getPreviousProcessorBlock() || lastProcessorBlock.getIsFirstInEventsFile()) {
 				supported = false;
 			} else {
 				supported = true;
 			}
-		} else if (lastProcessorBlock.containsExpansionEvents()) {
+		} else if (lastProcessorBlock.getContainsExpansionEvents()) {
 			supported = true;
 		} else if (lastProcessorBlock.getTotalNumberOfLinesInOutputFile() === 0) {
 			supported = false;
@@ -247,40 +255,24 @@ export class ExpansionProcessor implements IProcessor {
 			supported = lastProcessorBlock.getTotalNumberOfLinesInOutputFile() === lastProcessorBlock.getTotalNumberOfLinesInInputFiles();
 		}
 
-		if (lastProcessorBlock.getPreviousProcessorBlock() && !lastProcessorBlock.isFirstInEventsFile()) {
+		if (lastProcessorBlock.getPreviousProcessorBlock() && !lastProcessorBlock.getIsFirstInEventsFile()) {
 			supported = supported && this.isMappingSupportedByCurrentEventsFile(lastProcessorBlock.getPreviousProcessorBlock());
 		}
 
 		return supported;
 	}
 
-	/**
-	 * This method is used by the JUnit test for event file processing.
-	 * 
-	 * After all records in the Events File are processed, this method is called to
-	 * return all the errors from all the processor blocks (QSYSEventsFileProcessorBlock)
-	 * of the Events File. Since each QSYSEventsFileProcessorBlock contains a LinkedList
-	 * of errors, the result will be returned as a LinkedList of those linked lists.
-	 * 
-	 * This method is called by EventsFileParser.printEventFileErrors(), which in turn is
-	 * called by the JUnit test for event file processing.
-	 * @return a list of lists of all parsed errors from all processor blocks of the Events File
-	 * (one list for each processor block).
-	 */
 	public getAllErrors(): ErrorInformationRecord[][] {
-		if (this._currentProcessor) {
-			return this._currentProcessor.getAllProcessorErrors();
+		if (this.currentProcessor) {
+			return this.currentProcessor.getAllProcessorErrors();
 		}
 
 		return [];
 	}
 
-	/**
-	 * Return all file ID records.
-	 */
 	public getAllFileIDRecords(): FileIDRecord[] {
-		if (this._currentProcessor) {
-			return this._currentProcessor.getMappingTable().getAllFileIDRecords();
+		if (this.currentProcessor) {
+			return this.currentProcessor.getMappingTable().getAllFileIDRecords();
 		} else {
 			return [];
 		}
