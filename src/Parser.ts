@@ -93,11 +93,7 @@ export class Parser {
     }
   }
 
-  private logError(content: Error) {
-    console.log(content);
-  }
-
-  parse(fileReader: ISequentialFileReader, ccsid: number, markerCreator?: IMarkerCreator) {
+  parse(fileReader: ISequentialFileReader, markerCreator?: IMarkerCreator) {
     let word: string;
     let fileId: string;
 
@@ -121,10 +117,10 @@ export class Parser {
           const version = st[i++];
           fileId = st[i++];
 
-          let fileProcessed = this.sourceTable[fileId];
+          let fileProcessed = this.sourceTable.get(fileId);
           if (!fileProcessed) {
             if (fileId === ('000')) {
-              let location001 = this.sourceTable['001'];
+              let location001 = this.sourceTable.get('001');
               if (location001) {
                 fileProcessed = location001;
               } else {
@@ -270,7 +266,7 @@ export class Parser {
             }
           }
 
-          this.sourceTable[fileId] = fileEntry;
+          this.sourceTable.set(fileId, fileEntry);
 
           if (this.processor) {
             // Pass FILEID information to processor
@@ -278,8 +274,9 @@ export class Parser {
             try {
               this.processor.processFileIDRecord(record);
             } catch (e: any) {
-              this.logError(e.message ? e.message : e);
-              this.exception = e.message ? e.message : e;
+              const errorMessage = e.message ? e.message : e;
+              this.log(errorMessage);
+              this.exception = new Error(errorMessage);
             }
           }
 
@@ -295,8 +292,9 @@ export class Parser {
             try {
               this.processor?.processFileEndRecord(record);
             } catch (e: any) {
-              this.logError(e.message ? e.message : e);
-              this.exception = e.message ? e.message : e;
+              const errorMessage = e.message ? e.message : e;
+              this.log(errorMessage);
+              this.exception = new Error(errorMessage);
             }
           }
 
@@ -325,8 +323,9 @@ export class Parser {
             try {
               this.processor?.processProcessorRecord(record);
             } catch (e: any) {
-              this.logError(e.message ? e.message : e);
-              this.exception = e.message ? e.message : e;
+              const errorMessage = e.message ? e.message : e;
+              this.log(errorMessage);
+              this.exception = new Error(errorMessage);
             }
           }
 
@@ -352,8 +351,8 @@ export class Parser {
       // Allows processor to consume the information after completion of parsing and writing of markers
       try {
         this.processor?.doPostProcessing();
-      } catch (ex) {
-        this.exception = ex;
+      } catch (e: any) {
+        this.exception = new Error(e.message ? e.message : e)
       }
     }
   }
@@ -387,7 +386,8 @@ export class Parser {
   public getAllErrors(): ErrorInformationRecord[] {
     if (this.processor) {
       const nestedErrors = this.processor?.getAllErrors();
-      const allErrors: ErrorInformationRecord[] = [].concat(...nestedErrors);
+      let allErrors: ErrorInformationRecord[] = [];
+      allErrors = allErrors.concat(...nestedErrors);
 
       return allErrors;
     } else {

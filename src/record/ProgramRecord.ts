@@ -17,7 +17,7 @@ export class ProgramRecord implements IRecord {
 	constructor(private version: string, private line: string) { }
 
 	public getRecordType(): IRecordT {
-		return;
+		return IRecordT.PROGRAM;
 	}
 
 	/**

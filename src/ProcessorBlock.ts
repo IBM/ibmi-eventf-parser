@@ -33,7 +33,7 @@ export class ProcessorBlock {
   private mappingTable: MapTable;
 
   // Link to the previous processor block in the events File
-  private previousProcessorBlock: ProcessorBlock;
+  private previousProcessorBlock: ProcessorBlock | undefined;
 
   // Flags if the current processor block contains any EXPANSION events or not
   private containsExpansionEvents: boolean = false;
@@ -150,7 +150,7 @@ export class ProcessorBlock {
     return this.totalNumberOfLinesInOutputFile;
   }
 
-  public getPreviousProcessorBlock(): ProcessorBlock {
+  public getPreviousProcessorBlock(): ProcessorBlock | undefined {
     return this.previousProcessorBlock;
   }
 

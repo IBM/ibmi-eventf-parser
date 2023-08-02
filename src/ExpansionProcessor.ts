@@ -170,7 +170,7 @@ export class ExpansionProcessor implements IProcessor {
 	 */
 	protected determineAndSetMappingSupport(lastProcessorBlock: ProcessorBlock): boolean {
 		let isMappingSupportedByAny = false;
-		let curProc: ProcessorBlock = lastProcessorBlock;
+		let curProc: ProcessorBlock | undefined = lastProcessorBlock;
 
 		while (curProc) {
 			const curSupport = this.isMappingSupportedByCurrentEventsFile(curProc);
@@ -255,8 +255,9 @@ export class ExpansionProcessor implements IProcessor {
 			supported = lastProcessorBlock.getTotalNumberOfLinesInOutputFile() === lastProcessorBlock.getTotalNumberOfLinesInInputFiles();
 		}
 
-		if (lastProcessorBlock.getPreviousProcessorBlock() && !lastProcessorBlock.getIsFirstInEventsFile()) {
-			supported = supported && this.isMappingSupportedByCurrentEventsFile(lastProcessorBlock.getPreviousProcessorBlock());
+		const previousProcessorBlock = lastProcessorBlock.getPreviousProcessorBlock();
+		if (previousProcessorBlock && !lastProcessorBlock.getIsFirstInEventsFile()) {
+			supported = supported && this.isMappingSupportedByCurrentEventsFile(previousProcessorBlock);
 		}
 
 		return supported;
