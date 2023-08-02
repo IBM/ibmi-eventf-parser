@@ -14,7 +14,7 @@
     "webpack": "webpack --mode production --config ./webpack.config.js",
     "test": "npx vitest",
     "coverage": "npx vitest run --coverage",
-    "postinstall": "npm run webpack"
+    "postinstall": "webpack --mode production --config ./webpack.config.js"
   },
   "dependencies": {
     "jest": "^29.6.1"
