@@ -5,6 +5,7 @@
 		"lib": [
 			"ES2020"
 		],
+		"sourceMap": true,
 		"rootDir": ".",
 		"strict": true,
 		"skipLibCheck": true     
