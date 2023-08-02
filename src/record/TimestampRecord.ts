@@ -1,58 +1,58 @@
-/* IBM Confidential
+/**
+ * IBM Confidential
  * OCO Source Materials
  * 5900-AN9
  * (c) Copyright IBM Corp. 2021
  * The source code for this program is not published or otherwise divested of its trade secrets,
  * irrespective of what has been deposited with the U.S. Copyright Office.
- *
  */
 
-import { IRecordType } from './IRecordType';
+import { IRecordT } from './IRecordT';
 import { IRecord } from './IRecord';
 
 /**
  * This class represents a Timestamp record in an events file.
  */
 export class TimestampRecord implements IRecord {
-	constructor(private version: string, private timestamp: string) {
-	}
+	constructor(private version: string, private timestamp: string) { }
 
-	/**
-	 * @see com.ibm.etools.iseries.core.evfparser.IISeriesEventsFileRecordType#getRecordType()
-	 */
-	public getRecordType() {
-		return IRecordType.TIMESTAMP;
-	}
-
-	/**
-	 * Set the version.
-	 * @param the version
-	 */
-	public setVersion(version: string) {
-		this.version = version;
+	public getRecordType(): IRecordT {
+		return IRecordT.TIMESTAMP;
 	}
 
 	/**
 	 * Get the version.
-	 * @return the version
+	 * 
+	 * @return The version.
 	 */
 	public getVersion(): string {
 		return this.version;
 	}
 
 	/**
-	 * Set the timestamp.
-	 * @param the timestamp
+	 * Set the version.
+	 * 
+	 * @param version The version.
 	 */
-	public setTimestamp(timestamp: string) {
-		this.timestamp = timestamp;
+	public setVersion(version: string) {
+		this.version = version;
 	}
 
 	/**
 	 * Get the timestamp.
-	 * @return the timestamp
+	 * 
+	 * @return The timestamp.
 	 */
 	public getTimestamp(): string {
 		return this.timestamp;
+	}
+
+	/**
+	 * Set the timestamp.
+	 * 
+	 * @param timestamp The timestamp.
+	 */
+	public setTimestamp(timestamp: string) {
+		this.timestamp = timestamp;
 	}
 }

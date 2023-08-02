@@ -1,73 +1,76 @@
-/* IBM Confidential
+/**
+ * IBM Confidential
  * OCO Source Materials
  * 5900-AN9
  * (c) Copyright IBM Corp. 2003, 2023
  * The source code for this program is not published or otherwise divested of its trade secrets,
  * irrespective of what has been deposited with the U.S. Copyright Office.
- *
  */
-import { IRecordType } from "./IRecordType";
+
+import { IRecordT } from "./IRecordT";
 import { IRecord } from "./IRecord";
 
 /**
  * This class represents a File End record in an events file.
  */
 export class FileEndRecord implements IRecord {
-	constructor(private version: string, private fileId: string, private expansion: string) {
-	}
+	constructor(private version: string, private fileId: string, private expansion: string) { }
 
-	/**
-	 * @see com.ibm.etools.iseries.core.evfparser.IISeriesEventsFileRecordType#getRecordType()
-	 */
-	public getRecordType(): string {
-		return IRecordType.FILE_END;
-	}
-
-	/**
-	 * Set the version.
-	 * @param the version
-	 */
-	public setVersion(version: string) {
-		this.version = version;
+	public getRecordType(): IRecordT {
+		return IRecordT.FILE_END;
 	}
 
 	/**
 	 * Get the version.
-	 * @return the version
+	 * 
+	 * @return The version.
 	 */
 	public getVersion(): string {
 		return this.version;
 	}
 
 	/**
-	 * Set the file id.
-	 * @param the file id
+	 * Set the version.
+	 * 
+	 * @param version The version.
 	 */
-	public setFileId(fileId: string) {
-		this.fileId = fileId;
+	public setVersion(version: string) {
+		this.version = version;
 	}
 
 	/**
 	 * Get the file id.
-	 * @return the file id
+	 * 
+	 * @return The file id.
 	 */
 	public getFileId(): string {
 		return this.fileId;
 	}
 
 	/**
-	 * Set the expansion.
-	 * @param the expansion
+	 * Set the file id.
+	 * 
+	 * @param fileId The file id.
 	 */
-	public setExpansion(expansion: string) {
-		this.expansion = expansion;
+	public setFileId(fileId: string) {
+		this.fileId = fileId;
 	}
 
 	/**
 	 * Get the expansion.
-	 * @return the expansion
+	 * 
+	 * @return The expansion.
 	 */
 	public getExpansion(): string {
 		return this.expansion;
+	}
+
+	/**
+	 * Set the expansion.
+	 * 
+	 * @param expansion The expansion.
+	 */
+	public setExpansion(expansion: string) {
+		this.expansion = expansion;
 	}
 }

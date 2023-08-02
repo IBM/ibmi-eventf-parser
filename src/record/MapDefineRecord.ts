@@ -1,105 +1,113 @@
-/* IBM Confidential
+/**
+ * IBM Confidential
  * OCO Source Materials
  * 5900-AN9
  * (c) Copyright IBM Corp. 2003, 2021
  * The source code for this program is not published or otherwise divested of its trade secrets,
  * irrespective of what has been deposited with the U.S. Copyright Office.
- *
  */
-import { IRecordType } from "./IRecordType";
+
+import { IRecordT } from "./IRecordT";
 import { IRecord } from "./IRecord";
 
 /**
  * This class represents a Map Define record in an events file.
  */
 export class MapDefineRecord implements IRecord {
-	constructor(private version: string, private macroId: string, private line: string, private length: string, private macroName: string) {
-	}
+	constructor(private version: string, private macroId: string, private line: string,
+		private length: string, private macroName: string) { }
 
-	/**
-	 * @see com.ibm.etools.iseries.core.evfparser.IISeriesEventsFileRecordType#getRecordType()
-	 */
-	public getRecordType(): string {
-		return IRecordType.MAP_DEFINE;
-	}
-
-	/**
-	 * Set the version.
-	 * @param the version
-	 */
-	public setVersion(version: string) {
-		this.version = version;
+	public getRecordType(): IRecordT {
+		return IRecordT.MAP_DEFINE;
 	}
 
 	/**
 	 * Get the version.
-	 * @return the version
+	 * 
+	 * @return The version.
 	 */
 	public getVersion(): string {
 		return this.version;
 	}
 
 	/**
-	 * Set the macro id.
-	 * @param the macro id
+	 * Set the version.
+	 * 
+	 * @param version The version.
 	 */
-	public setMacroId(macroId: string) {
-		this.macroId = macroId;
+	public setVersion(version: string) {
+		this.version = version;
 	}
 
 	/**
 	 * Get the macro id.
-	 * @return the macro id
+	 * 
+	 * @return The macro id.
 	 */
 	public getMacroId(): string {
 		return this.macroId;
 	}
 
 	/**
-	 * Set the line.
-	 * @param the line
+	 * Set the macro id.
+	 * 
+	 * @param macroId The macro id.
 	 */
-	public setLine(line: string) {
-		this.line = line;
+	public setMacroId(macroId: string) {
+		this.macroId = macroId;
 	}
 
 	/**
 	 * Get the line.
-	 * @return the line
+	 * 
+	 * @return The line.
 	 */
 	public getLine(): string {
 		return this.line;
 	}
 
 	/**
-	 * Set the length.
-	 * @param the length
+	 * Set the line.
+	 * 
+	 * @param line The line.
 	 */
-	public setLength(length: string) {
-		this.length = length;
+	public setLine(line: string) {
+		this.line = line;
 	}
 
 	/**
 	 * Get the length.
-	 * @return the length
+	 * 
+	 * @return The length.
 	 */
 	public getLength(): string {
 		return this.length;
 	}
 
 	/**
-	 * Set the macro name.
-	 * @param the macro name
+	 * Set the length.
+	 * 
+	 * @param length The length.
 	 */
-	public setMacroName(macroName: string) {
-		this.macroName = macroName;
+	public setLength(length: string) {
+		this.length = length;
 	}
 
 	/**
 	 * Get the macro name.
-	 * @return the macro name
+	 * 
+	 * @return The macro name.
 	 */
 	public getMacroName(): string {
 		return this.macroName;
+	}
+
+	/**
+	 * Set the macro name.
+	 * 
+	 * @param macroName The macro name.
+	 */
+	public setMacroName(macroName: string) {
+		this.macroName = macroName;
 	}
 }

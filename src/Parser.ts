@@ -1,6 +1,14 @@
+/**
+ * IBM Confidential
+ * OCO Source Materials
+ * 5900-AN9
+ * (c) Copyright IBM Corp. 2021
+ * The source code for this program is not published or otherwise divested of its trade secrets,
+ * irrespective of what has been deposited with the U.S. Copyright Office.
+ */
 
 import * as path from "path";
-import { IRecordType } from './record/IRecordType';
+import { IRecordT } from './record/IRecordT';
 import { TimestampRecord } from './record/TimestampRecord';
 import { ProcessorRecord } from './record/ProcessorRecord';
 import { FileIDRecord } from './record/FileIDRecord';
@@ -11,18 +19,63 @@ import { ErrorInformationRecord } from './record/ErrorInformationRecord';
 import { FileEndRecord } from './record/FileEndRecord';
 import { ExpansionRecord } from './record/ExpansionRecord';
 import { ExpansionProcessor } from './ExpansionProcessor';
+import { readFileSync } from 'fs';
+
+class SourceFile {
+  constructor(private location: string, private browseMode: boolean) { }
+
+  public getLocation(): string {
+    return this.location;
+  }
+
+  public isReadOnly(): string {
+    return this.browseMode.toString();
+  }
+
+  public setReadOnly(value: boolean) {
+    // A member should be opened in browse mode
+    this.browseMode = value;
+  }
+}
+
+class LookAheadReader implements ISequentialFileReader {
+  private iSequentialFileReader: ISequentialFileReader;
+  private peakLine: string | undefined;
+
+  constructor(iSequentialFileReader: ISequentialFileReader) {
+    this.iSequentialFileReader = iSequentialFileReader;
+  }
+
+  readNextLine(): string | undefined {
+    if (this.peakLine) {
+      const nextLine = this.peakLine;
+      this.peakLine = undefined;
+
+      return nextLine;
+    } else {
+      return this.iSequentialFileReader.readNextLine();
+    }
+  }
+
+  peakNextRecordType() {
+    this.peakLine = this.iSequentialFileReader.readNextLine();
+    return this.peakLine?.split(/\s+/).filter(token => token !== "")[0];
+  }
+}
 
 export class Parser {
   static LOGGER: any;
 
-  private _exception: Error;
-  private _processor: IProcessor;
-  private _lastOutputFile: SourceFile | undefined;
-  private _currentOutputFile: SourceFile;
-  private _sourceTable: Map<String, SourceFile>;
+  private exception: Error | undefined;
+  private processor: IProcessor | undefined;
+  private lastOutputFile: SourceFile | undefined;
+  private currentOutputFile: SourceFile | undefined;
+
+  // Map of File ID to SourceFile
+  private sourceTable: Map<String, SourceFile>;
 
   constructor() {
-    this._sourceTable = new Map<String, SourceFile>();
+    this.sourceTable = new Map<String, SourceFile>();
   }
 
   private getUntilTheEndOfTheLine(startIndex: number, st: string[]): string {
@@ -35,44 +88,44 @@ export class Parser {
     return message;
   }
 
-  private getRemainderAfterToken(str: string, tokenIndex: number): string {
-    const tokens = str.split(' ');
-    const remainderTokens = tokens.slice(tokenIndex + 1);
-    const remainder = remainderTokens.join(' ');
-    return remainder;
-  }
-
   private log(content: string) {
     if (process.env.DEBUG) {
       console.log(content);
     }
   }
 
-  private logError(content: Error) {
-    console.log(content);
+  parseFile(fileName: string, markerCreator?: IMarkerCreator) {
+    this.parse(new FileReader(fileName), markerCreator);
   }
 
-  parse(fileReader: ISequentialFileReader, ccsid: number, markerCreator?: IMarkerCreator) {
+  parse(fileReader: ISequentialFileReader, markerCreator?: IMarkerCreator) {
     let word: string;
     let fileId: string;
-    if (!this._processor) {
-      this._processor = new ExpansionProcessor();
+
+    if (!this.processor) {
+      this.processor = new ExpansionProcessor();
     }
-    this._processor?.doPreProcessing();
+    // Allows processor to initialize prior to parsing
+    this.processor?.doPreProcessing();
+
     const reader = new LookAheadReader(fileReader);
     let lineText = reader.readNextLine();
+
     while (lineText) {
       let st = lineText.split(/\s+/).filter(token => token !== "");
       let i = 0
+
       while (i < st.length) {
         word = st[i++];
-        if (word === IRecordType.ERROR_INFORMATION) {
-          let version = st[i++];
+
+        if (word === IRecordT.ERROR_INFORMATION) {
+          const version = st[i++];
           fileId = st[i++];
-          let fileProcessed = this._sourceTable[fileId];
+
+          let fileProcessed = this.sourceTable.get(fileId);
           if (!fileProcessed) {
             if (fileId === ('000')) {
-              let location001 = this._sourceTable['001'];
+              let location001 = this.sourceTable.get('001');
               if (location001) {
                 fileProcessed = location001;
               } else {
@@ -82,19 +135,25 @@ export class Parser {
               fileProcessed = new SourceFile('', false);
             }
           }
-          let annotationClass = st[i++];
-          let line = st[i++];
-          let lineStart = st[i++];
-          let charStart = st[i++];
-          let lineEnd = st[i++];
-          let charEnd = st[i++];
-          let id = st[i++];
-          let severityText = st[i++];
-          let severity = st[i++];
-          let totalMessageLen = st[i++];
-          // TODO: Handle continued message lines.
-          let message = this.getUntilTheEndOfTheLine(i, st);
 
+          const annotationClass = st[i++];
+          const line = st[i++];
+          const lineStart = st[i++];
+          const charStart = st[i++];
+          const lineEnd = st[i++];
+          const charEnd = st[i++];
+          const id = st[i++];
+          const severityText = st[i++];
+          const severity = st[i++];
+
+          const totalMessageLen = st[i++];
+          const message = this.getUntilTheEndOfTheLine(i, st);
+
+          // Previous implementation used the location length to determine how many records to 
+          // read in.  This requires NLS process to account for differences in character length 
+          // between the encoding in the original EVENTF and the current one being parsed.
+          // To avoid this, we simply read all subsequent records that are of the continued type
+          //
           // let msgToken = st.nextToken('\n\r\f');
           // let msgTokenNl = new StringNL(msgToken, ccsid, true);
 
@@ -126,239 +185,247 @@ export class Parser {
           //     message += ' ' + msgTokenNl.trim().convertFromVisualToLogical(true);
           //   }
           // }
-          let record = new ErrorInformationRecord(version, fileId, annotationClass, line, lineStart, charStart,
+
+          const record = new ErrorInformationRecord(version, fileId, annotationClass, line, lineStart, charStart,
             lineEnd, charEnd, id, severityText, severity, totalMessageLen, message);
           record.setFileName(fileProcessed.getLocation());
-          if (this._processor) {
-            this._processor.processErrorRecord(record);
+
+          if (this.processor) {
+            this.processor.processErrorRecord(record);
           }
+
           if (markerCreator) {
             markerCreator.createMarker(record, record.getFileName(), fileProcessed.isReadOnly());
           }
+
           // if (!messageLenCorrect) {
           //   st = new StringTokenizer(msgToken);
           //   st = msgToken.split(" ")
           //   continue;
           // }
+
+          break;
+        } else if (word === (IRecordT.FILE_ID)) {
+          let browseMode = false;
+          const version = st[i++];
+          fileId = st[i++];
+          const lineNumber = st[i++];
+          const locationLength = parseInt(st[i++]);
+          let location = lineText.substring(28);
+
+          this.log(`EventsFileParser: location from line 1 = ${location}`);
+          let nextRecordType = reader.peakNextRecordType();
+          while (nextRecordType === IRecordT.FILE_CONT) {
+            lineText = reader.readNextLine();
+            if (lineText) {
+              st = lineText.split(' ');
+              location += (lineText.substring(28));
+              this.log(`EventsFileParser: location from line 1 = ${location}`);
+              nextRecordType = reader.peakNextRecordType();
+            } else {
+              throw new Error('Events file has incorrect format. End of file encountered before location length satisfied.');
+            }
+          }
+
+          // Attempt to parse the FILEID string backwards in order to find the timestamp and temp flag
+          // Timestamp should only be made of digits if it was parsed correctly. Otherwise, just ignore it.
+          let timestamp = location.substring(location.length - 16, location.length - 2);
+          try {
+            parseInt(timestamp);
+          } catch (e: any) {
+            timestamp = '';
+          }
+          const tempFlag = location.charAt(location.length - 1);
+
+          // Makes sure that the Temp Flag is the last character in the FILEID event and that it is preceded by a space
+          const isSpaceBeforeTempFlag = location.charAt(location.length - 2) === ' ';
+          if (tempFlag === '1' && isSpaceBeforeTempFlag) {
+            browseMode = true;
+          } else {
+            browseMode = false;
+          }
+
+          location = location.substring(0, location.length - 17);
+          location = this.resolveRelativePath(location);
+
+          // If this file was the output file of the previous block, then it should be opened in Browse Mode
+          const fileEntry = new SourceFile(location, browseMode);
+          if ((this.lastOutputFile && location === (this.lastOutputFile.getLocation()))
+            || this.currentOutputFile && location === (this.currentOutputFile.getLocation())) {
+            fileEntry.setReadOnly(true);
+          }
+
+          // If the file ID is 999, then this is the new output file
+          if ('999' === fileId) {
+            if (!this.lastOutputFile) {
+              this.lastOutputFile = this.currentOutputFile = fileEntry;
+            } else {
+              this.lastOutputFile = this.currentOutputFile;
+              this.currentOutputFile = fileEntry;
+            }
+          }
+
+          this.sourceTable.set(fileId, fileEntry);
+
+          if (this.processor) {
+            // Pass FILEID information to processor
+            const record = new FileIDRecord(version, fileId, lineNumber, locationLength.toString(), location, timestamp.toString(), tempFlag);
+            try {
+              this.processor.processFileIDRecord(record);
+            } catch (e: any) {
+              const errorMessage = e.message ? e.message : e;
+              this.log(errorMessage);
+              this.exception = new Error(errorMessage);
+            }
+          }
+
+          break;
+        } else if (word === (IRecordT.FILE_END)) {
+          // Pass FILEEND information to processor
+          if (this.processor) {
+            const version = st[i++];
+            const fileId = st[i++];
+            const expansion = st[i++];
+            const record = new FileEndRecord(version, fileId, expansion);
+
+            try {
+              this.processor?.processFileEndRecord(record);
+            } catch (e: any) {
+              const errorMessage = e.message ? e.message : e;
+              this.log(errorMessage);
+              this.exception = new Error(errorMessage);
+            }
+          }
+
+          break;
+        } else if (word === (IRecordT.EXPANSION)) {
+          // Pass EXPANSION information to processor
+          if (this.processor) {
+            const record = new ExpansionRecord(st[i++], st[i++], st[i++], st[i++], st[i++], st[i++], st[i++]);
+            this.processor?.processExpansionRecord(record);
+          }
+
+          break;
+        } else if (word === (IRecordT.TIMESTAMP)) {
+          // Pass TIMESTAMP information to processor
+          if (this.processor) {
+            let record = new TimestampRecord(st[i++], st[i++]);
+            this.processor?.processTimestampRecord(record);
+          }
+
+          break;
+        } else if (word === (IRecordT.PROCESSOR)) {
+          // Pass PROCESSOR information to processor
+          if (this.processor) {
+            let record = new ProcessorRecord(st[i++], st[i++], st[i++]);
+
+            try {
+              this.processor?.processProcessorRecord(record);
+            } catch (e: any) {
+              const errorMessage = e.message ? e.message : e;
+              this.log(errorMessage);
+              this.exception = new Error(errorMessage);
+            }
+          }
+
           break;
         } else {
-          if (word === (IRecordType.FILE_ID)) {
-            let browseMode = false;
-            let version = st[i++];
-            fileId = st[i++];
-            let lineNumber = st[i++];
-            let locationLength = parseInt(st[i++]);
-            // location = st.nextToken('\n\r\f').trim();
-            let location = lineText.substring(28);
-
-            this.log(`EventsFileParser: location from line 1 = ${location}`);
-            let nextRecordType = reader.peakNextRecordType();
-            while (nextRecordType === IRecordType.FILE_CONT) {
-              lineText = reader.readNextLine();
-              if (lineText) {
-                st = lineText.split(' ');
-                location += (lineText.substring(28));
-                this.log(`EventsFileParser: location from line 1 = ${location}`);
-                nextRecordType = reader.peakNextRecordType();
-              } else {
-                throw new Error('Events file has incorrect format. End of file encountered before location length satisfied.');
-              }
-            }
-
-            let timestamp = location.substring(location.length - 16, location.length - 2);
-            try {
-              parseInt(timestamp);
-            } catch (e: any) {
-              timestamp = '';
-            }
-            let tempFlag = location.charAt(location.length - 1);
-            let isSpaceBeforeTempFlag = location.charAt(location.length - 2) === ' ';
-            if (tempFlag === '1' && isSpaceBeforeTempFlag) {
-              browseMode = true;
-            } else {
-              browseMode = false;
-            }
-            location = location.substring(0, location.length - 17);
-            location = this.resolveRelativePath(location);
-
-            let index = location.indexOf('>');
-            if (index !== -1 && location.indexOf('<') === 0) {
-              if (markerCreator) {
-                markerCreator.updateConnectionName(location, index);
-              }
-              location = location.substring(index + 1);
-            }
-            let fileEntry = new SourceFile(location, browseMode);
-            if ((this._lastOutputFile && location === (this._lastOutputFile.getLocation())) || this._currentOutputFile && location === (this._currentOutputFile.getLocation())) {
-              fileEntry.setReadOnly(true);
-            }
-            if ('999' === fileId) {
-              if (!this._lastOutputFile) {
-                this._lastOutputFile = this._currentOutputFile = fileEntry;
-              } else {
-                this._lastOutputFile = this._currentOutputFile;
-                this._currentOutputFile = fileEntry;
-              }
-            }
-            this._sourceTable[fileId] = fileEntry;
-            if (this._processor) {
-              let record = new FileIDRecord(version, fileId, lineNumber, locationLength.toString(), location, timestamp.toString(), tempFlag);
-              try {
-                this._processor.processFileIDRecord(record);
-              } catch (e: any) {
-                this.logError(e.message ? e.message : e);
-                this._exception = e.message ? e.message : e;
-              }
-            }
+          // The following Events are being ignored since they are not used.
+          // If needed, we could parse those Events and pass them to an IISeriesEventsFileProcessor.
+          if (word === (IRecordT.PROGRAM) || word === (IRecordT.MAP_DEFINE) || word === (IRecordT.MAP_END)
+            || word === (IRecordT.MAP_START) || word === (IRecordT.FEEDBACK_CODE) || word.trim().length === 0) {
             break;
           } else {
-            if (word === (IRecordType.FILE_END)) {
-              if (this._processor) {
-                let version = st[i++];
-                let fileId = st[i++];
-                let expansion = st[i++];
-                let record = new FileEndRecord(version, fileId, expansion);
-                try {
-                  this._processor?.processFileEndRecord(record);
-                } catch (e: any) {
-                  this.logError(e.message ? e.message : e);
-                  this._exception = e.message ? e.message : e;
-                }
-              }
-              break;
-            } else {
-              if (word === (IRecordType.EXPANSION)) {
-                if (this._processor) {
-                  let record = new ExpansionRecord(st[i++], st[i++], st[i++], st[i++], st[i++], st[i++], st[i++]);
-                  // record.setVersion(st[i++]); // use split
-                  // record.setInputFileID(st[i++]);
-                  // record.setInputLineStart(st[i++]);
-                  // record.setInputLineEnd(st[i++]);
-                  // record.setOutputFileID(st[i++]);
-                  // record.setOutputLineStart(st[i++]);
-                  // record.setOutputLineEnd(st[i++]);
-                  this._processor?.processExpansionRecord(record);
-                }
-                break;
-              } else {
-                if (word === (IRecordType.TIMESTAMP)) {
-                  if (this._processor) {
-                    let record = new TimestampRecord(st[i++], st[i++]);
-                    // record.setVersion(st[i++]);
-                    // record.setTimestamp(st[i++]);
-                    this._processor?.processTimestampRecord(record);
-                  }
-                  break;
-                } else {
-                  if (word === (IRecordType.PROCESSOR)) {
-                    if (this._processor) {
-                      let record = new ProcessorRecord(st[i++], st[i++], st[i++]);
-                      // record.setVersion(st[i++]);
-                      // record.setOutputId(st[i++]);
-                      // record.setLineClass(st[i++]);
-                      try {
-                        this._processor?.processProcessorRecord(record);
-                      } catch (e: any) {
-                        this.logError(e.message ? e.message : e);
-                        this._exception = e.message ? e.message : e;
-                      }
-                    }
-                    break;
-                  } else {
-                    if (word === (IRecordType.PROGRAM) || word === (IRecordType.MAP_DEFINE) || word === (IRecordType.MAP_END) || word === (IRecordType.MAP_START) || word === (IRecordType.FEEDBACK_CODE) || word.trim().length === 0) {
-                      break;
-                    } else {
-                      throw new Error('Events file has incorrect format. Unexpected line type. LT=' + lineText);
-                    }
-                  }
-                }
-              }
-            }
+            throw new Error(`Events file has incorrect format. Unexpected line type. LT=${lineText}`);
           }
         }
       }
+
       if (lineText) {
         lineText = reader.readNextLine();
       }
     }
-    if (this._processor) {
+
+    if (this.processor) {
+      // Allows processor to consume the information after completion of parsing and writing of markers
       try {
-        this._processor?.doPostProcessing();
-      } catch (ex) {
-        this._exception = ex;
+        this.processor?.doPostProcessing();
+      } catch (e: any) {
+        this.exception = new Error(e.message ? e.message : e)
       }
     }
   }
+
   private resolveRelativePath(location: string) {
-    // normalize the location in case the location is a relative path
+    // Normalize the location in case the location is a relative path
     location = path.normalize(location).toString();
 
-    // after normalization, / will be change to \ for windows path
-    // have to change it back
+    // After normalization, / will be change to \ for windows path,
+    // so have to change it back.
     location = location.replace(/\\/g, '/');
     return location;
   }
-  getException() {
-    return this._exception;
+
+  public getException(): Error | undefined {
+    return this.exception;
   }
-  setProcessor(processor: IProcessor) {
-    this._processor = processor;
+
+  public setProcessor(processor: IProcessor) {
+    this.processor = processor;
   }
-  getAllErrors() {
-    if (this._processor) {
-      const nestedErrors = this._processor?.getAllErrors();
-      const allErrors = [].concat(...nestedErrors);
+
+  /**
+   * After all records in the Events File are processed, this method is called to
+   * return all the errors from all the processor blocks (ProcessorBlock) of the
+   * Events File. Since each ProcessorBlock contains an array of errors, the result
+   * will be flattened to an array.
+   * 
+   * @return An array of all parsed errors from all processor blocks of the Events File.
+   */
+  public getAllErrors(): ErrorInformationRecord[] {
+    if (this.processor) {
+      const nestedErrors = this.processor?.getAllErrors();
+      let allErrors: ErrorInformationRecord[] = [];
+      allErrors = allErrors.concat(...nestedErrors);
+
       return allErrors;
     } else {
       return [];
     }
   }
-  getAllFileIDRecords() {
-    if (this._processor) {
-      return this._processor.getAllFileIDRecords();
+
+  /**
+   * Get all file ID records.
+   * 
+   * @return An array of all file ID records.
+   */
+  public getAllFileIDRecords(): FileIDRecord[] {
+    if (this.processor) {
+      return this.processor.getAllFileIDRecords();
     } else {
       return [];
     }
   }
 }
 
-class LookAheadReader implements ISequentialFileReader {
-  private iSequentialFileReader: ISequentialFileReader;
-  private peakLine: string | undefined;
+export default class FileReader implements ISequentialFileReader {
+  file: string;
+  linesArray: string[];
+  currLineNum = 0;
 
-  constructor(iSequentialFileReader: ISequentialFileReader) {
-    this.iSequentialFileReader = iSequentialFileReader;
+  constructor(fileName: string) {
+    this.file = readFileSync(fileName, 'utf-8');
+    this.linesArray = this.file.split(/\r?\n/)
   }
 
-  readNextLine(): string | undefined {
-    if (this.peakLine) {
-      const nextLine = this.peakLine;
-      this.peakLine = undefined;
-      return nextLine;
+  public readNextLine() {
+    let line: string | undefined;
+    if (this.currLineNum < this.linesArray.length) {
+      line = this.linesArray[this.currLineNum];
+      this.currLineNum++;
     } else {
-      return this.iSequentialFileReader.readNextLine();
+      line = undefined;
     }
-  }
-
-  peakNextRecordType() {
-    this.peakLine = this.iSequentialFileReader.readNextLine();
-    return this.peakLine?.split(/\s+/).filter(token => token !== "")[0];
-  }
-}
-
-class SourceFile {
-  constructor(private location: string, private browseMode: boolean) {
-  }
-
-  public getLocation(): string {
-    return this.location;
-  }
-
-  public isReadOnly(): string {
-    return this.browseMode.toString();
-  }
-  // a member should be opened in Browse Mode
-  public setReadOnly(value: boolean) {
-    this.browseMode = value;
+    return line;
   }
 }

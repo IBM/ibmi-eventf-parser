@@ -3,7 +3,8 @@
  * This interface should be implemented by all classes that represent
  * records in an events file.
  */
-export enum IRecordType {
+
+export enum IRecordT {
     TIMESTAMP = "TIMESTAMP",
     PROCESSOR = "PROCESSOR",
     FILE_ID = "FILEID",

@@ -1,14 +1,15 @@
 import { assert, describe, it } from 'vitest'
 import { Parser } from '../src/Parser';
-import TestDataReader from './TestDataReader';
 import { ErrorInformationRecord } from '../src/record/ErrorInformationRecord';
 import { FileIDRecord } from '../src/record/FileIDRecord';
 
+
+const TEST_DIR = 'testfixtures/evf';
 describe('Tests', () => {
+
     it('test LITINERR', () => {
         const parser = new Parser();
-        const fileReader = new TestDataReader('LITINERR.PGM.evfevent');
-        parser.parse(fileReader, 37);
+        parser.parseFile(`${TEST_DIR}/LITINERR.PGM.evfevent`);
 
         const fileIDRecords = parser.getAllFileIDRecords();
         assert.strictEqual(fileIDRecords.length, 1);
@@ -25,8 +26,7 @@ describe('Tests', () => {
 
     it('test SQLRPGLE', () => {
         const parser = new Parser();
-        const fileReader = new TestDataReader('SQLRPGLE.PGM.evfevent');
-        parser.parse(fileReader, 37);
+        parser.parseFile(`${TEST_DIR}/SQLRPGLE.PGM.evfevent`);
 
         const fileIDRecords = parser.getAllFileIDRecords();
         assert.strictEqual(fileIDRecords.length, 1);
@@ -42,10 +42,25 @@ describe('Tests', () => {
         assert.strictEqual(exceptions, undefined);
     });
 
+    it('test SQLCMOD', () => {
+        const parser = new Parser();
+        parser.parseFile(`${TEST_DIR}/SQLCMOD.evfevent`);
+
+        const fileIDRecords = parser.getAllFileIDRecords();
+        assert.strictEqual(fileIDRecords.length, 1);
+        assertFileIDRecord(fileIDRecords[0], '/QSYS.LIB/QTEMP.LIB/QSQLT00103.FILE/ANZ_FILE2.MBR', '001', '0');
+
+        const errors = parser.getAllErrors();
+        assert.strictEqual(errors.length, 1);
+        assertErrorInformationRecord(errors[0], '/QSYS.LIB/QTEMP.LIB/QSQLT00103.FILE/ANZ_FILE2.MBR', '001570', 'Undeclared identifier y.');
+
+        const exceptions = parser.getException();
+        assert.strictEqual(exceptions!.message, 'One or more FILEID records do not have matching FILEEND records\nList of outstanding FILEID records: {"stack":[{"ID":"001","lines":0}]}');
+    });
+
     it('test TYPICAL', () => {
         const parser = new Parser();
-        const fileReader = new TestDataReader('TYPICAL.PGM.evfevent');
-        parser.parse(fileReader, 37);
+        parser.parseFile(`${TEST_DIR}/TYPICAL.PGM.evfevent`);
 
         const fileIDRecords = parser.getAllFileIDRecords();
         assert.strictEqual(fileIDRecords.length, 3);
@@ -65,8 +80,7 @@ describe('Tests', () => {
 
     it('test TYPICAL2', () => {
         const parser = new Parser();
-        const fileReader = new TestDataReader('TYPICAL2.PGM.evfevent');
-        parser.parse(fileReader, 37);
+        parser.parseFile(`${TEST_DIR}/TYPICAL2.PGM.evfevent`);
 
         const fileIDRecords = parser.getAllFileIDRecords();
         assert.strictEqual(fileIDRecords.length, 1);
@@ -84,8 +98,7 @@ describe('Tests', () => {
 
     it('test LONG_SOURCE_FILE_PATH', () => {
         const parser = new Parser();
-        const fileReader = new TestDataReader('LONG_SOURCE_FILE_PATH.PGM.evfevent');
-        parser.parse(fileReader, 37);
+        parser.parseFile(`${TEST_DIR}/LONG_SOURCE_FILE_PATH.PGM.evfevent`);
 
         const fileIDRecords = parser.getAllFileIDRecords();
         assert.strictEqual(fileIDRecords.length, 1);
@@ -110,8 +123,7 @@ describe('Tests', () => {
 
     it('test NESTED_COPYBOOK', () => {
         const parser = new Parser();
-        const fileReader = new TestDataReader('NESTED_COPYBOOK.PGM.evfevent');
-        parser.parse(fileReader, 37);
+        parser.parseFile(`${TEST_DIR}/NESTED_COPYBOOK.PGM.evfevent`);
 
         const fileIDRecords = parser.getAllFileIDRecords();
         assert.strictEqual(fileIDRecords.length, 3);
@@ -136,8 +148,7 @@ describe('Tests', () => {
 
     it('test SQLLVL1', () => {
         const parser = new Parser();
-        const fileReader = new TestDataReader('SQLLVL1.PGM.evfevent');
-        parser.parse(fileReader, 37);
+        parser.parseFile(`${TEST_DIR}/SQLLVL1.PGM.evfevent`);
 
         const fileIDRecords = parser.getAllFileIDRecords();
         assert.strictEqual(fileIDRecords.length, 3);
@@ -161,8 +172,7 @@ describe('Tests', () => {
 
     it('test SQLLVL2', () => {
         const parser = new Parser();
-        const fileReader = new TestDataReader('SQLLVL2.PGM.evfevent');
-        parser.parse(fileReader, 37);
+        parser.parseFile(`${TEST_DIR}/SQLLVL2.PGM.evfevent`);
 
         const fileIDRecords = parser.getAllFileIDRecords();
         assert.strictEqual(fileIDRecords.length, 1);
