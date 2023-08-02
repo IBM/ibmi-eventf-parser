@@ -8,9 +8,13 @@
   "repository": {
     "url": "https://github.com/IBM/ibmi-eventf-parser"
   },
+  "main": "./dist/index.js",
   "scripts": {
+    "webpack:dev": "webpack --mode none --config ./webpack.config.js",
+    "webpack": "webpack --mode production --config ./webpack.config.js",
     "test": "npx vitest",
-    "coverage": "npx vitest run --coverage"
+    "coverage": "npx vitest run --coverage",
+    "postinstall": "npm run webpack"
   },
   "dependencies": {
     "jest": "^29.6.1"
@@ -18,7 +22,11 @@
   "devDependencies": {
     "@babel/preset-typescript": "^7.22.5",
     "@vitest/coverage-v8": "^0.33.0",
+    "merge-options": "^3.0.4",
     "ts-jest": "^29.1.1",
-    "vitest": "^0.33.0"
+    "vitest": "^0.33.0",
+    "webpack": "^5.88.2",
+    "webpack-cli": "^5.1.4",
+    "ts-loader": "^9.4.4"
   }
 }

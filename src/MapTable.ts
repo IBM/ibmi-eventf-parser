@@ -20,7 +20,7 @@ class SourceLineRange {
 	// Input File Info
 	private inputStartLine: number = 0;
 	private inputEndLine: number = -1;
-	private inputFileID: string;
+	private inputFileID: string = '';
 
 	// Output File Info
 	private outputStartLine: number = 0;

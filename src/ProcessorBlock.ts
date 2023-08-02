@@ -21,10 +21,10 @@ export class ProcessorBlock {
   private errors: ErrorInformationRecord[];
 
   // Input to the processor block
-  private inputFile: FileIDRecord;
+  private inputFile: FileIDRecord | undefined;
 
   // Output of the processor block
-  private outputFile: FileIDRecord;
+  private outputFile: FileIDRecord | undefined;
 
   // The PROCESSOR record
   private currentProcessor: ProcessorRecord;
@@ -59,7 +59,7 @@ export class ProcessorBlock {
     this.errors = [];
   }
 
-  public getInputFile(): FileIDRecord {
+  public getInputFile(): FileIDRecord | undefined {
     return this.inputFile;
   }
 
@@ -68,7 +68,7 @@ export class ProcessorBlock {
    * 
    * @return the input file of the first processor block of the current events file.
    */
-  getInitialInputFile(): FileIDRecord {
+  getInitialInputFile(): FileIDRecord | undefined {
     if (this.previousProcessorBlock && !this.getIsFirstInEventsFile()) {
       return this.previousProcessorBlock.getInitialInputFile();
     }
@@ -98,7 +98,7 @@ export class ProcessorBlock {
     }
   }
 
-  public getOutputFile(): FileIDRecord {
+  public getOutputFile(): FileIDRecord | undefined {
     return this.outputFile;
   }
 
@@ -167,9 +167,10 @@ export class ProcessorBlock {
     let inputFileLocation = '';
     let inputFileId = '';
 
-    if (this.getInputFile()) {
-      inputFileLocation = this.getInputFile().getFilename();
-      inputFileId = this.getInputFile().getSourceId();
+    const inputFile = this.getInputFile();
+    if (inputFile) {
+      inputFileLocation = inputFile.getFilename();
+      inputFileId = inputFile.getSourceId();
     }
 
     if (this.previousProcessorBlock && !this.getIsFirstInEventsFile() && this.isMappingSupported()
@@ -217,8 +218,10 @@ export class ProcessorBlock {
     // True if the temporary flag of the file is 1 (indicating temp member)
     // or the file is the same as the output file of the current or previous processor block
     return fileIDRecord.getFlag() === ('1')
-      || ((this.previousProcessorBlock && !this.getIsFirstInEventsFile()) && this.previousProcessorBlock.getOutputFile() && fileIDRecord.getFilename() === (this.previousProcessorBlock.getOutputFile().getFilename()))
-      || (this.getOutputFile() && fileIDRecord.getFilename() === (this.getOutputFile().getFilename()));
+      || ((this.previousProcessorBlock && !this.getIsFirstInEventsFile())
+        && this.previousProcessorBlock.getOutputFile() !== undefined
+        && fileIDRecord.getFilename() === (this.previousProcessorBlock.getOutputFile()!.getFilename()))
+      || (this.getOutputFile() !== undefined && fileIDRecord.getFilename() === (this.getOutputFile()!.getFilename()));
   }
 
   /**
@@ -276,13 +279,14 @@ export class ProcessorBlock {
         readOnly = fileIDRecord ? this.isFileReadOnly(fileIDRecord) : false;
         error.setFileName(fileLocation);
       } else {
-        readOnly = this.isFileReadOnly(this.getInitialInputFile());
+        const initialInputFile = this.getInitialInputFile();
+        readOnly = initialInputFile ? this.isFileReadOnly(initialInputFile) : false;
 
         // If getFileLocationForFileID returns null, that means that the
         // file with fileId of the error is not in the fileTable, most
         // likely because it is an output file. Map this error to the
         // top of the input file of this processor.
-        error.setFileName(this.getInitialInputFile().getFilename());
+        error.setFileName(initialInputFile?.getFilename() || '');
         error.setStmtLine('0');
         error.setStartErrLine('0');
         error.setTokenStart('000');

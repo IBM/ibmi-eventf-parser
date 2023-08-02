@@ -65,10 +65,10 @@ class LookAheadReader implements ISequentialFileReader {
 export class Parser {
   static LOGGER: any;
 
-  private exception: Error;
-  private processor: IProcessor;
+  private exception: Error | undefined;
+  private processor: IProcessor | undefined;
   private lastOutputFile: SourceFile | undefined;
-  private currentOutputFile: SourceFile;
+  private currentOutputFile: SourceFile | undefined;
 
   // Map of File ID to SourceFile
   private sourceTable: Map<String, SourceFile>;
@@ -367,7 +367,7 @@ export class Parser {
     return location;
   }
 
-  public getException(): Error {
+  public getException(): Error | undefined {
     return this.exception;
   }
 
