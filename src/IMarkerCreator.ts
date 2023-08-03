@@ -1,3 +1,7 @@
+/*
+ * (c) Copyright IBM Corp. 2023
+ */
+
 import { ErrorInformationRecord } from "./record/ErrorInformationRecord";
 
 /**

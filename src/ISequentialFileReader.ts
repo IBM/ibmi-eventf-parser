@@ -1,5 +1,5 @@
-/**
- * (c) Copyright IBM Corp 2004
+/*
+ * (c) Copyright IBM Corp. 2023
  */
 
 /**
