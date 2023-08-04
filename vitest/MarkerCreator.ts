@@ -1,3 +1,7 @@
+/*
+ * (c) Copyright IBM Corp. 2023
+ */
+
 import { IMarkerCreator } from "../src/IMarkerCreator";
 import { ErrorInformationRecord } from "../src/record/ErrorInformationRecord";
 

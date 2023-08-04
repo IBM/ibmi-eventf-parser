@@ -1,9 +1,11 @@
+/*
+ * (c) Copyright IBM Corp. 2023
+ */
+
 /**
- * (C) Copyright IBM Corp. 2003  All Rights Reserved.
  * This interface should be implemented by all classes that represent
  * records in an events file.
  */
-
 export enum IRecordT {
     TIMESTAMP = "TIMESTAMP",
     PROCESSOR = "PROCESSOR",
