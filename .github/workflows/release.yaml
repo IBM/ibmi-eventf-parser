@@ -30,7 +30,7 @@ jobs:
         run: npm install
 
       - name: Build
-        run: npx webpack
+        run: npm run webpack
 
       - name: Publish Types to NPM
         run: npm publish --access public
