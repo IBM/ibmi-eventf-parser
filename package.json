@@ -18,8 +18,8 @@
     "iseries",
     "as400"
   ],
-  "main": "dist/index.js",
-  "types": "dist/index.d.ts",
+  "main": "./dist/index.js",
+  "types": "./dist/src/index.d.ts",
   "scripts": {
     "webpack": "webpack --mode production --config ./webpack.config.js",
     "webpack:dev": "webpack --mode none --config ./webpack.config.js",
