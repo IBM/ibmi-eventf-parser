@@ -23,7 +23,6 @@
   "scripts": {
     "webpack": "webpack --mode production --config ./webpack.config.js",
     "webpack:dev": "webpack --mode none --config ./webpack.config.js",
-    "deploy": "npm run webpack && npm i && npm publish --access public",
     "test": "npx vitest run",
     "test:dev": "npx vitest",
     "coverage": "npx vitest run --coverage"
