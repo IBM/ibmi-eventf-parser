@@ -21,10 +21,11 @@
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "scripts": {
-    "webpack:dev": "webpack --mode none --config ./webpack.config.js",
     "webpack": "webpack --mode production --config ./webpack.config.js",
+    "webpack:dev": "webpack --mode none --config ./webpack.config.js",
     "deploy": "npm run webpack && npm i && npm publish --access public",
-    "test": "npx vitest",
+    "test": "npx vitest run",
+    "test:dev": "npx vitest",
     "coverage": "npx vitest run --coverage"
   },
   "devDependencies": {
