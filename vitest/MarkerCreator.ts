@@ -2,69 +2,46 @@
  * (c) Copyright IBM Corp. 2023
  */
 
-// import { IMarkerCreator } from "../src/IMarkerCreator";
+import { IMarkerCreator } from "../src/IMarkerCreator";
+import { ErrorInformationRecord } from "../src/record/ErrorInformationRecord";
 
-// class MarkerCreator implements IMarkerCreator {
-//     List<Error> _errors = new ArrayList<Error>();
-//     public void createMarker(QSYSEventsFileErrorInformationRecord record, String fileLocation, String isReadOnly)
-//             throws Exception {
-//         _errors.add( new Error(fileLocation, record.getMsg(), Integer.parseInt(record.getStmtLine())) );
-        
-//     }
+export class MarkerCreator implements IMarkerCreator {
+    private errors: Error[] = [];
 
-//     public void updateConnectionName(String location, int indexEndBracket) {
-        
-//     }
+    public createMarker(record: ErrorInformationRecord, fileLocation: string, isReadOnly: string) {
+        this.errors.push(new Error(fileLocation, parseInt(record.getStmtLine()), record.getMsg()));
+    }
 
-//     public int getErrorCount() {
-//         return _errors.size();
-//     }
+    public getErrorCount(): number {
+        return this.errors.length;
+    }
 
-//     public boolean equals(int errorIndex, String path, String msg, int line) {
-//         if (errorIndex >= _errors.size()) return false; // error not there
-//         Error err = _errors.get(errorIndex);
-//         return err.equals(new Error(path, msg, line));
-//     }
-// }
+    public equals(index: number, fileName: string, startErrLine: number, msg: string): boolean {
+        if (index >= this.errors.length) {
+            return false;
+        }
+
+        const error: Error = this.errors[index];
+        return error.equals(new Error(fileName, startErrLine, msg));
+    }
+}
 
 
-// public class Error {
-//     String _file;
-//     String _message;
-//     int    _startLine;
-//     Error(String file, String message, int stmtLine) {
-//         _file = file;
-//         _message = message;
-//         _startLine = stmtLine;
-//     }
-    
-//     public int hashCode() {
-//         final int prime = 31;
-//         int result = 1;
-//         result = prime * result + Objects.hash(_file, _message, _startLine);
-//         return result;
-//     }
+class Error {
+    constructor(private fileName: string, private startErrLine: number, private msg: string) { }
 
-//     public boolean equals(Object obj) {
-//         if (this == obj)
-//             return true;
-//         if (obj == null)
-//             return false;
-//         if (getClass() != obj.getClass())
-//             return false;
-//         Error other = (Error) obj;
-//         if (!Objects.equals(_file, other._file)) {
-//             System.err.println("expected: " + other._file + " got " + _file);
-//             return false;
-//         }
-//         if (!Objects.equals(_message, other._message)) {
-//             System.err.println("expected: " + other._message + " got " + _message);
-//             return false;
-//         }
-//         if (_startLine != other._startLine) {
-//             System.err.println("expected: " + other._startLine + " got " + _startLine);
-//             return false;
-//         }
-//         return true;
-//     }
-// }
+    public equals(expected: Error): boolean {
+        if (this.fileName !== expected.fileName) {
+            console.log(`Expected: ${expected.fileName} got ${this.fileName}`);
+            return false;
+        } else if (this.startErrLine !== expected.startErrLine) {
+            console.log(`Expected: ${expected.startErrLine} got ${this.startErrLine}`);
+            return false;
+        } else if (this.msg !== expected.msg) {
+            console.log(`Expected: ${expected.msg} got ${this.msg}`);
+            return false;
+        }
+
+        return true;
+    }
+}

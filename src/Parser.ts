@@ -197,10 +197,6 @@ export class Parser {
             this.processor.processErrorRecord(record);
           }
 
-          if (markerCreator) {
-            markerCreator.createMarker(record, record.getFileName(), fileProcessed.isReadOnly());
-          }
-
           // if (!messageLenCorrect) {
           //   st = new StringTokenizer(msgToken);
           //   st = msgToken.split(" ")
@@ -356,6 +352,17 @@ export class Parser {
       } catch (e: any) {
         this.exception = new Error(e.message ? e.message : e)
       }
+    }
+
+    if (markerCreator) {
+      const errors = this.getAllErrors();
+      errors.forEach(record => {
+        const sourceFile = this.sourceTable.get(record.getFileId());
+
+        if (sourceFile) {
+          markerCreator.createMarker(record, record.getFileName(), sourceFile.isReadOnly());
+        }
+      });
     }
   }
 
