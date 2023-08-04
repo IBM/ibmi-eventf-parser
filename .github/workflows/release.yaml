@@ -27,13 +27,12 @@ jobs:
           registry-url: "https://registry.npmjs.org"
 
       - name: Install NPM Dependencies
-        run: |
-          npm install
+        run: npm install
 
       - name: Build
         run: npx webpack
 
       - name: Publish Types to NPM
-        run: cd types && npm publish --access public
+        run: npm publish --access public
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
