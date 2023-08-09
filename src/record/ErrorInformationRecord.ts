@@ -12,10 +12,10 @@ export class ErrorInformationRecord implements IRecord {
 	// Source file name corresponding to file id - is computed later
 	private fileName: string = "";
 
-	constructor(private version: string, private fileId: string, private annotClass: string,
-		private stmtLine: string, private startErrLine: string, private tokenStart: string,
-		private endErrLine: string, private tokenEnd: string, private msgId: string,
-		private sevChar: string, private sevNum: string, private length: string, private msg: string) { }
+	constructor(private version: number, private fileId: number, private annotClass: number,
+		private stmtLine: number, private startErrLine: number, private tokenStart: number,
+		private endErrLine: number, private tokenEnd: number, private msgId: string,
+		private sevChar: string, private sevNum: number, private length: number, private msg: string) { }
 
 	getRecordType(): IRecordT {
 		return IRecordT.ERROR_INFORMATION;
@@ -26,7 +26,7 @@ export class ErrorInformationRecord implements IRecord {
 	 * 
 	 * @return The version.
 	 */
-	public getVersion(): string {
+	public getVersion(): number {
 		return this.version;
 	}
 
@@ -35,7 +35,7 @@ export class ErrorInformationRecord implements IRecord {
 	 * 
 	 * @return The file id.
 	 */
-	public getFileId(): string {
+	public getFileId(): number {
 		return this.fileId;
 	}
 
@@ -44,7 +44,7 @@ export class ErrorInformationRecord implements IRecord {
 	 * 
 	 * @param fileId The file id.
 	 */
-	public setFileId(fileId: string) {
+	public setFileId(fileId: number) {
 		this.fileId = fileId;
 	}
 
@@ -71,7 +71,7 @@ export class ErrorInformationRecord implements IRecord {
 	 * 
 	 * @return The annotation class.
 	 */
-	public getAnnotClass(): string {
+	public getAnnotClass(): number {
 		return this.annotClass;
 	}
 
@@ -80,7 +80,7 @@ export class ErrorInformationRecord implements IRecord {
 	 * 
 	 * @param annotClass The annotation class.
 	 */
-	public setAnnotClass(annotClass: string) {
+	public setAnnotClass(annotClass: number) {
 		this.annotClass = annotClass;
 	}
 
@@ -89,7 +89,7 @@ export class ErrorInformationRecord implements IRecord {
 	 * 
 	 * @return The statement line.
 	 */
-	public getStmtLine(): string {
+	public getStmtLine(): number {
 		return this.stmtLine;
 	}
 
@@ -98,7 +98,7 @@ export class ErrorInformationRecord implements IRecord {
 	 * 
 	 * @param stmtLine The statement line.
 	 */
-	public setStmtLine(stmtLine: string) {
+	public setStmtLine(stmtLine: number) {
 		this.stmtLine = stmtLine;
 	}
 
@@ -107,7 +107,7 @@ export class ErrorInformationRecord implements IRecord {
 	 * 
 	 * @return The starting error line.
 	 */
-	public getStartErrLine(): string {
+	public getStartErrLine(): number {
 		return this.startErrLine;
 	}
 
@@ -116,7 +116,7 @@ export class ErrorInformationRecord implements IRecord {
 	 * 
 	 * @param startErrLine The starting error line.
 	 */
-	public setStartErrLine(startErrLine: string) {
+	public setStartErrLine(startErrLine: number) {
 		this.startErrLine = startErrLine;
 	}
 
@@ -125,7 +125,7 @@ export class ErrorInformationRecord implements IRecord {
 	 * 
 	 * @return The starting error column.
 	 */
-	public getTokenStart(): string {
+	public getTokenStart(): number {
 		return this.tokenStart;
 	}
 
@@ -134,7 +134,7 @@ export class ErrorInformationRecord implements IRecord {
 	 * 
 	 * @param tokenStart The starting error column.
 	 */
-	public setTokenStart(tokenStart: string) {
+	public setTokenStart(tokenStart: number) {
 		this.tokenStart = tokenStart;
 	}
 
@@ -143,7 +143,7 @@ export class ErrorInformationRecord implements IRecord {
 	 * 
 	 * @return The ending error line.
 	 */
-	public getEndErrLine(): string {
+	public getEndErrLine(): number {
 		return this.endErrLine;
 	}
 
@@ -152,7 +152,7 @@ export class ErrorInformationRecord implements IRecord {
 	 * 
 	 * @param endErrLine The ending error line.
 	 */
-	public setEndErrLine(endErrLine: string) {
+	public setEndErrLine(endErrLine: number) {
 		this.endErrLine = endErrLine;
 	}
 
@@ -161,7 +161,7 @@ export class ErrorInformationRecord implements IRecord {
 	 * 
 	 * @return The ending error column.
 	 */
-	public getTokenEnd(): string {
+	public getTokenEnd(): number {
 		return this.tokenEnd;
 	}
 
@@ -170,7 +170,7 @@ export class ErrorInformationRecord implements IRecord {
 	 * 
 	 * @param tokenEnd The ending error column.
 	 */
-	public setTokenEnd(tokenEnd: string) {
+	public setTokenEnd(tokenEnd: number) {
 		this.tokenEnd = tokenEnd;
 	}
 
@@ -197,7 +197,7 @@ export class ErrorInformationRecord implements IRecord {
 	 * 
 	 * @return The severity level number.
 	 */
-	public getSevNum(): string {
+	public getSevNum(): number {
 		return this.sevNum;
 	}
 
@@ -206,7 +206,7 @@ export class ErrorInformationRecord implements IRecord {
 	 * 
 	 * @return The length of the message.
 	 */
-	public getLength(): string {
+	public getLength(): number {
 		return this.length;
 	}
 
@@ -215,7 +215,7 @@ export class ErrorInformationRecord implements IRecord {
 	 * 
 	 * @param length The length of the message.
 	 */
-	public setLength(length: string) {
+	public setLength(length: number) {
 		this.length = length;
 	}
 

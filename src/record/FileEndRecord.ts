@@ -9,7 +9,7 @@ import { IRecord } from "./IRecord";
  * This class represents a File End record in an events file.
  */
 export class FileEndRecord implements IRecord {
-	constructor(private version: string, private fileId: string, private expansion: string) { }
+	constructor(private version: number, private fileId: number, private expansion: number) { }
 
 	public getRecordType(): IRecordT {
 		return IRecordT.FILE_END;
@@ -20,7 +20,7 @@ export class FileEndRecord implements IRecord {
 	 * 
 	 * @return The version.
 	 */
-	public getVersion(): string {
+	public getVersion(): number {
 		return this.version;
 	}
 
@@ -29,7 +29,7 @@ export class FileEndRecord implements IRecord {
 	 * 
 	 * @param version The version.
 	 */
-	public setVersion(version: string) {
+	public setVersion(version: number) {
 		this.version = version;
 	}
 
@@ -38,7 +38,7 @@ export class FileEndRecord implements IRecord {
 	 * 
 	 * @return The file id.
 	 */
-	public getFileId(): string {
+	public getFileId(): number {
 		return this.fileId;
 	}
 
@@ -47,7 +47,7 @@ export class FileEndRecord implements IRecord {
 	 * 
 	 * @param fileId The file id.
 	 */
-	public setFileId(fileId: string) {
+	public setFileId(fileId: number) {
 		this.fileId = fileId;
 	}
 
@@ -56,7 +56,7 @@ export class FileEndRecord implements IRecord {
 	 * 
 	 * @return The expansion.
 	 */
-	public getExpansion(): string {
+	public getExpansion(): number {
 		return this.expansion;
 	}
 
@@ -65,7 +65,7 @@ export class FileEndRecord implements IRecord {
 	 * 
 	 * @param expansion The expansion.
 	 */
-	public setExpansion(expansion: string) {
+	public setExpansion(expansion: number) {
 		this.expansion = expansion;
 	}
 }

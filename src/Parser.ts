@@ -67,10 +67,10 @@ export class Parser {
   private currentOutputFile: SourceFile | undefined;
 
   // Map of File ID to SourceFile
-  private sourceTable: Map<String, SourceFile>;
+  private sourceTable: Map<number, SourceFile>;
 
   constructor() {
-    this.sourceTable = new Map<String, SourceFile>();
+    this.sourceTable = new Map<number, SourceFile>();
   }
 
   private getUntilTheEndOfTheLine(startIndex: number, st: string[]): string {
@@ -103,7 +103,7 @@ export class Parser {
 
   parse(fileReader: ISequentialFileReader, markerCreator?: IMarkerCreator) {
     let word: string;
-    let fileId: string;
+    let fileId: number;
 
     if (!this.processor) {
       this.processor = new ExpansionProcessor();
@@ -122,13 +122,13 @@ export class Parser {
         word = st[i++];
 
         if (word === IRecordT.ERROR_INFORMATION) {
-          const version = st[i++];
-          fileId = st[i++];
+          const version = parseInt(st[i++]);
+          fileId = parseInt(st[i++]);
 
           let fileProcessed = this.sourceTable.get(fileId);
           if (!fileProcessed) {
-            if (fileId === ('000')) {
-              let location001 = this.sourceTable.get('001');
+            if (fileId === 0) {
+              let location001 = this.sourceTable.get(1);
               if (location001) {
                 fileProcessed = location001;
               } else {
@@ -139,17 +139,17 @@ export class Parser {
             }
           }
 
-          const annotationClass = st[i++];
-          const line = st[i++];
-          const lineStart = st[i++];
-          const charStart = st[i++];
-          const lineEnd = st[i++];
-          const charEnd = st[i++];
+          const annotationClass = parseInt(st[i++]);
+          const line = parseInt(st[i++]);
+          const lineStart = parseInt(st[i++]);
+          const charStart = parseInt(st[i++]);
+          const lineEnd = parseInt(st[i++]);
+          const charEnd = parseInt(st[i++]);
           const id = st[i++];
           const severityText = st[i++];
-          const severity = st[i++];
+          const severity = parseInt(st[i++]);
 
-          const totalMessageLen = st[i++];
+          const totalMessageLen = parseInt(st[i++]);
           const message = this.getUntilTheEndOfTheLine(i, st);
 
           // Previous implementation used the location length to determine how many records to 
@@ -206,9 +206,9 @@ export class Parser {
           break;
         } else if (word === (IRecordT.FILE_ID)) {
           let browseMode = false;
-          const version = st[i++];
-          fileId = st[i++];
-          const lineNumber = st[i++];
+          const version = parseInt(st[i++]);
+          fileId = parseInt(st[i++]);
+          const lineNumber = parseInt(st[i++]);
           const locationLength = parseInt(st[i++]);
           let location = lineText.substring(28);
 
@@ -234,11 +234,11 @@ export class Parser {
           } catch (e: any) {
             timestamp = '';
           }
-          const tempFlag = location.charAt(location.length - 1);
+          const tempFlag = parseInt(location.charAt(location.length - 1));
 
           // Makes sure that the Temp Flag is the last character in the FILEID event and that it is preceded by a space
           const isSpaceBeforeTempFlag = location.charAt(location.length - 2) === ' ';
-          if (tempFlag === '1' && isSpaceBeforeTempFlag) {
+          if (tempFlag === 1 && isSpaceBeforeTempFlag) {
             browseMode = true;
           } else {
             browseMode = false;
@@ -255,7 +255,7 @@ export class Parser {
           }
 
           // If the file ID is 999, then this is the new output file
-          if ('999' === fileId) {
+          if (fileId === 999) {
             if (!this.lastOutputFile) {
               this.lastOutputFile = this.currentOutputFile = fileEntry;
             } else {
@@ -268,7 +268,7 @@ export class Parser {
 
           if (this.processor) {
             // Pass FILEID information to processor
-            const record = new FileIDRecord(version, fileId, lineNumber, locationLength.toString(), location, timestamp.toString(), tempFlag);
+            const record = new FileIDRecord(version, fileId, lineNumber, locationLength, location, timestamp.toString(), tempFlag);
             try {
               this.processor.processFileIDRecord(record);
             } catch (e: any) {
@@ -282,9 +282,9 @@ export class Parser {
         } else if (word === (IRecordT.FILE_END)) {
           // Pass FILEEND information to processor
           if (this.processor) {
-            const version = st[i++];
-            const fileId = st[i++];
-            const expansion = st[i++];
+            const version = parseInt(st[i++]);
+            const fileId = parseInt(st[i++]);
+            const expansion = parseInt(st[i++]);
             const record = new FileEndRecord(version, fileId, expansion);
 
             try {
@@ -300,7 +300,14 @@ export class Parser {
         } else if (word === (IRecordT.EXPANSION)) {
           // Pass EXPANSION information to processor
           if (this.processor) {
-            const record = new ExpansionRecord(st[i++], st[i++], st[i++], st[i++], st[i++], st[i++], st[i++]);
+            const version = parseInt(st[i++]);
+            const inputFileID = parseInt(st[i++]);
+            const inputLineStart = parseInt(st[i++]);
+            const inputLineEnd = parseInt(st[i++]);
+            const outputFileID = parseInt(st[i++]);
+            const outputLineStart = parseInt(st[i++]);
+            const outputLineEnd = parseInt(st[i++]);
+            const record = new ExpansionRecord(version, inputFileID, inputLineStart, inputLineEnd, outputFileID, outputLineStart, outputLineEnd);
             this.processor?.processExpansionRecord(record);
           }
 
@@ -308,7 +315,9 @@ export class Parser {
         } else if (word === (IRecordT.TIMESTAMP)) {
           // Pass TIMESTAMP information to processor
           if (this.processor) {
-            let record = new TimestampRecord(st[i++], st[i++]);
+            const version = parseInt(st[i++]);
+            const timestamp = st[i++];
+            let record = new TimestampRecord(version, timestamp);
             this.processor?.processTimestampRecord(record);
           }
 
@@ -316,7 +325,10 @@ export class Parser {
         } else if (word === (IRecordT.PROCESSOR)) {
           // Pass PROCESSOR information to processor
           if (this.processor) {
-            let record = new ProcessorRecord(st[i++], st[i++], st[i++]);
+            const version = parseInt(st[i++]);
+            const outputId = parseInt(st[i++]);
+            const lineClass = parseInt(st[i++]);
+            let record = new ProcessorRecord(version, outputId, lineClass);
 
             try {
               this.processor?.processProcessorRecord(record);

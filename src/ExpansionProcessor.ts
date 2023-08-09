@@ -17,7 +17,7 @@ import { ProgramRecord } from "./record/ProgramRecord";
 import { TimestampRecord } from "./record/TimestampRecord";
 
 export class ExpansionProcessor implements IProcessor {
-	private PRE_COMPILE_PROCESSOR_ID = "999";
+	private PRE_COMPILE_PROCESSOR_ID = 999;
 
 	protected currentProcessor: ProcessorBlock | undefined;
 
@@ -63,7 +63,7 @@ export class ExpansionProcessor implements IProcessor {
 	public processFileIDRecord(record: FileIDRecord) {
 		// The try-catch block is there to flag any problems, disable processing and allow regular Events File processing to continue
 		try {
-			const fileID = parseInt(record.getSourceId());
+			const fileID = record.getSourceId();
 
 			if (!this.currentProcessor!.isProcessorIDZero()) {
 				if (fileID > 1) {

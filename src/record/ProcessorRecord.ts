@@ -9,7 +9,7 @@ import { IRecord } from "./IRecord";
  * This class represents a Processor record in an events file.
  */
 export class ProcessorRecord implements IRecord {
-	constructor(private version: string, private outputId: string, private lineClass: string) { }
+	constructor(private version: number, private outputId: number, private lineClass: number) { }
 
 	public getRecordType(): IRecordT {
 		return IRecordT.PROCESSOR;
@@ -20,7 +20,7 @@ export class ProcessorRecord implements IRecord {
 	 * 
 	 * @return The version.
 	 */
-	public getVersion(): string {
+	public getVersion(): number {
 		return this.version;
 	}
 
@@ -29,7 +29,7 @@ export class ProcessorRecord implements IRecord {
 	 * 
 	 * @param version The version.
 	 */
-	public setVersion(version: string) {
+	public setVersion(version: number) {
 		this.version = version;
 	}
 
@@ -38,7 +38,7 @@ export class ProcessorRecord implements IRecord {
 	 * 
 	 * @return The output id.
 	 */
-	public getOutputId(): string {
+	public getOutputId(): number {
 		return this.outputId;
 	}
 
@@ -47,7 +47,7 @@ export class ProcessorRecord implements IRecord {
 	 * 
 	 * @param outputId The output id.
 	 */
-	public setOutputId(outputId: string) {
+	public setOutputId(outputId: number) {
 		this.outputId = outputId;
 	}
 
@@ -56,7 +56,7 @@ export class ProcessorRecord implements IRecord {
 	 * 
 	 * @return The line class.
 	 */
-	public getLineClass(): string {
+	public getLineClass(): number {
 		return this.lineClass;
 	}
 
@@ -65,7 +65,7 @@ export class ProcessorRecord implements IRecord {
 	 * 
 	 * @param lineClass The line class.
 	 */
-	public setLineClass(lineClass: string) {
+	public setLineClass(lineClass: number) {
 		this.lineClass = lineClass;
 	}
 }

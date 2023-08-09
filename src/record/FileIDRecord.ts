@@ -9,9 +9,9 @@ import { IRecord } from "./IRecord";
  * This class represents a File ID record in an events file.
  */
 export class FileIDRecord implements IRecord {
-	constructor(private version: string, private sourceId: string, private line: string,
-		private length: string, private filename: string, private timestamp: string,
-		private flag: string) { }
+	constructor(private version: number, private sourceId: number, private line: number,
+		private length: number, private filename: string, private timestamp: string,
+		private flag: number) { }
 
 	public getRecordType(): IRecordT {
 		return IRecordT.FILE_ID;
@@ -22,7 +22,7 @@ export class FileIDRecord implements IRecord {
 	 * 
 	 * @return The version.
 	 */
-	public getVersion(): string {
+	public getVersion(): number {
 		return this.version;
 	}
 
@@ -31,7 +31,7 @@ export class FileIDRecord implements IRecord {
 	 * 
 	 * @return The source id.
 	 */
-	public getSourceId(): string {
+	public getSourceId(): number {
 		return this.sourceId;
 	}
 
@@ -40,7 +40,7 @@ export class FileIDRecord implements IRecord {
 	 * 
 	 * @return The line.
 	 */
-	public getLine(): string {
+	public getLine(): number {
 		return this.line;
 	}
 
@@ -49,7 +49,7 @@ export class FileIDRecord implements IRecord {
 	 * 
 	 * @return The length.
 	 */
-	public getLength(): string {
+	public getLength(): number {
 		return this.length;
 	}
 
@@ -58,7 +58,7 @@ export class FileIDRecord implements IRecord {
 	 * 
 	 * @return The filename.
 	 */
-	public getFilename(): string {
+	public getFileName(): string {
 		return this.filename;
 	}
 
@@ -76,7 +76,7 @@ export class FileIDRecord implements IRecord {
 	 * 
 	 * @return The flag.
 	 */
-	public getFlag(): string {
+	public getFlag(): number {
 		return this.flag;
 	}
 }

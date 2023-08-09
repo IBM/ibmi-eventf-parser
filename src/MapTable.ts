@@ -15,13 +15,13 @@ class SourceLineRange {
 	// Input File Info
 	private inputStartLine: number = 0;
 	private inputEndLine: number = -1;
-	private inputFileID: string = '';
+	private inputFileID: number = '';
 
 	// Output File Info
 	private outputStartLine: number = 0;
 	private outputEndLine: number = -1;
 
-	constructor(fileID?: string, copy?: SourceLineRange) {
+	constructor(fileID?: number, copy?: SourceLineRange) {
 		if (copy) {
 			this.inputStartLine = copy.getInputStartLine();
 			this.inputEndLine = copy.getInputEndLine();
@@ -43,11 +43,11 @@ class SourceLineRange {
 		this.inputEndLine = endLine;
 	}
 
-	public getInputFileID(): string {
+	public getInputFileID(): number {
 		return this.inputFileID;
 	}
 
-	public setInputFileID(fileID: string) {
+	public setInputFileID(fileID: number) {
 		this.inputFileID = fileID;
 	}
 
@@ -110,7 +110,7 @@ class SourceLineRange {
 	 * @param ID ID of the input file that contains the line.
 	 * @return True if the line is present in the range or false otherwise.
 	 */
-	public containsInputLine(line: number, ID: string): boolean {
+	public containsInputLine(line: number, ID: number): boolean {
 		if (this.inputEndLine === -1) {
 			return line >= this.inputStartLine && ID === (this.inputFileID);
 		}
@@ -139,11 +139,11 @@ class SourceLineRange {
 class FileIDLinesPair {
 	private lines: number;
 
-	constructor(private ID: string) {
+	constructor(private ID: number) {
 		this.lines = 0;
 	}
 
-	public getID(): string {
+	public getID(): number {
 		return this.ID;
 	}
 
@@ -168,7 +168,7 @@ export class MapTable {
 	private lookupIndex: number = 0;
 
 	// Hashtable of File IDs and locations for fast lookup
-	private fileTable: Map<String, FileIDRecord> = new Map<String, FileIDRecord>();
+	private fileTable: Map<number, FileIDRecord> = new Map<number, FileIDRecord>();
 
 	constructor() { }
 
@@ -243,7 +243,7 @@ export class MapTable {
 
 		let expansion = 0;
 		try {
-			expansion = parseInt(record.getExpansion());
+			expansion = record.getExpansion();
 		} catch (e: any) {
 			throw new Error(`Unable to parse the expansion field of the FILEEND record to an integer\n`
 				+ `Faulty record: ${record.toString()}`);
@@ -297,7 +297,7 @@ export class MapTable {
 	private createOpenEndedSourceLineRange(record: FileIDRecord): SourceLineRange {
 		let line = 1;
 		try {
-			line = parseInt(record.getLine());
+			line = record.getLine();
 		} catch (e: any) {
 			throw new Error(`Unable to parse the line field of the FILEID record to an integer\n`
 				+ `Faulty record: ${record.toString()}`);
@@ -355,7 +355,7 @@ export class MapTable {
 		}
 	}
 
-	private getSourceLineRangeForInputLine(line: number, id: string): SourceLineRange | undefined {
+	private getSourceLineRangeForInputLine(line: number, id: number): SourceLineRange | undefined {
 		for (const range of this.map) {
 			if (range.containsInputLine(line, id)) {
 				return range;
@@ -475,10 +475,10 @@ export class MapTable {
 
 		let iStart = 0, iEnd = 0, oStart = 0, oEnd = 0;
 		try {
-			iStart = parseInt(record.getInputLineStart());
-			iEnd = parseInt(record.getInputLineEnd());
-			oStart = parseInt(record.getOutputLineStart());
-			oEnd = parseInt(record.getOutputLineEnd());
+			iStart = record.getInputLineStart();
+			iEnd = record.getInputLineEnd();
+			oStart = record.getOutputLineStart();
+			oEnd = record.getOutputLineEnd();
 		} catch (e: any) {
 			throw new Error(`Unable to parse the fields of the EXPANSION record to integers\n`
 				+ `Faulty record: ${record.toString()}`);
@@ -498,15 +498,15 @@ export class MapTable {
 	 * @param ID The ID of the file to look for.
 	 * @return The FileIDRecord corresponding to the file ID if it exists in the table, `undefined` otherwise.
 	 */
-	public getFileIDRecordForFileID(ID: string): FileIDRecord | undefined {
+	public getFileIDRecordForFileID(ID: number): FileIDRecord | undefined {
 		return this.fileTable.get(ID);
 	}
 
-	public getFileLocationForFileID(ID: string): string | undefined {
+	public getFileLocationForFileID(ID: number): string | undefined {
 		const fileRecord = this.getFileIDRecordForFileID(ID);
 
 		if (fileRecord) {
-			return fileRecord.getFilename();
+			return fileRecord.getFileName();
 		}
 	}
 
@@ -516,7 +516,7 @@ export class MapTable {
 	 * @param record The Error record to be modified.
 	 */
 	public modifyErrorInformation(record: ErrorInformationRecord) {
-		const statementLine = parseInt(record.getStmtLine());
+		const statementLine = record.getStmtLine();
 		const range = this.optimizedSourceLineRangeLookup(statementLine);
 
 		if (!range) {
@@ -524,16 +524,16 @@ export class MapTable {
 				+ `Faulty event: ${record.toString()}`);
 		} else {
 			try {
-				record.setStmtLine(this.getLineFromSourceLineRange(range, statementLine).toString());
+				record.setStmtLine(this.getLineFromSourceLineRange(range, statementLine));
 				record.setFileId(range.getInputFileID());
 
-				const startLineNumber = parseInt(record.getStartErrLine());
-				record.setStartErrLine(this.getLineFromSourceLineRange(range, startLineNumber).toString());
+				const startLineNumber = record.getStartErrLine();
+				record.setStartErrLine(this.getLineFromSourceLineRange(range, startLineNumber));
 
-				const endLineNumber = parseInt(record.getEndErrLine());
-				record.setEndErrLine(this.getLineFromSourceLineRange(range, endLineNumber).toString());
+				const endLineNumber = record.getEndErrLine();
+				record.setEndErrLine(this.getLineFromSourceLineRange(range, endLineNumber));
 
-				record.setFileName((this.fileTable.get(range.getInputFileID())!).getFilename());
+				record.setFileName((this.fileTable.get(range.getInputFileID())!).getFileName());
 			} catch (e: any) {
 				throw new Error(`Unable to parse the line fields of the ERROR record to integers\n`
 					+ `Faulty record: ${record.toString()}`);
@@ -580,7 +580,7 @@ export class MapTable {
 
 		// This handles errors at line 0 of the main source file.
 		// Those are usually sev 40 errors.
-		const header = new SourceLineRange("001");
+		const header = new SourceLineRange(1);
 		header.setInputStartLine(0);
 		header.setInputEndLine(0);
 		header.setOutputStartLine(0);

@@ -9,7 +9,7 @@ import { IRecordT } from "./IRecordT";
  * This class represents a Program record in an events file.
  */
 export class ProgramRecord implements IRecord {
-	constructor(private version: string, private line: string) { }
+	constructor(private version: number, private line: number) { }
 
 	public getRecordType(): IRecordT {
 		return IRecordT.PROGRAM;
@@ -20,7 +20,7 @@ export class ProgramRecord implements IRecord {
 	 * 
 	 * @return The version.
 	 */
-	public getVersion(): string {
+	public getVersion(): number {
 		return this.version;
 	}
 
@@ -29,7 +29,7 @@ export class ProgramRecord implements IRecord {
 	 * 
 	 * @param version The version.
 	 */
-	public setVersion(version: string) {
+	public setVersion(version: number) {
 		this.version = version;
 	}
 
@@ -38,7 +38,7 @@ export class ProgramRecord implements IRecord {
 	 * 
 	 * @return The line.
 	 */
-	public getLine(): string {
+	public getLine(): number {
 		return this.line;
 	}
 
@@ -47,7 +47,7 @@ export class ProgramRecord implements IRecord {
 	 * 
 	 * @param line The line.
 	 */
-	public setLine(line: string) {
+	public setLine(line: number) {
 		this.line = line;
 	}
 }
