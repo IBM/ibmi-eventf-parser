@@ -49,9 +49,9 @@ export class FileIDRecord implements IRecord {
 	}
 
 	/**
-	 * Get the filename.
+	 * Get the file name.
 	 * 
-	 * @return The filename.
+	 * @return The file name.
 	 */
 	public getFileName(): string {
 		return this.fileName;
