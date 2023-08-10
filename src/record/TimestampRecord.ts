@@ -15,22 +15,8 @@ export class TimestampRecord implements IRecord {
 		return IRecordT.TIMESTAMP;
 	}
 
-	/**
-	 * Get the version.
-	 * 
-	 * @return The version.
-	 */
 	public getVersion(): number {
 		return this.version;
-	}
-
-	/**
-	 * Set the version.
-	 * 
-	 * @param version The version.
-	 */
-	public setVersion(version: number) {
-		this.version = version;
 	}
 
 	/**
@@ -40,14 +26,5 @@ export class TimestampRecord implements IRecord {
 	 */
 	public getTimestamp(): string {
 		return this.timestamp;
-	}
-
-	/**
-	 * Set the timestamp.
-	 * 
-	 * @param timestamp The timestamp.
-	 */
-	public setTimestamp(timestamp: string) {
-		this.timestamp = timestamp;
 	}
 }
