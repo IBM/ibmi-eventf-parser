@@ -36,4 +36,9 @@ export class ProcessorRecord implements IRecord {
 	public getLineClass(): number {
 		return this.lineClass;
 	}
+
+	public toString(): string {
+		return `${IRecordT.PROCESSOR}\t`
+			+ `${this.version} ${this.outputId} ${this.lineClass}`;
+	}
 }

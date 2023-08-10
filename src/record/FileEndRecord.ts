@@ -36,4 +36,9 @@ export class FileEndRecord implements IRecord {
 	public getExpansion(): number {
 		return this.expansion;
 	}
+
+	public toString(): string {
+		return `${IRecordT.FILE_END}\t`
+			+ `${this.version} ${this.fileId} ${this.expansion}`;
+	}
 }

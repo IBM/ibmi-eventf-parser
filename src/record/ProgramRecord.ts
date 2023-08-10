@@ -27,4 +27,9 @@ export class ProgramRecord implements IRecord {
 	public getLine(): number {
 		return this.line;
 	}
+
+	public toString(): string {
+		return `${IRecordT.PROGRAM}\t`
+			+ `${this.version} ${this.line}`;
+	}
 }

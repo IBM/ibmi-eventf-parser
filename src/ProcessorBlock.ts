@@ -254,7 +254,7 @@ export class ProcessorBlock {
 
   /**
    * Maps the error back to the original input member and resolves the 
-   * filename of that member. If mappings are not supported, checks and 
+   * file name of that member. If mappings are not supported, checks and 
    * returns whether that member is read-only.
    * 
    * @param error The ErrorInformationRecord to resolve.

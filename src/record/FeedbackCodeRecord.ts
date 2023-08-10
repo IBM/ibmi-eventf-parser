@@ -36,4 +36,9 @@ export class FeedbackCodeRecord implements IRecord {
 	public getReasonCode(): string {
 		return this.reasonCode;
 	}
+
+	public toString(): string {
+		return `${IRecordT.FEEDBACK_CODE}\t`
+			+ `${this.version} ${this.returnCode} ${this.reasonCode}`;
+	}
 }
