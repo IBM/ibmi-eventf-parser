@@ -30,7 +30,7 @@ assert.ok(markers.equals(60, '/home/REINHARD/builds/hll/sqlrpgle.pgm.sqlrpgle', 
 
 ## Usage
 
-In the simplest method, create a class that implements the `IMarkerCreator` interface and then pass an instance into the `parse` method on the `Parser` class.
+In the simplest method, create a class that implements the `IMarkerCreator` interface and then pass an instance into the `parseFile` method on the `Parser` class.
 
 For every error logged in the eventf, the following callback function will be called:
 
