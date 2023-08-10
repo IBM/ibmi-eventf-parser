@@ -17,11 +17,6 @@ export class FileIDRecord implements IRecord {
 		return IRecordT.FILE_ID;
 	}
 
-	/**
-	 * Get the version.
-	 * 
-	 * @return The version.
-	 */
 	public getVersion(): number {
 		return this.version;
 	}

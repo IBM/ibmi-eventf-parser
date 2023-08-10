@@ -127,6 +127,7 @@ export class Parser {
 
           let fileProcessed = this.sourceTable.get(fileId);
           if (!fileProcessed) {
+            // If file ID is '000' we can assume that it is the second file after the '999' output file
             if (fileId === 0) {
               let location001 = this.sourceTable.get(1);
               if (location001) {

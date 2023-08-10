@@ -17,22 +17,8 @@ export class ExpansionRecord implements IRecord {
 		return IRecordT.EXPANSION;
 	}
 
-	/**
-	 * Get the version.
-	 * 
-	 * @return The version.
-	 */
 	public getVersion(): number {
 		return this.version;
-	}
-
-	/**
-	 * Set the version.
-	 * 
-	 * @param version The version.
-	 */
-	public setVersion(version: number) {
-		this.version = version;
 	}
 
 	/**
@@ -45,30 +31,12 @@ export class ExpansionRecord implements IRecord {
 	}
 
 	/**
-	 * Set the input file ID.
-	 * 
-	 * @param fileID The input file ID.
-	 */
-	public setInputFileID(fileID: number) {
-		this.inputFileID = fileID;
-	}
-
-	/**
 	 * Get the input line start.
 	 * 
 	 * @return The input line start.
 	 */
 	public getInputLineStart(): number {
 		return this.inputLineStart;
-	}
-
-	/**
-	 * Set the input line start.
-	 * 
-	 * @param lineStart The input line start.
-	 */
-	public setInputLineStart(lineStart: number) {
-		this.inputLineStart = lineStart;
 	}
 
 	/**
@@ -81,30 +49,12 @@ export class ExpansionRecord implements IRecord {
 	}
 
 	/**
-	 * Set the input line end.
-	 * 
-	 * @param lineEnd The input line end.
-	 */
-	public setInputLineEnd(lineEnd: number) {
-		this.inputLineEnd = lineEnd;
-	}
-
-	/**
 	 * Get the output file ID.
 	 * 
 	 * @return The output file ID.
 	 */
 	public getOutputFileID(): number {
 		return this.outputFileID;
-	}
-
-	/**
-	 * Set the output file ID.
-	 * 
-	 * @param fileID The output file ID.
-	 */
-	public setOutputFileID(fileID: number) {
-		this.outputFileID = fileID;
 	}
 
 	/**
@@ -117,29 +67,11 @@ export class ExpansionRecord implements IRecord {
 	}
 
 	/**
-	 * Set the output line start.
-	 * 
-	 * @param lineStart The output line start.
-	 */
-	public setOutputLineStart(lineStart: number) {
-		this.outputLineStart = lineStart;
-	}
-
-	/**
 	 * Get the output line end.
 	 * 
 	 * @return The output line end.
 	 */
 	public getOutputLineEnd(): number {
 		return this.outputLineEnd;
-	}
-
-	/**
-	 * Set the output line end.
-	 * 
-	 * @param lineEnd The output line end.
-	 */
-	public setOutputLineEnd(lineEnd: number) {
-		this.outputLineEnd = lineEnd;
 	}
 }

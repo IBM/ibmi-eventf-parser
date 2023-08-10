@@ -21,11 +21,6 @@ export class ErrorInformationRecord implements IRecord {
 		return IRecordT.ERROR_INFORMATION;
 	}
 
-	/**
-	 * Get the version.
-	 * 
-	 * @return The version.
-	 */
 	public getVersion(): number {
 		return this.version;
 	}
@@ -73,15 +68,6 @@ export class ErrorInformationRecord implements IRecord {
 	 */
 	public getAnnotClass(): number {
 		return this.annotClass;
-	}
-
-	/**
-	 * Set the annotation class.
-	 * 
-	 * @param annotClass The annotation class.
-	 */
-	public setAnnotClass(annotClass: number) {
-		this.annotClass = annotClass;
 	}
 
 	/**
@@ -208,15 +194,6 @@ export class ErrorInformationRecord implements IRecord {
 	 */
 	public getLength(): number {
 		return this.length;
-	}
-
-	/**
-	 * Set the length of the message.
-	 * 
-	 * @param length The length of the message.
-	 */
-	public setLength(length: number) {
-		this.length = length;
 	}
 
 	/**
