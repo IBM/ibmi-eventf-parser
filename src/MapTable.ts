@@ -15,23 +15,23 @@ class SourceLineRange {
 	// Input File Info
 	private inputStartLine: number = 0;
 	private inputEndLine: number = -1;
-	private inputFileID: number | undefined;
+	private inputFileID: number;
 
 	// Output File Info
 	private outputStartLine: number = 0;
 	private outputEndLine: number = -1;
 
-	constructor(fileID?: number, copy?: SourceLineRange) {
-		if (copy) {
-			this.inputStartLine = copy.getInputStartLine();
-			this.inputEndLine = copy.getInputEndLine();
-			this.inputFileID = copy.getInputFileID();
-			this.outputStartLine = copy.getOutputStartLine();
-			this.outputEndLine = copy.getOutputEndLine();
-		}
-
-		if (fileID) {
-			this.inputFileID = fileID;
+	constructor(input: number | SourceLineRange) {
+		if (typeof input === 'number') {
+			// Input is fileID
+			this.inputFileID = input;
+		} else {
+			// Input is other range to copy
+			this.inputStartLine = input.getInputStartLine();
+			this.inputEndLine = input.getInputEndLine();
+			this.inputFileID = input.getInputFileID();
+			this.outputStartLine = input.getOutputStartLine();
+			this.outputEndLine = input.getOutputEndLine();
 		}
 	}
 
@@ -44,7 +44,7 @@ class SourceLineRange {
 	}
 
 	public getInputFileID(): number {
-		return this.inputFileID!;
+		return this.inputFileID;
 	}
 
 	public setInputFileID(fileID: number) {
@@ -419,7 +419,7 @@ export class MapTable {
 
 				this.shiftRangesBy(expansionSize, index + 1);
 			} else {
-				const extraRange = new SourceLineRange(undefined, expanded);
+				const extraRange = new SourceLineRange(expanded);
 
 				expanded.setInputEndLine(expansion.getInputStartLine() - 1);
 				expanded.fixOutputRangeBasedOnInputRange();
@@ -455,7 +455,7 @@ export class MapTable {
 			// Split the current range in half at the point of expansion's output start,
 			// insert the expansion between the two halves, and shift the outputs of the
 			// remaining ranges (starting with the second half) by the mount of the expansion.
-			const extraRange = new SourceLineRange(undefined, expanded);
+			const extraRange = new SourceLineRange(expanded);
 
 			expanded.setOutputEndLine(expansion.getOutputStartLine() - 1);
 			expanded.fixInputRangeBasedOnOutputRange();

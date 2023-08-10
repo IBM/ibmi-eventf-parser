@@ -9,7 +9,7 @@ export class MarkerCreator implements IMarkerCreator {
     private errors: Error[] = [];
 
     public createMarker(record: ErrorInformationRecord, fileLocation: string, isReadOnly: string) {
-        this.errors.push(new Error(fileLocation, parseInt(record.getStmtLine()), record.getMsg()));
+        this.errors.push(new Error(fileLocation, record.getStmtLine(), record.getMsg()));
     }
 
     public getErrorCount(): number {
