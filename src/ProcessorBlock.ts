@@ -160,7 +160,7 @@ export class ProcessorBlock {
     // Since this method is only called on a _previousProcessorBlock, this is not
     // the compiler processor block and getInputFile() should not return null.
     let inputFileLocation = '';
-    let inputFileId = '';
+    let inputFileId = -1;
 
     const inputFile = this.getInputFile();
     if (inputFile) {
@@ -169,7 +169,7 @@ export class ProcessorBlock {
     }
 
     if (this.previousProcessorBlock && !this.getIsFirstInEventsFile() && this.isMappingSupported()
-      && (error.getFileId() === (inputFileId) || error.getFileId() === (inputFileLocation))) {
+      && (error.getFileId() === (inputFileId) || error.getFileName() === (inputFileLocation))) {
       this.previousProcessorBlock.modifyErrorInformation(error);
     }
   }

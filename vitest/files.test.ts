@@ -58,7 +58,7 @@ describe('Tests', () => {
         assert.ok(markers.equals(0, '/QSYS.LIB/QTEMP.LIB/QSQLT00103.FILE/ANZ_FILE2.MBR', 1570, 'Undeclared identifier y.'));
 
         const exceptions = parser.getException();
-        assert.strictEqual(exceptions!.message, 'One or more FILEID records do not have matching FILEEND records\nList of outstanding FILEID records: {"stack":[{"ID":"001","lines":0}]}');
+        assert.strictEqual(exceptions!.message, 'One or more FILEID records do not have matching FILEEND records\nList of outstanding FILEID records: {"stack":[{"ID":1,"lines":0}]}');
     });
 
     it('test TYPICAL', () => {

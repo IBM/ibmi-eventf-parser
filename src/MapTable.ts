@@ -15,7 +15,7 @@ class SourceLineRange {
 	// Input File Info
 	private inputStartLine: number = 0;
 	private inputEndLine: number = -1;
-	private inputFileID: number = '';
+	private inputFileID: number | undefined;
 
 	// Output File Info
 	private outputStartLine: number = 0;
@@ -44,7 +44,7 @@ class SourceLineRange {
 	}
 
 	public getInputFileID(): number {
-		return this.inputFileID;
+		return this.inputFileID!;
 	}
 
 	public setInputFileID(fileID: number) {
