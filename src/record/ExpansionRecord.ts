@@ -74,4 +74,10 @@ export class ExpansionRecord implements IRecord {
 	public getOutputLineEnd(): number {
 		return this.outputLineEnd;
 	}
+
+	public toString(): string {
+		return `${IRecordT.EXPANSION}\t`
+			+ `${this.version} ${this.inputFileID} ${this.inputLineStart} ${this.inputLineEnd} ${this.outputFileID} `
+			+ `${this.outputLineStart} ${this.outputLineEnd}`;
+	}
 }

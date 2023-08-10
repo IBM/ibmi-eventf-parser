@@ -15,7 +15,8 @@ export class ErrorInformationRecord implements IRecord {
 	constructor(private version: number, private fileId: number, private annotClass: number,
 		private stmtLine: number, private startErrLine: number, private tokenStart: number,
 		private endErrLine: number, private tokenEnd: number, private msgId: string,
-		private sevChar: string, private sevNum: number, private length: number, private msg: string) { }
+		private sevChar: string, private sevNum: number, private length: number,
+		private msg: string) { }
 
 	getRecordType(): IRecordT {
 		return IRecordT.ERROR_INFORMATION;
@@ -203,5 +204,12 @@ export class ErrorInformationRecord implements IRecord {
 	 */
 	public getMsg(): string {
 		return this.msg;
+	}
+
+	public toString(): string {
+		return `${IRecordT.ERROR_INFORMATION}\t`
+			+ `${this.version} ${this.fileId} ${this.annotClass} ${this.stmtLine} ${this.startErrLine} `
+			+ `${this.tokenStart} ${this.endErrLine} ${this.tokenEnd} ${this.msgId} ${this.sevChar} `
+			+ `${this.sevNum} ${this.length} ${this.msg}`;
 	}
 }

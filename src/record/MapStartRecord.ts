@@ -36,4 +36,9 @@ export class MapStartRecord implements IRecord {
 	public getLine(): number {
 		return this.line;
 	}
+
+	public toString(): string {
+		return `${IRecordT.MAP_START}\t`
+			+ `${this.version} ${this.macroId} ${this.line}`;
+	}
 }

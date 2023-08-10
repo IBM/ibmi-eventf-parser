@@ -10,7 +10,7 @@ import { IRecord } from "./IRecord";
  */
 export class FileIDRecord implements IRecord {
 	constructor(private version: number, private sourceId: number, private line: number,
-		private length: number, private filename: string, private timestamp: string,
+		private length: number, private fileName: string, private timestamp: string,
 		private flag: number) { }
 
 	public getRecordType(): IRecordT {
@@ -54,7 +54,7 @@ export class FileIDRecord implements IRecord {
 	 * @return The filename.
 	 */
 	public getFileName(): string {
-		return this.filename;
+		return this.fileName;
 	}
 
 	/**
@@ -73,5 +73,11 @@ export class FileIDRecord implements IRecord {
 	 */
 	public getFlag(): number {
 		return this.flag;
+	}
+
+	public toString(): string {
+		return `${IRecordT.FILE_ID}\t`
+			+ `${this.version} ${this.sourceId} ${this.line} ${this.length} ${this.fileName} `
+			+ `${this.timestamp} ${this.flag}`;
 	}
 }

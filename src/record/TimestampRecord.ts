@@ -27,4 +27,9 @@ export class TimestampRecord implements IRecord {
 	public getTimestamp(): string {
 		return this.timestamp;
 	}
+
+	public toString(): string {
+		return `${IRecordT.TIMESTAMP}\t`
+			+ `${this.version} ${this.timestamp}`;
+	}
 }

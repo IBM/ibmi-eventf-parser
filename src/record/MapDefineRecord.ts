@@ -55,4 +55,9 @@ export class MapDefineRecord implements IRecord {
 	public getMacroName(): string {
 		return this.macroName;
 	}
+
+	public toString(): string {
+		return `${IRecordT.MAP_DEFINE}\t`
+			+ `${this.version} ${this.macroId} ${this.line} ${this.length} ${this.macroName}`;
+	}
 }

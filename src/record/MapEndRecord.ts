@@ -45,4 +45,9 @@ export class MapEndRecord implements IRecord {
 	public getExpansion(): number {
 		return this.expansion;
 	}
+
+	public toString(): string {
+		return `${IRecordT.MAP_END}\t`
+			+ `${this.version} ${this.macroId} ${this.line} ${this.expansion}`;
+	}
 }

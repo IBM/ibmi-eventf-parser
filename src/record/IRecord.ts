@@ -18,4 +18,9 @@ export interface IRecord {
 	 * @return The version.
 	 */
     getVersion(): number;
+
+    /**
+     * Get the string representation of the record.
+     */
+    toString(): string;
 }
