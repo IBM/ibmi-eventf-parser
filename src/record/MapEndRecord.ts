@@ -8,8 +8,8 @@ import { IRecord } from "./IRecord";
  * This class represents a Map End record in an events file.
  */
 export class MapEndRecord implements IRecord {
-	constructor(private version: string, private macroId: string, private line: string,
-		private expansion: string) { }
+	constructor(private version: number, private macroId: number, private line: number,
+		private expansion: number) { }
 
 	public getRecordType(): IRecordT {
 		return IRecordT.MAP_END;
@@ -20,7 +20,7 @@ export class MapEndRecord implements IRecord {
 	 * 
 	 * @return The version.
 	 */
-	public getVersion(): string {
+	public getVersion(): number {
 		return this.version;
 	}
 
@@ -29,7 +29,7 @@ export class MapEndRecord implements IRecord {
 	 * 
 	 * @param version The version.
 	 */
-	public setVersion(version: string) {
+	public setVersion(version: number) {
 		this.version = version;
 	}
 
@@ -38,7 +38,7 @@ export class MapEndRecord implements IRecord {
 	 * 
 	 * @return The macro id.
 	 */
-	public getMacroId(): string {
+	public getMacroId(): number {
 		return this.macroId;
 	}
 
@@ -47,7 +47,7 @@ export class MapEndRecord implements IRecord {
 	 * 
 	 * @param macroId The macro id.
 	 */
-	public setMacroId(macroId: string) {
+	public setMacroId(macroId: number) {
 		this.macroId = macroId;
 	}
 
@@ -56,7 +56,7 @@ export class MapEndRecord implements IRecord {
 	 * 
 	 * @return The line.
 	 */
-	public getLine(): string {
+	public getLine(): number {
 		return this.line;
 	}
 
@@ -65,7 +65,7 @@ export class MapEndRecord implements IRecord {
 	 * 
 	 * @param line The line.
 	 */
-	public setLine(line: string) {
+	public setLine(line: number) {
 		this.line = line;
 	}
 
@@ -74,7 +74,7 @@ export class MapEndRecord implements IRecord {
 	 * 
 	 * @return The expansion.
 	 */
-	public getExpansion(): string {
+	public getExpansion(): number {
 		return this.expansion;
 	}
 
@@ -83,7 +83,7 @@ export class MapEndRecord implements IRecord {
 	 * 
 	 * @param expansion The expansion.
 	 */
-	public setExpansion(expansion: string) {
+	public setExpansion(expansion: number) {
 		this.expansion = expansion;
 	}
 }

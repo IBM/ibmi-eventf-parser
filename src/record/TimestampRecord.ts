@@ -9,7 +9,7 @@ import { IRecord } from './IRecord';
  * This class represents a Timestamp record in an events file.
  */
 export class TimestampRecord implements IRecord {
-	constructor(private version: string, private timestamp: string) { }
+	constructor(private version: number, private timestamp: string) { }
 
 	public getRecordType(): IRecordT {
 		return IRecordT.TIMESTAMP;
@@ -20,7 +20,7 @@ export class TimestampRecord implements IRecord {
 	 * 
 	 * @return The version.
 	 */
-	public getVersion(): string {
+	public getVersion(): number {
 		return this.version;
 	}
 
@@ -29,7 +29,7 @@ export class TimestampRecord implements IRecord {
 	 * 
 	 * @param version The version.
 	 */
-	public setVersion(version: string) {
+	public setVersion(version: number) {
 		this.version = version;
 	}
 

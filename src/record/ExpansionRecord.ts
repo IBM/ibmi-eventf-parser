@@ -9,9 +9,9 @@ import { IRecord } from "./IRecord";
  * This class represents an Expansion record in an Events File.
  */
 export class ExpansionRecord implements IRecord {
-	constructor(private version: string, private inputFileID: string, private inputLineStart: string,
-		private inputLineEnd: string, private outputFileID: string, private outputLineStart: string,
-		private outputLineEnd: string) { }
+	constructor(private version: number, private inputFileID: number, private inputLineStart: number,
+		private inputLineEnd: number, private outputFileID: number, private outputLineStart: number,
+		private outputLineEnd: number) { }
 
 	public getRecordType(): IRecordT {
 		return IRecordT.EXPANSION;
@@ -22,7 +22,7 @@ export class ExpansionRecord implements IRecord {
 	 * 
 	 * @return The version.
 	 */
-	public getVersion(): string {
+	public getVersion(): number {
 		return this.version;
 	}
 
@@ -31,7 +31,7 @@ export class ExpansionRecord implements IRecord {
 	 * 
 	 * @param version The version.
 	 */
-	public setVersion(version: string) {
+	public setVersion(version: number) {
 		this.version = version;
 	}
 
@@ -40,7 +40,7 @@ export class ExpansionRecord implements IRecord {
 	 * 
 	 * @return The input file ID.
 	 */
-	public getInputFileID(): string {
+	public getInputFileID(): number {
 		return this.inputFileID;
 	}
 
@@ -49,7 +49,7 @@ export class ExpansionRecord implements IRecord {
 	 * 
 	 * @param fileID The input file ID.
 	 */
-	public setInputFileID(fileID: string) {
+	public setInputFileID(fileID: number) {
 		this.inputFileID = fileID;
 	}
 
@@ -58,7 +58,7 @@ export class ExpansionRecord implements IRecord {
 	 * 
 	 * @return The input line start.
 	 */
-	public getInputLineStart(): string {
+	public getInputLineStart(): number {
 		return this.inputLineStart;
 	}
 
@@ -67,7 +67,7 @@ export class ExpansionRecord implements IRecord {
 	 * 
 	 * @param lineStart The input line start.
 	 */
-	public setInputLineStart(lineStart: string) {
+	public setInputLineStart(lineStart: number) {
 		this.inputLineStart = lineStart;
 	}
 
@@ -76,7 +76,7 @@ export class ExpansionRecord implements IRecord {
 	 * 
 	 * @return The input line end.
 	 */
-	public getInputLineEnd(): string {
+	public getInputLineEnd(): number {
 		return this.inputLineEnd;
 	}
 
@@ -85,7 +85,7 @@ export class ExpansionRecord implements IRecord {
 	 * 
 	 * @param lineEnd The input line end.
 	 */
-	public setInputLineEnd(lineEnd: string) {
+	public setInputLineEnd(lineEnd: number) {
 		this.inputLineEnd = lineEnd;
 	}
 
@@ -94,7 +94,7 @@ export class ExpansionRecord implements IRecord {
 	 * 
 	 * @return The output file ID.
 	 */
-	public getOutputFileID(): string {
+	public getOutputFileID(): number {
 		return this.outputFileID;
 	}
 
@@ -103,7 +103,7 @@ export class ExpansionRecord implements IRecord {
 	 * 
 	 * @param fileID The output file ID.
 	 */
-	public setOutputFileID(fileID: string) {
+	public setOutputFileID(fileID: number) {
 		this.outputFileID = fileID;
 	}
 
@@ -112,7 +112,7 @@ export class ExpansionRecord implements IRecord {
 	 * 
 	 * @return The output line start.
 	 */
-	public getOutputLineStart(): string {
+	public getOutputLineStart(): number {
 		return this.outputLineStart;
 	}
 
@@ -121,7 +121,7 @@ export class ExpansionRecord implements IRecord {
 	 * 
 	 * @param lineStart The output line start.
 	 */
-	public setOutputLineStart(lineStart: string) {
+	public setOutputLineStart(lineStart: number) {
 		this.outputLineStart = lineStart;
 	}
 
@@ -130,7 +130,7 @@ export class ExpansionRecord implements IRecord {
 	 * 
 	 * @return The output line end.
 	 */
-	public getOutputLineEnd(): string {
+	public getOutputLineEnd(): number {
 		return this.outputLineEnd;
 	}
 
@@ -139,7 +139,7 @@ export class ExpansionRecord implements IRecord {
 	 * 
 	 * @param lineEnd The output line end.
 	 */
-	public setOutputLineEnd(lineEnd: string) {
+	public setOutputLineEnd(lineEnd: number) {
 		this.outputLineEnd = lineEnd;
 	}
 }

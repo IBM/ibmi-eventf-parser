@@ -9,7 +9,7 @@ import { IRecord } from "./IRecord";
  * This class represents a Feedback Code record in an events file.
  */
 export class FeedbackCodeRecord implements IRecord {
-	constructor(private returnCode: string, private reasonCode: string) { }
+	constructor(private returnCode: number, private reasonCode: string) { }
 
 	public getRecordType(): IRecordT {
 		return IRecordT.FEEDBACK_CODE;
@@ -20,7 +20,7 @@ export class FeedbackCodeRecord implements IRecord {
 	 * 
 	 * @return The return code.
 	 */
-	public getReturnCode(): string {
+	public getReturnCode(): number {
 		return this.returnCode;
 	}
 
@@ -29,7 +29,7 @@ export class FeedbackCodeRecord implements IRecord {
 	 * 
 	 * @param returnCode The return code.
 	 */
-	public setReturnCode(returnCode: string) {
+	public setReturnCode(returnCode: number) {
 		this.returnCode = returnCode;
 	}
 

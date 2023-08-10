@@ -17,7 +17,7 @@ describe('Tests', () => {
 
         const fileIDRecords = parser.getAllFileIDRecords();
         assert.strictEqual(fileIDRecords.length, 1);
-        assertFileIDRecord(fileIDRecords[0], '/home/REINHARD/builds/hll/literalInMessage.pgm.rpgle', '001', '0')
+        assertFileIDRecord(fileIDRecords[0], '/home/REINHARD/builds/hll/literalInMessage.pgm.rpgle', 1, 0)
 
         assert.strictEqual(markers.getErrorCount(), 2);
         assert.ok(markers.equals(0, '/home/REINHARD/builds/hll/literalInMessage.pgm.rpgle', 2, 'The second parameter \'a very long lite... for %SUBST is not valid; built-in function is ignored.'));
@@ -34,7 +34,7 @@ describe('Tests', () => {
 
         const fileIDRecords = parser.getAllFileIDRecords();
         assert.strictEqual(fileIDRecords.length, 1);
-        assertFileIDRecord(fileIDRecords[0], '/QSYS.LIB/QTEMP.LIB/QSQLTEMP1.FILE/SQLRPGLE.MBR', '001', '0');
+        assertFileIDRecord(fileIDRecords[0], '/QSYS.LIB/QTEMP.LIB/QSQLTEMP1.FILE/SQLRPGLE.MBR', 1, 0);
 
         assert.strictEqual(markers.getErrorCount(), 61);
         assert.ok(markers.equals(0, '/home/REINHARD/builds/hll/sqlrpgle.pgm.sqlrpgle', 328, 'Precompile option COMMIT changed by SET OPTION statement.'));
@@ -52,13 +52,13 @@ describe('Tests', () => {
 
         const fileIDRecords = parser.getAllFileIDRecords();
         assert.strictEqual(fileIDRecords.length, 1);
-        assertFileIDRecord(fileIDRecords[0], '/QSYS.LIB/QTEMP.LIB/QSQLT00103.FILE/ANZ_FILE2.MBR', '001', '0');
+        assertFileIDRecord(fileIDRecords[0], '/QSYS.LIB/QTEMP.LIB/QSQLT00103.FILE/ANZ_FILE2.MBR', 1, 0);
 
         assert.strictEqual(markers.getErrorCount(), 1);
         assert.ok(markers.equals(0, '/QSYS.LIB/QTEMP.LIB/QSQLT00103.FILE/ANZ_FILE2.MBR', 1570, 'Undeclared identifier y.'));
 
         const exceptions = parser.getException();
-        assert.strictEqual(exceptions!.message, 'One or more FILEID records do not have matching FILEEND records\nList of outstanding FILEID records: {"stack":[{"ID":"001","lines":0}]}');
+        assert.strictEqual(exceptions!.message, 'One or more FILEID records do not have matching FILEEND records\nList of outstanding FILEID records: {"stack":[{"ID":1,"lines":0}]}');
     });
 
     it('test TYPICAL', () => {
@@ -68,9 +68,9 @@ describe('Tests', () => {
 
         const fileIDRecords = parser.getAllFileIDRecords();
         assert.strictEqual(fileIDRecords.length, 3);
-        assertFileIDRecord(fileIDRecords[0], 'BARRY/EVFTEMPF01(VSCODE)', '001', '1');
-        assertFileIDRecord(fileIDRecords[1], 'BARRY/QRPGLESRC(VSCODEINC)', '002', '0');
-        assertFileIDRecord(fileIDRecords[2], 'BARRY/QRPGLESRC(VSCODEINC2)', '003', '0');
+        assertFileIDRecord(fileIDRecords[0], 'BARRY/EVFTEMPF01(VSCODE)', 1, 1);
+        assertFileIDRecord(fileIDRecords[1], 'BARRY/QRPGLESRC(VSCODEINC)', 2, 0);
+        assertFileIDRecord(fileIDRecords[2], 'BARRY/QRPGLESRC(VSCODEINC2)', 3, 0);
 
         assert.strictEqual(markers.getErrorCount(), 46);
         assert.ok(markers.equals(0, 'BARRY/QRPGLESRC(VSCODE)', 20, 'The name or indicator SQL_00001 is not referenced.'));
@@ -88,7 +88,7 @@ describe('Tests', () => {
 
         const fileIDRecords = parser.getAllFileIDRecords();
         assert.strictEqual(fileIDRecords.length, 1);
-        assertFileIDRecord(fileIDRecords[0], 'BARRY/EVFTEMPF01(VSCODE)', '001', '1');
+        assertFileIDRecord(fileIDRecords[0], 'BARRY/EVFTEMPF01(VSCODE)', 1, 1);
 
         assert.strictEqual(markers.getErrorCount(), 44);
         assert.ok(markers.equals(0, 'BARRY/QRPGLESRC(VSCODE)', 19, 'The name or indicator SQL_00001 is not referenced.'));
@@ -106,7 +106,7 @@ describe('Tests', () => {
 
         const fileIDRecords = parser.getAllFileIDRecords();
         assert.strictEqual(fileIDRecords.length, 1);
-        assertFileIDRecord(fileIDRecords[0], '/QSYS.LIB/QTEMP.LIB/QSQLTEMP1.FILE/FIX1200.MBR', '001', '0');
+        assertFileIDRecord(fileIDRecords[0], '/QSYS.LIB/QTEMP.LIB/QSQLTEMP1.FILE/FIX1200.MBR', 1, 0);
 
         assert.strictEqual(markers.getErrorCount(), 38);
         const fileName = "/home/ANGELORPA/builds/sources/long-directory-name-for-testing-long-paths/subdirectory-"
@@ -131,9 +131,9 @@ describe('Tests', () => {
 
         const fileIDRecords = parser.getAllFileIDRecords();
         assert.strictEqual(fileIDRecords.length, 3);
-        assertFileIDRecord(fileIDRecords[0], '/home/ANGELORPA/builds/fix1200/display/qrpglesrc/hello.rpgle', '001', '0');
-        assertFileIDRecord(fileIDRecords[1], '/home/ANGELORPA/builds/fix1200/display/qprotsrc/constants.rpgle', '002', '0');
-        assertFileIDRecord(fileIDRecords[2], '/home/ANGELORPA/builds/fix1200/display/qprotsrc/constLeve2.rpgle', '003', '0');
+        assertFileIDRecord(fileIDRecords[0], '/home/ANGELORPA/builds/fix1200/display/qrpglesrc/hello.rpgle', 1, 0);
+        assertFileIDRecord(fileIDRecords[1], '/home/ANGELORPA/builds/fix1200/display/qprotsrc/constants.rpgle', 2, 0);
+        assertFileIDRecord(fileIDRecords[2], '/home/ANGELORPA/builds/fix1200/display/qprotsrc/constLeve2.rpgle', 3, 0);
 
         assert.strictEqual(markers.getErrorCount(), 12);
         assert.ok(markers.equals(2, '/home/ANGELORPA/builds/fix1200/display/qrpglesrc/hello.rpgle', 6, 'A keyword is specified more than once for a definition; keyword is ignored.'));
@@ -156,9 +156,9 @@ describe('Tests', () => {
 
         const fileIDRecords = parser.getAllFileIDRecords();
         assert.strictEqual(fileIDRecords.length, 3);
-        assertFileIDRecord(fileIDRecords[0], 'BARRY/EVFTEMPF01(VSCODE)', '001', '1');
-        assertFileIDRecord(fileIDRecords[1], 'BARRY/QRPGLESRC(VSCODEINC)', '002', '0');
-        assertFileIDRecord(fileIDRecords[2], 'BARRY/QRPGLESRC(VSCODEINC2)', '003', '0');
+        assertFileIDRecord(fileIDRecords[0], 'BARRY/EVFTEMPF01(VSCODE)', 1, 1);
+        assertFileIDRecord(fileIDRecords[1], 'BARRY/QRPGLESRC(VSCODEINC)', 2, 0);
+        assertFileIDRecord(fileIDRecords[2], 'BARRY/QRPGLESRC(VSCODEINC2)', 3, 0);
 
         assert.strictEqual(markers.getErrorCount(), 46);
         assert.ok(markers.equals(0, 'BARRY/QRPGLESRC(VSCODE)', 20, 'The name or indicator SQL_00001 is not referenced.'));
@@ -180,7 +180,7 @@ describe('Tests', () => {
 
         const fileIDRecords = parser.getAllFileIDRecords();
         assert.strictEqual(fileIDRecords.length, 1);
-        assertFileIDRecord(fileIDRecords[0], 'BARRY/EVFTEMPF01(VSCODE)', '001', '1');
+        assertFileIDRecord(fileIDRecords[0], 'BARRY/EVFTEMPF01(VSCODE)', 1, 1);
 
         assert.strictEqual(markers.getErrorCount(), 44);
         assert.ok(markers.equals(0, 'BARRY/QRPGLESRC(VSCODE)', 19, 'The name or indicator SQL_00001 is not referenced.'));
@@ -202,8 +202,8 @@ describe('Tests', () => {
 
         const fileIDRecords = parser.getAllFileIDRecords();
         assert.strictEqual(fileIDRecords.length, 2);
-        assertFileIDRecord(fileIDRecords[0], '/home/REINHARD/builds/hll/expandmain.pgm.sqlrpgle', '001', '0');
-        assertFileIDRecord(fileIDRecords[1], '/home/REINHARD/builds/hll/expandcpy1.rpgleinc', '002', '0');
+        assertFileIDRecord(fileIDRecords[0], '/home/REINHARD/builds/hll/expandmain.pgm.sqlrpgle', 1, 0);
+        assertFileIDRecord(fileIDRecords[1], '/home/REINHARD/builds/hll/expandcpy1.rpgleinc', 2, 0);
 
         assert.strictEqual(markers.getErrorCount(), 2);
         assert.ok(markers.equals(0, '/home/REINHARD/builds/hll/expandcpy1.rpgleinc', 3, 'Character literal has missing trailing apostrophe; trailing apostrophe assumed.'));
@@ -220,7 +220,7 @@ describe('Tests', () => {
 
         const fileIDRecords = parser.getAllFileIDRecords();
         assert.strictEqual(fileIDRecords.length, 1);
-        assertFileIDRecord(fileIDRecords[0], '/QSYS.LIB/QTEMP.LIB/QSQLTEMP1.FILE/EXPAN2MAIN.MBR', '001', '0');
+        assertFileIDRecord(fileIDRecords[0], '/QSYS.LIB/QTEMP.LIB/QSQLTEMP1.FILE/EXPAN2MAIN.MBR', 1, 0);
 
         assert.strictEqual(markers.getErrorCount(), 39);
         assert.ok(markers.equals(1, '/home/REINHARD/builds/hll/expan2main.pgm.sqlrpgle', 5, 'The length of the hexadecimal literal is not a positive multiple of 2; literal truncated.'));
@@ -234,10 +234,10 @@ describe('Tests', () => {
     });
 });
 
-function assertFileIDRecord(record: FileIDRecord, fileName: string, fileID: string, flag: string) {
+function assertFileIDRecord(record: FileIDRecord, fileName: string, fileID: number, flag: number) {
     assert.deepStrictEqual(
         {
-            fileName: record.getFilename(),
+            fileName: record.getFileName(),
             fileID: record.getSourceId(),
             flag: record.getFlag()
         },

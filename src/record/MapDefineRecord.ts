@@ -9,8 +9,8 @@ import { IRecord } from "./IRecord";
  * This class represents a Map Define record in an events file.
  */
 export class MapDefineRecord implements IRecord {
-	constructor(private version: string, private macroId: string, private line: string,
-		private length: string, private macroName: string) { }
+	constructor(private version: number, private macroId: number, private line: number,
+		private length: number, private macroName: string) { }
 
 	public getRecordType(): IRecordT {
 		return IRecordT.MAP_DEFINE;
@@ -21,7 +21,7 @@ export class MapDefineRecord implements IRecord {
 	 * 
 	 * @return The version.
 	 */
-	public getVersion(): string {
+	public getVersion(): number {
 		return this.version;
 	}
 
@@ -30,7 +30,7 @@ export class MapDefineRecord implements IRecord {
 	 * 
 	 * @param version The version.
 	 */
-	public setVersion(version: string) {
+	public setVersion(version: number) {
 		this.version = version;
 	}
 
@@ -39,7 +39,7 @@ export class MapDefineRecord implements IRecord {
 	 * 
 	 * @return The macro id.
 	 */
-	public getMacroId(): string {
+	public getMacroId(): number {
 		return this.macroId;
 	}
 
@@ -48,7 +48,7 @@ export class MapDefineRecord implements IRecord {
 	 * 
 	 * @param macroId The macro id.
 	 */
-	public setMacroId(macroId: string) {
+	public setMacroId(macroId: number) {
 		this.macroId = macroId;
 	}
 
@@ -57,7 +57,7 @@ export class MapDefineRecord implements IRecord {
 	 * 
 	 * @return The line.
 	 */
-	public getLine(): string {
+	public getLine(): number {
 		return this.line;
 	}
 
@@ -66,7 +66,7 @@ export class MapDefineRecord implements IRecord {
 	 * 
 	 * @param line The line.
 	 */
-	public setLine(line: string) {
+	public setLine(line: number) {
 		this.line = line;
 	}
 
@@ -75,7 +75,7 @@ export class MapDefineRecord implements IRecord {
 	 * 
 	 * @return The length.
 	 */
-	public getLength(): string {
+	public getLength(): number {
 		return this.length;
 	}
 
@@ -84,7 +84,7 @@ export class MapDefineRecord implements IRecord {
 	 * 
 	 * @param length The length.
 	 */
-	public setLength(length: string) {
+	public setLength(length: number) {
 		this.length = length;
 	}
 
