@@ -12,11 +12,11 @@ export interface IRecord {
      */
     getRecordType(): IRecordT;
 
-	/**
-	 * Get the version.
-	 * 
-	 * @return The version.
-	 */
+    /**
+     * Get the version.
+     * 
+     * @return The version.
+     */
     getVersion(): number;
 
     /**

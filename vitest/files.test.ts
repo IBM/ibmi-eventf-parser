@@ -6,7 +6,7 @@ import { assert, describe, it } from 'vitest'
 import { Parser } from '../src/Parser';
 import { FileIDRecord } from '../src/record/FileIDRecord';
 import { MarkerCreator } from './MarkerCreator';
-import {FileReader} from './FileReader';
+import { FileReader } from './FileReader';
 
 const TEST_DIR = 'testfixtures/evf';
 describe('Tests', () => {
