@@ -14,8 +14,7 @@ npm i @ibm/ibmi-eventf-parser
 ## Example
 The API to use this parser is illustrated in the [vitest/files.test.ts](./vitest/files.test.ts) examples:
 
-[`FileReader`](./vitest/FileReader.ts)  is an implementation of `ISequentialFileReader'. 
-You can find it in the vitest directory in case you also want to read a local EVFEVENT file.
+[`FileReader`](./vitest/FileReader.ts)  is an implementation of `ISequentialFileReader`. You can find it in the vitest directory in case you also want to read a local EVFEVENT file.
 
 ```typescript
 const parser = new Parser();
@@ -43,8 +42,7 @@ public createMarker(record: ErrorInformationRecord, fileLocation: string, isRead
 
 where the `ErrorInformationRecord` has all the information about the error included the original line and column range in the original source that this error was encountered in.  The value is that the parser is able to interpret all of the expansion events from precompilers and includes to determine accurate token locations in the origination source file whose path is provided in the `fileLocation`.
 
-All data is read using the `ISequentialFileReader` on the general `parser.parse(fileReader: ISequentialFileReader, markerCreator?: IMarkerCreator)` method.  
-The `readNextLine()` method can use sockets, read from an array, read a local file, or use any other arbitrary mechanism to get the contents of the eventf.
+All data is read using the `ISequentialFileReader` on the general `parser.parse(fileReader: ISequentialFileReader, markerCreator?: IMarkerCreator)` method. The `readNextLine()` method can use sockets, read from an array, read a local file, or use any other arbitrary mechanism to get the contents of the eventf.
 
 ```typescript
 export interface ISequentialFileReader {
