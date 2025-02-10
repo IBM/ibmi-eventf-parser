@@ -6,6 +6,7 @@ import { assert, describe, it } from 'vitest'
 import { Parser } from '../src/Parser';
 import { FileIDRecord } from '../src/record/FileIDRecord';
 import { MarkerCreator } from './MarkerCreator';
+import {FileReader} from './FileReader';
 
 const TEST_DIR = 'testfixtures/evf';
 describe('Tests', () => {
@@ -13,7 +14,8 @@ describe('Tests', () => {
     it('test LITINERR', () => {
         const parser = new Parser();
         const markers: MarkerCreator = new MarkerCreator();
-        parser.parseFile(`${TEST_DIR}/LITINERR.PGM.evfevent`, markers);
+        const fileReader: FileReader = new FileReader(`${TEST_DIR}/LITINERR.PGM.evfevent`);
+        parser.parse(fileReader, markers);
 
         const fileIDRecords = parser.getAllFileIDRecords();
         assert.strictEqual(fileIDRecords.length, 1);
@@ -30,7 +32,8 @@ describe('Tests', () => {
     it('test SQLRPGLE', () => {
         const parser = new Parser();
         const markers: MarkerCreator = new MarkerCreator();
-        parser.parseFile(`${TEST_DIR}/SQLRPGLE.PGM.evfevent`, markers);
+        const fileReader: FileReader = new FileReader(`${TEST_DIR}/SQLRPGLE.PGM.evfevent`);
+        parser.parse(fileReader, markers);
 
         const fileIDRecords = parser.getAllFileIDRecords();
         assert.strictEqual(fileIDRecords.length, 1);
@@ -48,7 +51,8 @@ describe('Tests', () => {
     it('test SQLCMOD', () => {
         const parser = new Parser();
         const markers: MarkerCreator = new MarkerCreator();
-        parser.parseFile(`${TEST_DIR}/SQLCMOD.evfevent`, markers);
+        const fileReader: FileReader = new FileReader(`${TEST_DIR}/SQLCMOD.evfevent`);
+        parser.parse(fileReader, markers);
 
         const fileIDRecords = parser.getAllFileIDRecords();
         assert.strictEqual(fileIDRecords.length, 1);
@@ -64,7 +68,8 @@ describe('Tests', () => {
     it('test TYPICAL', () => {
         const parser = new Parser();
         const markers: MarkerCreator = new MarkerCreator();
-        parser.parseFile(`${TEST_DIR}/TYPICAL.PGM.evfevent`, markers);
+        const fileReader: FileReader = new FileReader(`${TEST_DIR}/TYPICAL.PGM.evfevent`);
+        parser.parse(fileReader, markers);
 
         const fileIDRecords = parser.getAllFileIDRecords();
         assert.strictEqual(fileIDRecords.length, 3);
@@ -84,7 +89,8 @@ describe('Tests', () => {
     it('test TYPICAL2', () => {
         const parser = new Parser();
         const markers: MarkerCreator = new MarkerCreator();
-        parser.parseFile(`${TEST_DIR}/TYPICAL2.PGM.evfevent`, markers);
+        const fileReader: FileReader = new FileReader(`${TEST_DIR}/TYPICAL2.PGM.evfevent`);
+        parser.parse(fileReader, markers);
 
         const fileIDRecords = parser.getAllFileIDRecords();
         assert.strictEqual(fileIDRecords.length, 1);
@@ -102,7 +108,8 @@ describe('Tests', () => {
     it('test LONG_SOURCE_FILE_PATH', () => {
         const parser = new Parser();
         const markers: MarkerCreator = new MarkerCreator();
-        parser.parseFile(`${TEST_DIR}/LONG_SOURCE_FILE_PATH.PGM.evfevent`, markers);
+        const fileReader: FileReader = new FileReader(`${TEST_DIR}/LONG_SOURCE_FILE_PATH.PGM.evfevent`);
+        parser.parse(fileReader, markers);
 
         const fileIDRecords = parser.getAllFileIDRecords();
         assert.strictEqual(fileIDRecords.length, 1);
@@ -127,7 +134,8 @@ describe('Tests', () => {
     it('test NESTED_COPYBOOK', () => {
         const parser = new Parser();
         const markers: MarkerCreator = new MarkerCreator();
-        parser.parseFile(`${TEST_DIR}/NESTED_COPYBOOK.PGM.evfevent`, markers);
+        const fileReader: FileReader = new FileReader(`${TEST_DIR}/NESTED_COPYBOOK.PGM.evfevent`);
+        parser.parse(fileReader, markers);
 
         const fileIDRecords = parser.getAllFileIDRecords();
         assert.strictEqual(fileIDRecords.length, 3);
@@ -152,7 +160,8 @@ describe('Tests', () => {
     it('test SQLLVL1', () => {
         const parser = new Parser();
         const markers: MarkerCreator = new MarkerCreator();
-        parser.parseFile(`${TEST_DIR}/SQLLVL1.PGM.evfevent`, markers);
+        const fileReader: FileReader = new FileReader(`${TEST_DIR}/SQLLVL1.PGM.evfevent`);
+        parser.parse(fileReader, markers);
 
         const fileIDRecords = parser.getAllFileIDRecords();
         assert.strictEqual(fileIDRecords.length, 3);
@@ -176,7 +185,8 @@ describe('Tests', () => {
     it('test SQLLVL2', () => {
         const parser = new Parser();
         const markers: MarkerCreator = new MarkerCreator();
-        parser.parseFile(`${TEST_DIR}/SQLLVL2.PGM.evfevent`, markers);
+        const fileReader: FileReader = new FileReader(`${TEST_DIR}/SQLLVL2.PGM.evfevent`);
+        parser.parse(fileReader, markers);
 
         const fileIDRecords = parser.getAllFileIDRecords();
         assert.strictEqual(fileIDRecords.length, 1);
@@ -198,8 +208,8 @@ describe('Tests', () => {
     it('test EXPANDMAIN', () => {
         const parser = new Parser();
         const markers: MarkerCreator = new MarkerCreator();
-        parser.parseFile(`${TEST_DIR}/EXPANDMAIN.PGM.evfevent`, markers);
-
+        const fileReader: FileReader = new FileReader(`${TEST_DIR}/EXPANDMAIN.PGM.evfevent`);
+        parser.parse(fileReader, markers);
         const fileIDRecords = parser.getAllFileIDRecords();
         assert.strictEqual(fileIDRecords.length, 2);
         assertFileIDRecord(fileIDRecords[0], '/home/REINHARD/builds/hll/expandmain.pgm.sqlrpgle', 1, 0);
@@ -216,7 +226,8 @@ describe('Tests', () => {
     it('test EXPAN2MAIN', () => {
         const parser = new Parser();
         const markers: MarkerCreator = new MarkerCreator();
-        parser.parseFile(`${TEST_DIR}/EXPAN2MAIN.PGM.evfevent`, markers);
+        const fileReader: FileReader = new FileReader(`${TEST_DIR}/EXPAN2MAIN.PGM.evfevent`);
+        parser.parse(fileReader, markers);
 
         const fileIDRecords = parser.getAllFileIDRecords();
         assert.strictEqual(fileIDRecords.length, 1);
