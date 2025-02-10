@@ -11,5 +11,10 @@
     "sourceMap": true,
     "declaration": true
   },
-  "exclude": ["node_modules", "testfixtures", "vitest", "dist"]
+  "exclude": [
+    "node_modules",
+    "testfixtures",
+    "vitest",
+    "dist"
+  ]
 }
