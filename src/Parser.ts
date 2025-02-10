@@ -58,8 +58,7 @@ class LookAheadReader implements ISequentialFileReader {
 }
 
 export class Parser {
-  static LOGGER: any;
-
+  private _loggingEnabled: boolean = false;
   private exception: Error | undefined;
   private processor: IProcessor | undefined;
   private lastOutputFile: SourceFile | undefined;
@@ -82,8 +81,17 @@ export class Parser {
     return message;
   }
 
+  /**
+   * Enable or disable logging.
+   *
+   * @param {boolean} enable true to enable or false to disable logging
+   */
+  loggingEnabled(enable: boolean) {
+    this._loggingEnabled = enable;
+  }
+
   private log(content: string) {
-    if (process && process.env.DEBUG) {
+    if (this._loggingEnabled) {
       console.log(content);
     }
   }

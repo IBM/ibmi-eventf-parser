@@ -2,7 +2,7 @@
  * (c) Copyright IBM Corp. 2023
  */
 
-import { assert, describe, it } from 'vitest'
+import { assert, describe, expect, it, vi } from 'vitest'
 import { Parser } from '../src/Parser';
 import { FileIDRecord } from '../src/record/FileIDRecord';
 import { MarkerCreator } from './MarkerCreator';
@@ -242,6 +242,22 @@ describe('Tests', () => {
 
         const exceptions = parser.getException();
         assert.strictEqual(exceptions, undefined);
+    });
+
+    it('test Logging', () => {
+        const consoleSpy = vi.spyOn(console, 'log');
+        const parser = new Parser();
+        const markerCreator = new MarkerCreator();
+
+        // No logging
+        parser.loggingEnabled(false);
+        parser.parse(new FileReader(`${TEST_DIR}/TYPICAL.PGM.evfevent`), markerCreator);
+        expect(consoleSpy).toHaveBeenCalledTimes(0);
+        
+        // Logging
+        parser.loggingEnabled(true);
+        parser.parse(new FileReader(`${TEST_DIR}/TYPICAL.PGM.evfevent`), markerCreator);
+        expect(consoleSpy).toHaveBeenCalled();
     });
 });
 
