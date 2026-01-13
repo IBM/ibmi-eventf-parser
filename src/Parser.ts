@@ -432,4 +432,10 @@ export class Parser {
       return [];
     }
   }
+
+  public resolveLineNumber(line: number): number | undefined {
+    if (this.processor) {
+      return this.processor.resolveLineNumber(line);
+    }
+  }
 }

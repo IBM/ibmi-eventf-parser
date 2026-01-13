@@ -124,4 +124,12 @@ export interface IProcessor {
 	 * @return An array of all file ID records.
 	 */
 	getAllFileIDRecords(): FileIDRecord[];
+
+	/**
+	 * Resolve an expanded source line number to its true line number in the original source.
+	 * 
+	 * @param line The line number in the expanded source.
+	 * @return The line number in the original source or `undefined` if it cannot be resolved.
+	 */
+	resolveLineNumber(line: number): number | undefined;
 }

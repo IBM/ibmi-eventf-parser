@@ -270,4 +270,18 @@ export class ExpansionProcessor implements IProcessor {
 			return [];
 		}
 	}
+
+	public resolveLineNumber(line: number): number | undefined {
+		let trueLine: number | undefined;
+
+		if (this.currentProcessor) {
+			let currentProcessor: ProcessorBlock | undefined = this.currentProcessor;
+			while (currentProcessor) {
+				trueLine = currentProcessor.getMappingTable().resolveLineNumber(trueLine || line);
+				currentProcessor = currentProcessor.getPreviousProcessorBlock();
+			}
+		}
+
+		return trueLine;
+	}
 }

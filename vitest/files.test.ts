@@ -259,6 +259,16 @@ describe('Tests', () => {
         parser.parse(new FileReader(`${TEST_DIR}/TYPICAL.PGM.evfevent`), markerCreator);
         expect(consoleSpy).toHaveBeenCalled();
     });
+
+    it('test resolveLineNumber', () => {
+        const parser = new Parser();
+        const markers: MarkerCreator = new MarkerCreator();
+        const fileReader: FileReader = new FileReader(`${TEST_DIR}/EMPDET.TEST.SQLRPGLE.evfevent`);
+        parser.parse(fileReader, markers);
+        
+        assert.strictEqual(parser.resolveLineNumber(1414), 58);
+        assert.strictEqual(parser.resolveLineNumber(1434), 78);
+    });
 });
 
 function assertFileIDRecord(record: FileIDRecord, fileName: string, fileID: number, flag: number) {

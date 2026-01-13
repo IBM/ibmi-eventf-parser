@@ -542,6 +542,13 @@ export class MapTable {
 		}
 	}
 
+	public resolveLineNumber(line: number) {
+		const range = this.optimizedSourceLineRangeLookup(line);
+		if (range) {
+			return this.getLineFromSourceLineRange(range, line)
+		}
+	}
+
 	/**
 	 * Calculates the line number based on the initial number and how many lines where 
 	 * shifted in the expansion process.
