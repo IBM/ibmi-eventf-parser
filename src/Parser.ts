@@ -433,6 +433,12 @@ export class Parser {
     }
   }
 
+  /**
+   * Resolve an expanded source line number to its true line number in the original source.
+   * 
+   * @param line The line number in the expanded source.
+   * @return The line number in the original source or `undefined` if it cannot be resolved.
+   */
   public resolveLineNumber(line: number): number | undefined {
     if (this.processor) {
       return this.processor.resolveLineNumber(line);
