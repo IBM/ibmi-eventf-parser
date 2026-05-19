@@ -28,7 +28,7 @@
     "coverage": "npx vitest run --coverage"
   },
   "dependencies": {
-    "path-normalize": "^6.0.13"
+    "path-normalize": "^8.0.0"
   },
   "devDependencies": {
     "@vitest/coverage-v8": "^4.1.6",
